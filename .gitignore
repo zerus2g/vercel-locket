@@ -1,3 +1,4 @@
 .env
 /__pycache__
 queue_state.json
+/__pycache__
