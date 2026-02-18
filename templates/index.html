@@ -188,12 +188,14 @@
             z-index: 1;
         }
 
-        button:hover {
+        button:hover,
+        .download-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px -5px rgba(253, 185, 49, 0.4);
         }
 
-        button:active {
+        button:active,
+        .download-btn:active {
             transform: translateY(0);
         }
 
@@ -635,15 +637,18 @@
                         block revocation.</li>
                     <li>Restart your Locket app to see the changes.</li>
                 </ol>
-                <div style="margin-top: 1rem; text-align: center;">
+                <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="/static/locket.mobileconfig" class="download-btn" target="_blank" style="
-                        display: inline-block;
+                        display: inline-flex;
+                        align-items: center;
                         background: rgba(255, 255, 255, 0.1);
                         color: #fff;
                         padding: 0.8rem 1.5rem;
                         border-radius: 0.75rem;
                         text-decoration: none;
                         font-weight: 600;
+                        font-size: 1rem;
+                        font-family: 'Outfit', sans-serif;
                         border: 1px solid rgba(255, 255, 255, 0.2);
                         transition: all 0.3s ease;
                     ">
@@ -654,8 +659,32 @@
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Download Configuration Profile
+                        Download Profile
                     </a>
+
+                    <button onclick="showTutorial()" style="
+                        display: inline-flex;
+                        align-items: center;
+                        width: auto;
+                        background: rgba(255, 215, 0, 0.1);
+                        color: #FFD700;
+                        padding: 0.8rem 1.5rem;
+                        border-radius: 0.75rem;
+                        font-weight: 600;
+                        font-size: 1rem;
+                        font-family: 'Outfit', sans-serif;
+                        cursor: pointer;
+                        border: 1px solid rgba(255, 215, 0, 0.2);
+                        transition: all 0.3s ease;
+                    ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align: middle; margin-right: 8px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                        </svg>
+                        Watch Tutorial
+                    </button>
                 </div>
             </div>
 
@@ -725,6 +754,31 @@
             document.getElementById(platform + '-content').classList.add('active');
         }
 
+        function showTutorial() {
+            Swal.fire({
+                title: 'How to Install',
+                html: `
+                    <div style="
+                        border-radius: 1rem;
+                        overflow: hidden;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        background: rgba(0, 0, 0, 0.2);
+                    ">
+                        <iframe src="https://www.youtube.com/embed/DVEkn_AZd4w?autoplay=1" title="YouTube video player"
+                            style="width: 100%; aspect-ratio: 9/16; border: 0; display: block;"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                `,
+                ...swalGlassParams,
+                showConfirmButton: false,
+                showCloseButton: true,
+                width: 400,
+                padding: '1.5rem'
+            });
+        }
+
         let currentUserData = null;
 
         const swalGlassParams = {
@@ -768,8 +822,6 @@
                     },
                     body: JSON.stringify({
                         username: username
-                        username: username,
-                        recaptcha_token: recaptchaToken
                     }),
                 });
 
@@ -781,7 +833,7 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: data.msg === 'reCAPTCHA verification failed' ? 'Verification Failed' : 'User Not Found',
+                        title: 'User Not Found',
                         text: data.msg || "Could not find user with this username",
                         ...swalGlassParams,
                         confirmButtonColor: undefined, // Override if needed or rely on class
