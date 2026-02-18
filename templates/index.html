@@ -214,6 +214,60 @@
             color: var(--text-secondary);
         }
 
+        /* Platform Tabs */
+        .platform-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .platform-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .platform-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .platform-tab.active {
+            background: var(--primary-gradient);
+            color: #000;
+            border-color: transparent;
+        }
+
+        .platform-content {
+            display: none;
+        }
+
+        .platform-content.active {
+            display: block;
+        }
+
+        .dns-hostname {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: #FFD700;
+            text-align: center;
+            margin: 0.75rem 0;
+            user-select: all;
+        }
+
         .instructions h3 {
             color: #fff;
             font-size: 1rem;
@@ -548,61 +602,78 @@
                 </svg>
                 How to use
             </h3>
-            <ol>
-                <li>Open the Locket app and find your username in settings.</li>
-                <li>Enter your exact username in the field above.</li>
-                <li>Click <strong>Check User Info</strong> to verify the account.</li>
-                <li>Review the information and click <strong>Continue</strong> to unlock Gold.</li>
-                <li><strong>Important:</strong> After activation, you must install the configuration profile below to
-                    block revocation.</li>
-                <li>Restart your Locket app to see the changes.</li>
-            </ol>
-            <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                <button onclick="showDNSSetup()" style="
-                    display: inline-flex;
-                    align-items: center;
-                    background: rgba(255, 255, 255, 0.1);
-                    color: #fff;
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 0.75rem;
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    transition: all 0.3s ease;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    font-family: 'Outfit', sans-serif;
-                ">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        style="vertical-align: middle; margin-right: 8px;">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                    Private DNS Setup
-                </button>
 
-                <button onclick="showTutorial()" style="
-                    display: inline-flex;
-                    align-items: center;
-                    width: auto;
-                    background: rgba(255, 215, 0, 0.1);
-                    color: #FFD700;
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 0.75rem;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    font-family: 'Outfit', sans-serif;
-                    cursor: pointer;
-                    border: 1px solid rgba(255, 215, 0, 0.2);
-                    transition: all 0.3s ease;
-                ">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        style="vertical-align: middle; margin-right: 8px;">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            <!-- Platform Tabs -->
+            <div class="platform-tabs">
+                <div class="platform-tab active" onclick="switchPlatform('ios')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                     </svg>
-                    Watch Tutorial
-                </button>
+                    iOS
+                </div>
+                <div class="platform-tab" onclick="switchPlatform('android')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path
+                            d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.5 11.5 0 0 0-8.94 0L5.65 5.67c-.19-.28-.54-.37-.83-.22-.3.16-.42.54-.26.85l1.84 3.18C2.92 11.03 1 14.22 1 17.8h22c0-3.58-1.92-6.77-5.4-8.32zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z" />
+                    </svg>
+                    Android
+                </div>
+            </div>
+
+            <!-- iOS Content -->
+            <div id="ios-content" class="platform-content active">
+                <ol>
+                    <li>Open the Locket app and find your username in settings.</li>
+                    <li>Enter your exact username in the field above.</li>
+                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li>Review the information and click <strong>Continue</strong> to unlock Gold.</li>
+                    <li><strong>Important:</strong> After activation, you must install the configuration profile below
+                        to
+                        block revocation.</li>
+                    <li>Restart your Locket app to see the changes.</li>
+                </ol>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="/static/locket.mobileconfig" class="download-btn" target="_blank" style="
+                        display: inline-block;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: #fff;
+                        padding: 0.8rem 1.5rem;
+                        border-radius: 0.75rem;
+                        text-decoration: none;
+                        font-weight: 600;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        transition: all 0.3s ease;
+                    ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align: middle; margin-right: 8px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Configuration Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Android Content -->
+            <div id="android-content" class="platform-content">
+                <ol>
+                    <li>Open the Locket app and find your username in Settings.</li>
+                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li>Go to <strong>Settings → Network & Internet</strong> on your Android device.</li>
+                    <li>Tap <strong>Private DNS</strong>.</li>
+                    <li>Select <strong>Private DNS provider hostname</strong>.</li>
+                    <li>Enter the following hostname:</li>
+                </ol>
+                <div class="dns-hostname">62d63b.dns.nextdns.io</div>
+                <ol start="7">
+                    <li>Tap <strong>Save</strong>.</li>
+                    <li>Restart your Locket app to see the changes.</li>
+                </ol>
             </div>
         </div>
 
@@ -618,7 +689,7 @@
                 Important Note
             </h3>
             <ul>
-                <li>This tool is compatible with <strong>iOS Devices Only</strong>.</li>
+                <li>This tool is compatible with <strong>iOS and Android Devices</strong>.</li>
                 <li>The Gold subscription is only valid until you <strong>log out</strong> of the Locket app.</li>
                 <li>This project is created for <strong>educational purposes only</strong>.</li>
             </ul>
@@ -639,6 +710,21 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // Platform switching function
+        function switchPlatform(platform) {
+            // Update tabs
+            document.querySelectorAll('.platform-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.platform-tab').classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.platform-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(platform + '-content').classList.add('active');
+        }
+
         let currentUserData = null;
 
         const swalGlassParams = {
@@ -650,90 +736,6 @@
             },
             buttonsStyling: false
         };
-
-        function showDNSSetup() {
-            const dnsAddress = "62d63b.dns.nextdns.io";
-            Swal.fire({
-                title: 'Private DNS Setup',
-                html: `
-                    <div style="text-align: left; font-size: 0.95rem;">
-                        <div style="margin-bottom: 1.5rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.1);">
-                             <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 0.25rem;">DNS Address</div>
-                             <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                <code style="flex: 1; background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 0.5rem; font-family: monospace; color: #FFD700; word-break: break-all;">${dnsAddress}</code>
-                                <button onclick="navigator.clipboard.writeText('${dnsAddress}'); const icon = this.querySelector('svg'); icon.innerHTML='<polyline points=\\'20 6 9 17 4 12\\'></polyline>'; setTimeout(() => icon.innerHTML='<rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\' ry=\\'2\\'></rect><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'></path>', 1500);" style="padding: 0.5rem; background: rgba(255,255,255,0.1); border: none; border-radius: 0.5rem; color: #fff; cursor: pointer; width: auto; margin-top:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </button>
-                             </div>
-                        </div>
-
-                        <div style="margin-bottom: 1.5rem;">
-                            <h4 style="color: #fff; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 8px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                                iOS
-                            </h4>
-                            <a href="/static/locket.mobileconfig" target="_blank" style="
-                                display: block;
-                                width: 100%;
-                                text-align: center;
-                                background: var(--primary-gradient);
-                                color: #000;
-                                padding: 0.75rem;
-                                border-radius: 0.5rem;
-                                font-weight: 600;
-                                text-decoration: none;
-                                margin-bottom: 0.5rem;
-                                box-sizing: border-box;
-                            ">Download iOS Profile</a>
-                            <div style="font-size: 0.85rem; color: #a0a0a0; padding-left: 0.5rem;">
-                                (Mở link bằng Safari &rarr; Cho phép &rarr; Cài đặt Profile)
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 style="color: #fff; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 8px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
-                                Android
-                            </h4>
-                             <div style="font-size: 0.85rem; color: #a0a0a0; padding-left: 0.5rem;">
-                                (Cài đặt &rarr; Mạng &rarr; Private DNS &rarr; Chọn Hostname/Thủ công &rarr; Nhập DNS trên)
-                            </div>
-                        </div>
-                    </div>
-                `,
-                ...swalGlassParams,
-                showConfirmButton: false,
-                showCloseButton: true
-            });
-        }
-
-        function showTutorial() {
-            Swal.fire({
-                title: 'How to Install',
-                html: `
-                    <div style="
-                        border-radius: 1rem;
-                        overflow: hidden;
-                        border: 1px solid rgba(255, 255, 255, 0.1);
-                        background: rgba(0, 0, 0, 0.2);
-                    ">
-                        <iframe src="https://www.youtube.com/embed/DVEkn_AZd4w?autoplay=1" title="YouTube video player"
-                            style="width: 100%; aspect-ratio: 9/16; border: 0; display: block;"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                `,
-                ...swalGlassParams,
-                showConfirmButton: false,
-                showCloseButton: true,
-                width: 400,
-                padding: '1.5rem'
-            });
-        }
 
         async function checkUserInfo() {
             const usernameInput = document.getElementById('username');
@@ -766,6 +768,8 @@
                     },
                     body: JSON.stringify({
                         username: username
+                        username: username,
+                        recaptcha_token: recaptchaToken
                     }),
                 });
 
@@ -777,7 +781,7 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'User Not Found',
+                        title: data.msg === 'reCAPTCHA verification failed' ? 'Verification Failed' : 'User Not Found',
                         text: data.msg || "Could not find user with this username",
                         ...swalGlassParams,
                         confirmButtonColor: undefined, // Override if needed or rely on class
