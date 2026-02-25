@@ -938,7 +938,7 @@
                         <path
                             d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                     </svg>
-                    iOS
+                    <span data-i18n="ios">iOS</span>
                 </div>
                 <div class="platform-tab" onclick="switchPlatform('android')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -946,21 +946,20 @@
                         <path
                             d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.5 11.5 0 0 0-8.94 0L5.65 5.67c-.19-.28-.54-.37-.83-.22-.3.16-.42.54-.26.85l1.84 3.18C2.92 11.03 1 14.22 1 17.8h22c0-3.58-1.92-6.77-5.4-8.32zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z" />
                     </svg>
-                    Android
+                    <span data-i18n="android">Android</span>
                 </div>
             </div>
 
             <!-- iOS Content -->
             <div id="ios-content" class="platform-content active">
                 <ol>
-                    <li>Open the Locket app and find your username in settings.</li>
-                    <li>Enter your exact username in the field above.</li>
-                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li>Review the information and click <strong>Continue</strong> to unlock Gold.</li>
-                    <li><strong>Important:</strong> After activation, you must install the configuration profile below
-                        to
-                        block revocation.</li>
-                    <li>Restart your Locket app to see the changes.</li>
+                    <li data-i18n="ios1">Open the Locket app and find your username in settings.</li>
+                    <li data-i18n="ios2">Enter your exact username in the field above.</li>
+                    <li data-i18n="ios3">Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li data-i18n="ios4">Review the information and click <strong>Continue</strong> to unlock Gold.</li>
+                    <li data-i18n="ios5"><strong>Important:</strong> After activation, you must install the
+                        configuration profile below to block revocation.</li>
+                    <li data-i18n="ios6">Restart your Locket app to see the changes.</li>
                 </ol>
                 <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="/static/locket.mobileconfig" class="download-btn" target="_blank" style="
@@ -984,7 +983,7 @@
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Download Profile
+                        <span data-i18n="downloadProfile">Download Profile</span>
                     </a>
 
                     <button onclick="showTutorial()" style="
@@ -1008,7 +1007,7 @@
                             <circle cx="12" cy="12" r="10"></circle>
                             <polygon points="10 8 16 12 10 16 10 8"></polygon>
                         </svg>
-                        Watch Tutorial
+                        <span data-i18n="watchTutorial">Watch Tutorial</span>
                     </button>
                 </div>
             </div>
@@ -1016,17 +1015,18 @@
             <!-- Android Content -->
             <div id="android-content" class="platform-content">
                 <ol>
-                    <li>Open the Locket app and find your username in Settings.</li>
-                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li>Go to <strong>Settings → Network & Internet</strong> on your Android device.</li>
-                    <li>Tap <strong>Private DNS</strong>.</li>
-                    <li>Select <strong>Private DNS provider hostname</strong>.</li>
-                    <li>Enter the following hostname:</li>
+                    <li data-i18n="and1">Open the Locket app and find your username in Settings.</li>
+                    <li data-i18n="and2">Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li data-i18n="and3">Go to <strong>Settings → Network & Internet</strong> on your Android device.
+                    </li>
+                    <li data-i18n="and4">Tap <strong>Private DNS</strong>.</li>
+                    <li data-i18n="and5">Select <strong>Private DNS provider hostname</strong>.</li>
+                    <li data-i18n="and6">Enter the following hostname:</li>
                 </ol>
                 <div class="dns-hostname">62d63b.dns.nextdns.io</div>
                 <ol start="7">
-                    <li>Tap <strong>Save</strong>.</li>
-                    <li>Restart your Locket app to see the changes.</li>
+                    <li data-i18n="and7">Tap <strong>Save</strong>.</li>
+                    <li data-i18n="and8">Restart your Locket app to see the changes.</li>
                 </ol>
             </div>
         </div>
@@ -1099,7 +1099,7 @@
 
         function showTutorial() {
             Swal.fire({
-                title: 'How to Install',
+                title: t('howToInstallTitle'),
                 html: `
                     <div style="
                         border-radius: 1rem;
@@ -1174,10 +1174,16 @@
                     currentUserData = data.data;
                     showUserInfoConfirmation(data.data);
                 } else {
+                    let errorText = data.msg;
+                    if (errorText === "User not found or API error" || errorText === "User data not found") {
+                        errorText = t('userNotFoundText');
+                    } else if (errorText === "Username is required") {
+                        errorText = t('missingInputText');
+                    }
                     Swal.fire({
                         icon: 'error',
                         title: t('userNotFoundTitle'),
-                        text: data.msg || t('userNotFoundText'),
+                        text: errorText || t('userNotFoundText'),
                         ...swalGlassParams,
                         confirmButtonText: t('close')
                     });
@@ -1248,10 +1254,16 @@
                     // Show queue status and start polling
                     showQueueStatus(data.client_id, username);
                 } else {
+                    let errorText = data.msg;
+                    if (errorText === "Username is required") {
+                        errorText = t('missingInputText');
+                    } else if (errorText === "API not initialized. Check server logs.") {
+                        errorText = t('connectionErrorText');
+                    }
                     Swal.fire({
                         icon: 'error',
                         title: t('errorTitle'),
-                        text: data.msg || t('joinQueueFail'),
+                        text: errorText || t('joinQueueFail'),
                         ...swalGlassParams,
                         confirmButtonText: t('close')
                     });
@@ -1376,10 +1388,13 @@
                 } else {
                     clearInterval(pollInterval);
                     clearInterval(countdownInterval);
+                    let errorText = data.msg;
+                    if (errorText === "client_id is required") errorText = t('reqNotFoundText');
+
                     Swal.fire({
                         icon: 'error',
                         title: t('errorTitle'),
-                        text: data.msg || t('failGetQueue'),
+                        text: errorText || t('failGetQueue'),
                         ...swalGlassParams,
                         confirmButtonText: t('close')
                     });
@@ -1518,10 +1533,19 @@
 
         function showCompletedStatus(data) {
             if (data.result && data.result.success) {
+                let successText = data.result.msg;
+
+                // Intercept backend English success message
+                // Format: Purchase locket_199_1m for username successfully!
+                const match = successText.match(/Purchase (.*) for (.*) successfully!/i);
+                if (match) {
+                    successText = t('purchaseSuccess').replace('{product}', match[1]).replace('{user}', match[2]);
+                }
+
                 Swal.fire({
                     icon: 'success',
                     title: t('successTitle'),
-                    text: data.result.msg,
+                    text: successText,
                     ...swalGlassParams,
                     confirmButtonText: t('coolBtn')
                 });
@@ -1576,14 +1600,14 @@
                 wrapper.appendChild(el);
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
-                btn.textContent = 'COPY';
+                btn.textContent = t('copyBtn');
                 btn.type = 'button';
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(el.textContent.trim()).then(() => {
                         showToast(t('copied'), 'success');
                         btn.textContent = '✓';
-                        setTimeout(() => btn.textContent = 'COPY', 2000);
+                        setTimeout(() => btn.textContent = t('copyBtn'), 2000);
                     });
                 };
                 wrapper.appendChild(btn);
@@ -1645,7 +1669,26 @@
                 coolBtn: 'Cool!',
                 failedTitle: 'Failed',
                 reqFailedText: 'Request completed but failed',
-                reqErrorText: 'An error occurred while processing your request'
+                reqErrorText: 'An error occurred while processing your request',
+                howToInstallTitle: 'How to Install',
+                purchaseSuccess: '{product} unlocked successfully for {user}!',
+                copyBtn: 'COPY',
+                timeoutQueue: 'Timeout waiting for position in queue',
+                restoreFailText: 'Restore purchase failed: {msg}',
+                ios1: 'Open the Locket app and find your username in settings.',
+                ios2: 'Enter your exact username in the field above.',
+                ios3: 'Click <strong>Check User Info</strong> to verify the account.',
+                ios4: 'Review the information and click <strong>Continue</strong> to unlock Gold.',
+                ios5: '<strong>Important:</strong> After activation, you must install the configuration profile below to block revocation.',
+                ios6: 'Restart your Locket app to see the changes.',
+                and1: 'Open the Locket app and find your username in Settings.',
+                and2: 'Click <strong>Check User Info</strong> to verify the account.',
+                and3: 'Go to <strong>Settings → Network & Internet</strong> on your Android device.',
+                and4: 'Tap <strong>Private DNS</strong>.',
+                and5: 'Select <strong>Private DNS provider hostname</strong>.',
+                and6: 'Enter the following hostname:',
+                and7: 'Tap <strong>Save</strong>.',
+                and8: 'Restart your Locket app to see the changes.',
             },
             vi: {
                 title: 'LOCKET GOLD',
@@ -1699,7 +1742,26 @@
                 coolBtn: 'Tuyệt!',
                 failedTitle: 'Thất Bại',
                 reqFailedText: 'Yêu cầu đã hoàn tất nhưng thất bại',
-                reqErrorText: 'Đã xảy ra lỗi khi xử lý yêu cầu của bạn'
+                reqErrorText: 'Đã xảy ra lỗi khi xử lý yêu cầu của bạn',
+                howToInstallTitle: 'Hướng Dẫn Cài Đặt',
+                purchaseSuccess: 'Đã mở khóa {product} cho {user} thành công!',
+                copyBtn: 'SAO CHÉP',
+                timeoutQueue: 'Đã hết thời gian chờ tại hàng đợi',
+                restoreFailText: 'Lỗi khi mở khóa: {msg}',
+                ios1: 'Mở ứng dụng Locket và tìm tên người dùng trong cài đặt.',
+                ios2: 'Nhập chính xác tên người dùng vào ô trống bên trên.',
+                ios3: 'Nhấn <strong>Kiểm Tra Thông Tin</strong> để xác minh tài khoản.',
+                ios4: 'Kiểm tra lại thông tin và nhấn <strong>Tiếp Tục</strong> để được mở khóa Gold.',
+                ios5: '<strong>Quan trọng:</strong> Sau khi kích hoạt, bạn phải cài đặt profile cấu hình bên dưới để chặn thu hồi chứng chỉ.',
+                ios6: 'Khởi động lại Locket và tận hưởng.',
+                and1: 'Mở ứng dụng Locket và tìm tên người dùng trong cài đặt.',
+                and2: 'Nhấn <strong>Kiểm Tra Thông Tin</strong> để xác minh tài khoản.',
+                and3: 'Vào phần <strong>Cài đặt → Mạng & Internet</strong> trên thiết bị Android của bạn.',
+                and4: 'Nhấn vào <strong>DNS Cá nhân (Private DNS)</strong>.',
+                and5: 'Chọn <strong>Tên máy chủ của nhà cung cấp DNS Cá nhân</strong>.',
+                and6: 'Nhập tên máy chủ sau đây:',
+                and7: 'Nhấn <strong>Lưu</strong>.',
+                and8: 'Khởi động lại Locket và tận hưởng.'
             }
         };
 
@@ -1713,9 +1775,13 @@
                 const key = el.getAttribute('data-i18n');
                 if (lang[key]) {
                     if (el.tagName === 'INPUT') el.placeholder = lang[key];
-                    else if (key.includes('Compat') || key.includes('Valid') || key.includes('Only'))
-                        el.innerHTML = lang[key];
-                    else el.textContent = lang[key];
+                    else el.innerHTML = lang[key];
+                }
+            });
+            // Update copy buttons
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                if (btn.textContent !== '✓') {
+                    btn.textContent = t('copyBtn');
                 }
             });
         }
