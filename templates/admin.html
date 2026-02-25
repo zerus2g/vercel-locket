@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Locket Gold</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        :root {
+            --primary: #00ffff;
+            --secondary: #ff00ff;
+            --bg: #030305;
+            --card: rgba(10, 10, 15, 0.6);
+            --text: #fff;
+            --text2: #a0a0b0;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 255, .06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 255, .06) 0%, transparent 40%);
+        }
+
+        .dashboard {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .header a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: .9rem;
+            opacity: .7;
+            transition: opacity .3s;
+        }
+
+        .header a:hover {
+            opacity: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, .2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: border-color .3s;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, .5);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(255, 0, 255, .4);
+        }
+
+        .stat-label {
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text2);
+            margin-bottom: .75rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .stat-sub {
+            font-size: .8rem;
+            color: var(--text2);
+            margin-top: .5rem;
+        }
+
+        .chart-card {
+            background: var(--card);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 0, 255, .2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, .5);
+        }
+
+        .chart-card h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            color: var(--text2);
+        }
+
+        .health-bar {
+            height: 10px;
+            background: rgba(0, 0, 0, .5);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: .5rem;
+            border: 1px solid rgba(0, 255, 255, .2);
+        }
+
+        .health-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width .5s ease, background .5s ease;
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .8rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+            font-size: .9rem;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-user {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .activity-time {
+            color: var(--text2);
+            font-size: .8rem;
+        }
+
+        .activity-plan {
+            font-size: .75rem;
+            color: var(--secondary);
+            background: rgba(255, 0, 255, .1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        @media(max-width:600px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <a href="/">← Back to App</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Unlocks</div>
+                <div class="stat-value" id="totalUnlocks">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Today</div>
+                <div class="stat-value" id="todayUnlocks">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Errors</div>
+                <div class="stat-value" id="totalErrors">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Queue Now</div>
+                <div class="stat-value" id="queueSize">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Process Time</div>
+                <div class="stat-value" id="avgTime">-</div>
+                <div class="stat-sub">seconds</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">API Health</div>
+                <div class="stat-value" id="apiHealth" style="font-size:1.2rem;">—</div>
+                <div class="health-bar">
+                    <div class="health-fill" id="healthFill" style="width:0%;background:var(--primary);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h2>Unlocks — Last 7 Days</h2>
+            <canvas id="dailyChart" height="200"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h2>Recent Activity</h2>
+            <ul class="activity-list" id="activityList">
+                <li class="activity-item"><span style="color:var(--text2)">Loading...</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let dailyChart = null;
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                if (!data.success) return;
+
+                document.getElementById('totalUnlocks').textContent = data.total_unlocks;
+                document.getElementById('todayUnlocks').textContent = data.today_unlocks;
+                document.getElementById('totalErrors').textContent = data.total_errors;
+                document.getElementById('queueSize').textContent = data.queue_size;
+                document.getElementById('avgTime').textContent = data.avg_processing_time;
+
+                // Chart
+                const labels = data.daily_chart.map(d => d.date.slice(5)); // MM-DD
+                const values = data.daily_chart.map(d => d.count);
+                if (dailyChart) {
+                    dailyChart.data.labels = labels;
+                    dailyChart.data.datasets[0].data = values;
+                    dailyChart.update();
+                } else {
+                    const ctx = document.getElementById('dailyChart').getContext('2d');
+                    const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+                    gradient.addColorStop(0, '#00ffff');
+                    gradient.addColorStop(1, '#ff00ff');
+                    dailyChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Unlocks',
+                                data: values,
+                                backgroundColor: gradient,
+                                borderRadius: 6,
+                                borderSkipped: false,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666' } },
+                                y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666', stepSize: 1 }, beginAtZero: true }
+                            }
+                        }
+                    });
+                }
+            } catch (e) { console.error('Stats fetch error:', e); }
+        }
+
+        async function fetchActivity() {
+            try {
+                const res = await fetch('/api/recent-activity');
+                const data = await res.json();
+                const list = document.getElementById('activityList');
+                if (!data.success || data.activity.length === 0) {
+                    list.innerHTML = '<li class="activity-item"><span style="color:var(--text2)">No activity yet</span></li>';
+                    return;
+                }
+                list.innerHTML = data.activity.map(a => {
+                    const t = new Date(a.timestamp);
+                    const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `<li class="activity-item">
+                        <span class="activity-user">@${a.username}</span>
+                        <span class="activity-plan">${a.product_id}</span>
+                        <span class="activity-time">${timeStr}</span>
+                    </li>`;
+                }).join('');
+            } catch (e) { console.error('Activity fetch error:', e); }
+        }
+
+        async function fetchRateLimit() {
+            try {
+                const res = await fetch('/api/rate-limit');
+                const data = await res.json();
+                const el = document.getElementById('apiHealth');
+                const fill = document.getElementById('healthFill');
+                if (!data.success || data.remaining === null) {
+                    el.textContent = 'OK';
+                    fill.style.width = '100%';
+                    fill.style.background = 'var(--primary)';
+                    return;
+                }
+                const pct = data.limit > 0 ? Math.round((data.remaining / data.limit) * 100) : 100;
+                el.textContent = `${data.remaining}/${data.limit}`;
+                fill.style.width = pct + '%';
+                if (pct > 60) fill.style.background = '#00ffaa';
+                else if (pct > 30) fill.style.background = '#ffaa00';
+                else fill.style.background = '#ff4444';
+            } catch (e) { console.error('Rate limit fetch error:', e); }
+        }
+
+        fetchStats();
+        fetchActivity();
+        fetchRateLimit();
+        setInterval(fetchStats, 10000);
+        setInterval(fetchActivity, 15000);
+        setInterval(fetchRateLimit, 10000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+{
+    "name": "Locket Gold Unlocker",
+    "short_name": "LocketGold",
+    "description": "Unlock Locket Gold premium features instantly",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#030305",
+    "theme_color": "#00ffff",
+    "icons": [
+        {
+            "src": "https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

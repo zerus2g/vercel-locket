@@ -4,29 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00ffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/static/manifest.json">
     <title>Locket Gold Unlocker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- SweetAlert2 CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
-            --bg-color: #050505;
-            --card-bg: rgba(20, 20, 20, 0.7);
+            --primary-color: #00ffff;
+            --secondary-color: #ff00ff;
+            --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --bg-color: #030305;
+            --card-bg: rgba(10, 10, 15, 0.4);
             --text-color: #ffffff;
-            --text-secondary: #b0b0b0;
-            --input-bg: rgba(255, 255, 255, 0.03);
-            --border-color: rgba(255, 215, 0, 0.1);
-            --glass-border: 1px solid rgba(255, 215, 0, 0.15);
+            --text-secondary: #a0a0b0;
+            --input-bg: rgba(255, 255, 255, 0.02);
+            --border-color: rgba(0, 255, 255, 0.2);
+            --glass-border: 1px solid rgba(0, 255, 255, 0.15);
+            --neon-glow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(255, 0, 255, 0.2);
         }
 
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
             background-image:
-                radial-gradient(at 0% 0%, hsla(50, 100%, 10%, 1) 0, transparent 50%),
-                radial-gradient(at 50% 0%, hsla(45, 100%, 15%, 1) 0, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(50, 100%, 10%, 1) 0, transparent 50%);
+                radial-gradient(circle at 15% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(255, 0, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
             color: var(--text-color);
             display: flex;
             flex-direction: column;
@@ -35,6 +43,17 @@
             min-height: 100vh;
             margin: 0;
             overflow-x: hidden;
+            animation: bg-pulse 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes bg-pulse {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 100% 100%;
+            }
         }
 
         .main-wrapper {
@@ -44,32 +63,43 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
+            position: relative;
+            z-index: 10;
         }
 
+        /* The Neon Glass Container */
         .container {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             padding: 2.5rem;
             border-radius: 1.5rem;
-            border: var(--glass-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 1), var(--neon-glow);
             text-align: center;
             position: relative;
             overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
         }
 
-        .container::before {
+        .container:hover {
+            box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 1), 0 0 30px rgba(0, 255, 255, 0.6), 0 0 60px rgba(255, 0, 255, 0.3);
+        }
+
+        /* Subtle Noise Overlay for Realism */
+        .container::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
             pointer-events: none;
             z-index: 0;
+            opacity: 0.8;
+            mix-blend-mode: overlay;
         }
 
         .app-icon {
@@ -77,51 +107,72 @@
             height: 76px;
             border-radius: 18px;
             display: block;
-            margin: 0 auto 0.75rem;
+            margin: 0 auto 1rem;
             object-fit: cover;
             overflow: hidden;
-            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
             position: relative;
             z-index: 1;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            background-image: var(--primary-gradient);
+            padding: 2px;
+        }
+
+        .app-icon img {
+            border-radius: 16px;
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         h1 {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
+            color: transparent;
             margin-bottom: 0.5rem;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
             position: relative;
             z-index: 1;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
 
         p.subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 2.5rem;
             font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             position: relative;
             z-index: 1;
+            opacity: 0.8;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             text-align: left;
             position: relative;
             z-index: 1;
         }
 
-        /* Global Queue Status (Outside Modal) */
+        /* Global Queue Status */
         .global-queue-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            background: rgba(255, 215, 0, 0.05);
-            padding: 1rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: rgba(0, 255, 255, 0.03);
+            padding: 1.25rem;
             border-radius: 1rem;
-            border: 1px solid rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.05);
         }
 
         .global-queue-item {
@@ -129,128 +180,204 @@
         }
 
         .global-queue-label {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.25rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
         }
 
         .global-queue-value {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            color: #FFD700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
         }
 
         label {
             display: block;
             margin-bottom: 0.75rem;
             font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-secondary);
+            font-weight: 600;
+            color: var(--primary-color);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            opacity: 0.9;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             background-color: var(--input-bg);
-            border: var(--glass-border);
+            border: 1px solid rgba(0, 255, 255, 0.2);
             border-radius: 0.75rem;
-            color: var(--text-color);
+            color: #fff;
             font-size: 1rem;
+            letter-spacing: 1px;
             box-sizing: border-box;
             transition: all 0.3s ease;
             font-family: 'Outfit', sans-serif;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.2);
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #FFD700;
-            background-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+            border-color: var(--primary-color);
+            background-color: rgba(0, 255, 255, 0.05);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
         button {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             background: var(--primary-gradient);
             color: #000;
             border: none;
             border-radius: 0.75rem;
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             z-index: 1;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: pulse-border 3s infinite alternate;
         }
 
-        button:hover,
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(253, 185, 49, 0.4);
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 35px rgba(255, 0, 255, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.02);
+            color: #fff;
+            text-shadow: 0 0 5px #000;
+        }
+
+        button:hover::before {
+            left: 100%;
+            transition: all 0.5s ease;
         }
 
         button:active,
         .download-btn:active {
-            transform: translateY(0);
+            transform: translateY(1px);
         }
 
         button:disabled {
-            opacity: 0.7;
+            opacity: 0.5;
             cursor: not-allowed;
+            animation: none;
+            box-shadow: none;
             transform: none;
+            color: #555;
+            background: #222;
         }
 
-        /* Instructions Card */
-        .instructions {
-            background: rgba(20, 20, 20, 0.4);
+        /* Additional Container for Info / Instructions */
+        .instructions,
+        .note {
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(10px);
             border-radius: 1rem;
             padding: 1.5rem;
-            border: var(--glass-border);
+            border: 1px solid rgba(255, 0, 255, 0.2);
             text-align: left;
             font-size: 0.9rem;
             color: var(--text-secondary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s ease;
         }
 
-        /* Platform Tabs */
+        .instructions:hover,
+        .note:hover {
+            border-color: rgba(0, 255, 255, 0.4);
+        }
+
         .platform-tabs {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
 
         .platform-tab {
             flex: 1;
-            padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.2);
             border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .platform-tab:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(0, 255, 255, 0.5);
         }
 
         .platform-tab.active {
             background: var(--primary-gradient);
             color: #000;
             border-color: transparent;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
         }
 
         .platform-content {
             display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .platform-content.active {
@@ -258,44 +385,67 @@
         }
 
         .dns-hostname {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            padding: 0.75rem;
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px dashed rgba(255, 0, 255, 0.4);
+            padding: 1rem;
             border-radius: 0.5rem;
             font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-            color: #FFD700;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--secondary-color);
             text-align: center;
-            margin: 0.75rem 0;
+            margin: 1rem 0;
             user-select: all;
+            text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
         }
 
-        .instructions h3 {
+        .instructions h3,
+        .note h3 {
             color: #fff;
-            font-size: 1rem;
+            font-size: 1.1rem;
             margin-top: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .instructions ol {
-            padding-left: 1.2rem;
+        .instructions h3 svg {
+            color: var(--primary-color);
+            fill: rgba(0, 255, 255, 0.2);
+        }
+
+        .note h3 svg {
+            color: var(--secondary-color);
+            fill: rgba(255, 0, 255, 0.2);
+        }
+
+        .instructions ol,
+        .note ul {
+            padding-left: 1.5rem;
             margin: 0;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
-        .instructions li {
-            margin-bottom: 0.5rem;
+        .instructions li,
+        .note li {
+            margin-bottom: 0.75rem;
+        }
+
+        .instructions strong {
+            color: var(--primary-color);
         }
 
         .youtube-embed {
             margin-top: 1.25rem;
             border-radius: 1rem;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            background: #000;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
         }
 
         .youtube-embed iframe {
@@ -305,68 +455,51 @@
             display: block;
         }
 
-        /* Note Card */
-        .note {
-            background: rgba(255, 215, 0, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: left;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-top: 0px;
-            /* Spacing handled by gap in main-wrapper */
+        /* Download Profile Btn specifically */
+        .download-btn {
+            background: rgba(0, 255, 255, 0.1) !important;
+            border: 1px solid rgba(0, 255, 255, 0.3) !important;
+            color: var(--primary-color) !important;
         }
 
-        .note h3 {
-            color: #FFD700;
-            font-size: 1rem;
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .note ul {
-            padding-left: 1.2rem;
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .note li {
-            margin-bottom: 0.5rem;
+        .download-btn:hover {
+            background: rgba(0, 255, 255, 0.2) !important;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4) !important;
+            color: #fff !important;
         }
 
         /* Footer */
         footer {
-            margin-top: auto;
+            margin-top: 2rem;
             padding: 1.5rem;
-            color: var(--text-secondary);
+            color: rgba(255, 255, 255, 0.3);
             font-size: 0.85rem;
             text-align: center;
             width: 100%;
         }
 
         footer a {
-            color: #FFD700;
+            color: var(--primary-color);
             text-decoration: none;
-            transition: opacity 0.2s;
+            transition: all 0.3s;
+            font-weight: bold;
+            opacity: 0.7;
         }
 
         footer a:hover {
-            opacity: 0.8;
+            opacity: 1;
+            text-shadow: 0 0 10px var(--primary-color);
         }
 
         /* Loader */
         .loader {
             display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 0, 0, 0.3);
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 0, 0, 0.2);
             border-radius: 50%;
             border-top-color: #000;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 0.8s ease-in-out infinite;
             margin: 0 auto;
         }
 
@@ -376,19 +509,23 @@
             }
         }
 
-        /* Customize SweetAlert2 to match glassmorphism */
+        /* SweetAlert2 Neon Override */
         div:where(.swal2-container) div:where(.swal2-popup) {
-            background: rgba(30, 30, 30, 0.8) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: var(--glass-border) !important;
-            border-radius: 1.5rem !important;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            background: rgba(5, 5, 8, 0.9) !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(255, 0, 255, 0.3) !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.1) !important;
         }
 
         div:where(.swal2-container) h2:where(.swal2-title) {
             color: #fff !important;
             font-family: 'Outfit', sans-serif !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5) !important;
         }
 
         div:where(.swal2-container) .swal2-html-container {
@@ -396,169 +533,356 @@
             color: var(--text-secondary) !important;
         }
 
-        /* User Info Card Styles */
+        /* User Info Card inside Swal */
         .swal2-html-container .user-info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.2);
             border-radius: 12px;
             padding: 1.5rem;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             text-align: left;
-        }
-
-        .swal2-html-container .user-info-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
         }
 
         .swal2-html-container .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
             object-fit: cover;
-            border: 2px solid #FFD700;
-        }
-
-        .swal2-html-container .user-details {
-            flex: 1;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
         .swal2-html-container .user-name {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: #fff;
             margin-bottom: 0.25rem;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
         }
 
         .swal2-html-container .user-username {
-            font-size: 0.9rem;
-            color: #a0a0a0;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            font-weight: 500;
         }
 
         .swal2-html-container .user-uid {
             font-size: 0.8rem;
-            color: #666;
-            margin-top: 0.5rem;
+            color: #aaa;
+            margin-top: 0.75rem;
             word-break: break-all;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 4px 8px;
-            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 10px;
+            border-radius: 6px;
             display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Custom Buttons for Swal */
         .glass-confirm-btn {
             background: var(--primary-gradient) !important;
             color: #000 !important;
-            font-weight: 700 !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
             border-radius: 0.75rem !important;
-            padding: 12px 24px !important;
+            padding: 14px 28px !important;
             border: none !important;
-            box-shadow: none !important;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4) !important;
             font-family: 'Outfit', sans-serif !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .glass-confirm-btn:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.6) !important;
         }
 
         .glass-cancel-btn {
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: #fff !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            color: var(--text-secondary) !important;
             border-radius: 0.75rem !important;
-            padding: 12px 24px !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding: 14px 28px !important;
+            border: 1px dashed rgba(255, 255, 255, 0.2) !important;
             font-family: 'Outfit', sans-serif !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
             margin-top: 12px !important;
-            /* Spacing between buttons */
+            transition: all 0.3s ease !important;
+        }
+
+        .glass-cancel-btn:hover {
+            color: #fff !important;
+            border-color: rgba(255, 0, 255, 0.5) !important;
+            background: rgba(255, 0, 255, 0.1) !important;
         }
 
         /* Queue Status Styles */
-        .queue-status-container {
-            padding: 1.5rem;
-            text-align: center;
-        }
-
         .queue-position {
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: 3.5rem;
+            font-weight: 800;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 1rem 0;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .queue-info {
-            display: flex;
-            justify-content: space-around;
+            color: transparent;
             margin: 1.5rem 0;
-            gap: 1rem;
+            animation: text-pulse 2s ease-in-out infinite, glitch 3s infinite;
         }
 
         .queue-stat {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .queue-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
         }
 
         .queue-stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #FFD700;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
 
         .queue-progress {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 1.5rem 0;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 0, 255, 0.2);
+            border-radius: 6px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
         }
 
         .queue-progress-bar {
-            height: 100%;
             background: var(--primary-gradient);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
             border-radius: 4px;
-            transition: width 0.5s ease;
-            animation: shimmer 2s infinite;
         }
 
-        .queue-status-text {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 1rem;
-        }
-
-        @keyframes pulse {
+        @keyframes text-pulse {
 
             0%,
             100% {
                 opacity: 1;
+                filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
             }
 
             50% {
-                opacity: 0.7;
+                opacity: 0.8;
+                filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.2));
             }
         }
 
-        @keyframes shimmer {
-            0% {
-                background-position: -200% center;
+        /* ── Toast Notifications ── */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: .9rem;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, .3);
+            box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+            animation: toast-in .4s ease;
+            max-width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.success {
+            background: rgba(0, 200, 100, .2);
+            border-color: rgba(0, 200, 100, .5);
+        }
+
+        .toast.error {
+            background: rgba(255, 50, 50, .2);
+            border-color: rgba(255, 50, 50, .5);
+        }
+
+        .toast.info {
+            background: rgba(0, 255, 255, .1);
+            border-color: rgba(0, 255, 255, .3);
+        }
+
+        .toast.out {
+            animation: toast-out .3s ease forwards;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
             }
 
-            100% {
-                background-position: 200% center;
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
+        }
+
+        @keyframes toast-out {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+
+        .lang-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, .65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, .35);
+            border-radius: 20px;
+            padding: 7px 16px;
+            color: var(--primary-color);
+            font-family: 'Outfit', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all .3s;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            animation: none;
+            user-select: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .4);
+        }
+
+        .lang-toggle:hover {
+            background: rgba(0, 255, 255, .15);
+            box-shadow: 0 0 20px rgba(0, 255, 255, .3);
+            border-color: rgba(0, 255, 255, .6);
+        }
+
+        /* ── Copy Button ── */
+        .copy-wrap {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 0, 255, .2);
+            border: 1px solid rgba(255, 0, 255, .4);
+            color: #fff;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: .7rem;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all .3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 0, 255, .4);
+        }
+
+        /* ── Rate Limit Bar ── */
+        .rate-limit-bar {
+            margin-top: 1rem;
+        }
+
+        .rate-limit-label {
+            font-size: .7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .rate-limit-track {
+            height: 6px;
+            background: rgba(0, 0, 0, .5);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, .15);
+        }
+
+        .rate-limit-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width .5s, background .5s;
+            background: var(--primary-color);
+        }
+
+        /* ── Activity Feed ── */
+        .activity-feed {
+            background: rgba(10, 10, 15, .6);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 255, .2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+        }
+
+        .activity-feed h3 {
+            color: #fff;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .activity-feed h3 svg {
+            color: var(--primary-color);
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+            font-size: .85rem;
+        }
+
+        .activity-item:last-child {
+            border: none;
+        }
+
+        .activity-user {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: .75rem;
         }
     </style>
 </head>
@@ -569,27 +893,28 @@
         <div class="container">
             <img src="https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM"
                 alt="Locket Icon" class="app-icon">
-            <h1>Locket Gold</h1>
-            <p class="subtitle">Unlock premium features instantly</p>
+            <h1 data-i18n="title">Locket Gold</h1>
+            <p class="subtitle" data-i18n="subtitle">Unlock premium features instantly</p>
 
             <div class="form-group">
                 <div class="global-queue-container" id="globalQueueContainer">
                     <div class="global-queue-item">
-                        <div class="global-queue-label">Total Waiting</div>
+                        <div class="global-queue-label" data-i18n="totalWaiting">Total Waiting</div>
                         <div class="global-queue-value" id="globalQueueTotal">-</div>
                     </div>
                     <div class="global-queue-item">
-                        <div class="global-queue-label">Est. Time</div>
+                        <div class="global-queue-label" data-i18n="estTime">Est. Time</div>
                         <div class="global-queue-value" id="globalQueueTime">-</div>
                     </div>
                 </div>
 
-                <label for="username">Target Username</label>
-                <input type="text" id="username" placeholder="Enter Locket username..." required autocomplete="off">
+                <label for="username" data-i18n="targetUsername">Target Username</label>
+                <input type="text" id="username" data-i18n="placeholder" placeholder="Enter Locket username..." required
+                    autocomplete="off">
             </div>
 
             <button id="submitBtn" onclick="checkUserInfo()">
-                <span class="btn-text">Check User Info</span>
+                <span class="btn-text" data-i18n="checkBtn">Check User Info</span>
                 <div class="loader" id="loader"></div>
             </button>
         </div>
@@ -602,7 +927,7 @@
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 </svg>
-                How to use
+                <span data-i18n="howToUse">How to use</span>
             </h3>
 
             <!-- Platform Tabs -->
@@ -715,15 +1040,38 @@
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
-                Important Note
+                <span data-i18n="importantNote">Important Note</span>
             </h3>
             <ul>
-                <li>This tool is compatible with <strong>iOS and Android Devices</strong>.</li>
-                <li>The Gold subscription is only valid until you <strong>log out</strong> of the Locket app.</li>
-                <li>This project is created for <strong>educational purposes only</strong>.</li>
+                <li data-i18n="iosCompat">This tool is compatible with <strong>iOS and Android Devices</strong>.</li>
+                <li data-i18n="goldValid">The Gold subscription is only valid until you <strong>log out</strong> of the
+                    Locket app.</li>
+                <li data-i18n="eduOnly">This project is created for <strong>educational purposes only</strong>.</li>
             </ul>
         </div>
     </div>
+
+    <!-- Activity Feed -->
+    <div class="main-wrapper">
+        <div class="activity-feed">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                <span data-i18n="recentUnlocks">Recent Unlocks</span>
+            </h3>
+            <ul class="activity-list" id="activityFeed">
+                <li class="activity-item" style="color:var(--text-secondary)">No activity yet</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Language Toggle -->
+    <div class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 EN</div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <footer>
         <p>Created with ❤️ by <a href="https://maihuybao.dev" target="_blank">Mai Huy Bao</a></p>
@@ -1209,6 +1557,171 @@
                 event.preventDefault();
                 document.getElementById("submitBtn").click();
             }
+        });
+
+        // ── Toast Notification System ──
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('out');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ── Copy to Clipboard ──
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.dns-hostname').forEach(el => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'copy-wrap';
+                el.parentNode.insertBefore(wrapper, el);
+                wrapper.appendChild(el);
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.textContent = 'COPY';
+                btn.type = 'button';
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+                        showToast(t('copied'), 'success');
+                        btn.textContent = '✓';
+                        setTimeout(() => btn.textContent = 'COPY', 2000);
+                    });
+                };
+                wrapper.appendChild(btn);
+            });
+        });
+
+        // ── i18n System ──
+        let currentLang = localStorage.getItem('lang') || 'en';
+        const i18n = {
+            en: {
+                title: 'LOCKET GOLD',
+                subtitle: 'UNLOCK PREMIUM FEATURES INSTANTLY',
+                totalWaiting: 'Total Waiting',
+                estTime: 'Est. Time',
+                targetUsername: 'Target Username',
+                placeholder: 'Enter Locket username...',
+                checkBtn: 'Check User Info',
+                howToUse: 'How to Use',
+                ios: 'iOS',
+                android: 'Android',
+                importantNote: 'Important Note',
+                iosCompat: 'This tool is compatible with <strong>iOS and Android Devices</strong>.',
+                goldValid: 'The Gold subscription is only valid until you <strong>log out</strong> of the Locket app.',
+                eduOnly: 'This project is created for <strong>educational purposes only</strong>.',
+                recentUnlocks: 'Recent Unlocks',
+                noActivity: 'No activity yet',
+                copied: 'Copied to clipboard!',
+                downloadProfile: 'Download Profile',
+                watchTutorial: 'Watch Tutorial',
+            },
+            vi: {
+                title: 'LOCKET GOLD',
+                subtitle: 'MỞ KHÓA TÍNH NĂNG PREMIUM NGAY',
+                totalWaiting: 'Đang Chờ',
+                estTime: 'Thời Gian',
+                targetUsername: 'Tên Người Dùng',
+                placeholder: 'Nhập tên người dùng Locket...',
+                checkBtn: 'Kiểm Tra Thông Tin',
+                howToUse: 'Hướng Dẫn',
+                ios: 'iOS',
+                android: 'Android',
+                importantNote: 'Lưu Ý Quan Trọng',
+                iosCompat: 'Công cụ này tương thích với <strong>thiết bị iOS và Android</strong>.',
+                goldValid: 'Gói Gold chỉ có hiệu lực cho đến khi bạn <strong>đăng xuất</strong> khỏi ứng dụng Locket.',
+                eduOnly: 'Dự án này được tạo ra <strong>chỉ nhằm mục đích giáo dục</strong>.',
+                recentUnlocks: 'Mở Khóa Gần Đây',
+                noActivity: 'Chưa có hoạt động',
+                copied: 'Đã sao chép!',
+                downloadProfile: 'Tải Profile',
+                watchTutorial: 'Xem Hướng Dẫn',
+            }
+        };
+
+        function t(key) { return i18n[currentLang][key] || key; }
+
+        function applyLang() {
+            const lang = i18n[currentLang];
+            document.getElementById('langToggle').textContent = '🌐 ' + currentLang.toUpperCase();
+            // Apply translations to data-i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (lang[key]) {
+                    if (el.tagName === 'INPUT') el.placeholder = lang[key];
+                    else if (key.includes('Compat') || key.includes('Valid') || key.includes('Only'))
+                        el.innerHTML = lang[key];
+                    else el.textContent = lang[key];
+                }
+            });
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'vi' : 'en';
+            localStorage.setItem('lang', currentLang);
+            applyLang();
+            showToast(currentLang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'info');
+        }
+
+        // ── Activity Feed ──
+        async function fetchActivityFeed() {
+            try {
+                const res = await fetch('/api/recent-activity');
+                const data = await res.json();
+                const list = document.getElementById('activityFeed');
+                if (!list) return;
+                if (!data.success || !data.activity || data.activity.length === 0) {
+                    list.innerHTML = `<li class="activity-item" style="color:var(--text-secondary)">${t('noActivity')}</li>`;
+                    return;
+                }
+                list.innerHTML = data.activity.map(a => {
+                    const time = new Date(a.timestamp);
+                    const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `<li class="activity-item"><span class="activity-user">@${a.username}</span><span class="activity-time">${timeStr}</span></li>`;
+                }).join('');
+            } catch (e) { console.error('Activity error:', e); }
+        }
+
+        // ── Rate Limit ──
+        async function fetchRateLimit() {
+            try {
+                const res = await fetch('/api/rate-limit');
+                const data = await res.json();
+                // update rate limit bar if it exists
+                const fill = document.getElementById('rateLimitFill');
+                const label = document.getElementById('rateLimitValue');
+                if (!fill || !label) return;
+                if (!data.success || data.remaining === null) {
+                    label.textContent = 'OK';
+                    fill.style.width = '100%';
+                    return;
+                }
+                const pct = data.limit > 0 ? Math.round((data.remaining / data.limit) * 100) : 100;
+                label.textContent = `${data.remaining}/${data.limit}`;
+                fill.style.width = pct + '%';
+                if (pct > 60) fill.style.background = '#00ffaa';
+                else if (pct > 30) fill.style.background = '#ffaa00';
+                else fill.style.background = '#ff4444';
+            } catch (e) { console.error('Rate limit error:', e); }
+        }
+
+        // ── PWA Service Worker Registration ──
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(() => console.log('SW registered'))
+                .catch(e => console.log('SW fail:', e));
+        }
+
+        // ── Init new features on DOMContentLoaded ──
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLang();
+            fetchActivityFeed();
+            setInterval(fetchActivityFeed, 30000);
+            fetchRateLimit();
+            setInterval(fetchRateLimit, 15000);
         });
     </script>
 

@@ -3,201 +3,178 @@ import requests
 import time
 import os
 import random
-import dotenv
-
-dotenv.load_dotenv()
-
+import re
+from config import TOKEN_SETS
 
 class LocketAPI:
-    def __init__(self, token):
-        self.token = token
-        # Store common headers in a dictionary for reuse
-        self.headers = {
-            "Accept": "*/*",
-            "Accept-Language": "en-GB,en;q=0.9",
-            "Authorization": f"Bearer {self.token}",
-            "Connection": "keep-alive",
-            "Content-Type": "application/json",
-            "X-Client-Version": "iOS/FirebaseSDK/10.23.1/FirebaseCore-iOS",
-            "X-Firebase-GMPID": "1:641029076083:ios:cc8eb46290d69b234fa606",
-            "X-Ios-Bundle-Identifier": "com.locket.Locket",
-            "X-Firebase-AppCheck": (
-                "eyJraWQiOiJNbjVDS1EiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9."
-                "eyJzdWIiOiIxOjY0MTAyOTA3NjA4Mzppb3M6Y2M4ZWI0NjI5MGQ2OWIyMzRmYTYwNiIsImF1ZCI6WyJwcm9qZWN0c1wvNjQxMDI5MDc2MDgzIiwicHJvamVjdHNcL2xvY2tldC00MjUyYSJdLCJwcm92aWRlciI6ImRldmljZV9jaGVja19kZXZpY2VfaWRlbnRpZmljYXRpb24iLCJpc3MiOiJodHRwczpcL1wvZmlyZWJhc2VhcHBjaGVjay5nb29nbGVhcGlzLmNvbVwvNjQxMDI5MDc2MDgzIiwiZXhwIjoxNzIyMjQwNjcwLCJpYXQiOjE3MjIyMzcwNzAsImp0aSI6ImFMTmF3aHlBc3E2a2ROT1FRTS1PT1FwX2gyTlU1ZDZGZUdIcUZoYTJZWXMifQ."
-                "C1dXXEB_4q1-hWNkEV66HmycPNRiTHLn3nBoVrwmIEQ2opJ6S9rO4h7_K2_EdsMQkut_p-dGU8GiWZyBLi6MohzIfANfWggYS_Et2l6ZjCGJish-lt6FlIForpe4PAnG6OPreEL1qyzjFqD5IBN0FvdKuhEFMpDwBHQeSuubpkfRaki67jxR016cAZy6VDb42H2dqTH2t7rhwr5VCzErtzEKm711DTrFm0Rxgnvk8TcqOhjno6CDkUvfFc4RYMDmPVIuuX6H8zNBDVcvR5LFmZD5eo38lUwwQU1BoyQfgEMXp2w86MjtYm6KrF7U9TUfrgMz9I5e66oFBn5vqIUE594Pi7jmkcxbt_mW29FH3B4HIIAzvI-4WrVgGSkVidq6kZGKDfBt5NjxBYzfDiOtWtnUyUJmziZAbXayrYkRoJP2g8DS2Dsc-NvwIXVV_29YdgxYFIW1PjhTp2gmXMVTb4uHHUaMmd0j4Y4NgtgPwcVswSwawgy3e6C6-K01X6Xx"
-            ),
+    def __init__(self):
+        # Tracking rate limits for RevenueCat API
+        self.rate_limit_info = {
+            "remaining": None,
+            "limit": None,
+            "reset": None,
+            "last_updated": None,
         }
 
     def getUserByUsername(self, username):
+        """
+        Scrapes locket.cam to find the user's UID, name, and profile picture
+        without needing a Locket account/Firebase token.
+        """
         if not username:
             raise ValueError("Username is required")
 
-        request_payload = {
-            "data": {
-                "username": username,
+        url = f"https://locket.cam/{username}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        }
+
+        response = requests.get(url, headers=headers, timeout=10)
+        html = response.text
+        
+        # 1. Extract UID
+        uid_match = re.search(r'/invites/([A-Za-z0-9]{28})', html)
+        if not uid_match:
+            # Try alternate fallback method
+            lp = re.search(r'link=([^\s"\'>]+)', html)
+            if lp:
+                try:
+                    d = lp.group(1).replace('%3A', ':').replace('%2F', '/')
+                    dm = re.search(r'/invites/([A-Za-z0-9]{28})', d)
+                    if dm:
+                        uid_match = dm
+                except:
+                    pass
+                    
+        if not uid_match:
+            raise Exception("User not found or UID extraction failed. Ensure the username is correct.")
+            
+        uid = uid_match.group(1)
+        
+        # 2. Extract Name
+        # Looking for <meta property="og:title" content="Name on Locket">
+        name_match = re.search(r'og:title"\s+content="([^"]+) on Locket|content="([^"]+) on Locket"\s+property="og:title', html)
+        first_name = username
+        last_name = ""
+        if name_match:
+            full_name = (name_match.group(1) or name_match.group(2) or username).split(" \u2022")[0].strip()
+            parts = full_name.split(" ", 1)
+            first_name = parts[0]
+            if len(parts) > 1:
+                last_name = parts[1]
+                
+        # 3. Extract Avatar
+        # Looking for <meta property="og:image" content="...">
+        avatar_match = re.search(r'og:image"\s+content="([^"]+)"|content="([^"]+)"\s+property="og:image', html)
+        avatar_url = ""
+        if avatar_match:
+            avatar_url = avatar_match.group(1) or avatar_match.group(2)
+            
+        # Format the response exactly like the original API to easily drop-in replace
+        return {
+            "result": {
+                "data": {
+                    "uid": uid,
+                    "username": username,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "profile_picture_url": avatar_url
+                }
             }
         }
 
-        response = requests.post(
-            "https://api.locketcamera.com/getUserByUsername",
-            headers=self.headers,
-            json=request_payload,
-        )
-        # print(response.json())
-        if response.ok:
-            return response.json()
-        else:
-            raise Exception(
-                f"API request failed with status code {response.status_code}: {response.text}"
-            )
-
     def restorePurchase(self, uid):
-        """Restores the purchase using the provided token.
-
-        Returns:
-            dict: The JSON response from the API if successful.
-
-        Raises:
-            Exception: If the API request fails.
+        """
+        Restores the purchase using a token set from config.py.
         """
         url = "https://api.revenuecat.com/v1/receipts"
 
-        gist_url = os.getenv("gist_token_url")
-        if not gist_url:
-            raise Exception("gist_token_url environment variable is not set")
+        if not TOKEN_SETS:
+            raise Exception("TOKEN_SETS is empty in config.py")
 
-        try:
-            response = requests.get(gist_url)
-            if not response.ok:
-                raise Exception(f"Failed to fetch token from URL: {response.text}")
-            tokens = response.json()
-        except Exception as e:
-            raise Exception(f"Error loading tokens from URL: {str(e)}")
+        # Select random payload config
+        token_config = random.choice(TOKEN_SETS)
+        
+        fetch_token = token_config.get('fetch_token')
+        app_transaction = token_config.get('app_transaction')
+        is_sandbox = token_config.get('is_sandbox', False)
 
-        if not tokens:
-            raise Exception("Token list is empty")
+        if not fetch_token or not app_transaction:
+            raise Exception("Invalid TOKEN_SET config: missing fetch_token or app_transaction")
 
-        # Select random payload
-        payload_data = random.choice(tokens)
-
-        # Update dynamic fields
-        payload_data["app_user_id"] = uid
-        if (
-            "attributes" in payload_data
-            and "$attConsentStatus" in payload_data["attributes"]
-        ):
-            payload_data["attributes"]["$attConsentStatus"]["updated_at_ms"] = int(
-                time.time() * 1000
-            )
+        payload_data = {
+            "product_id": "locket_199_1m", 
+            "fetch_token": fetch_token, 
+            "app_transaction": app_transaction,
+            "app_user_id": uid, 
+            "is_restore": True, 
+            "store_country": "VNM", 
+            "currency": "VND",
+            "price": "49000", 
+            "normal_duration": "P1M", 
+            "subscription_group_id": "21419447",
+            "observer_mode": False, 
+            "initiation_source": "restore", 
+            "offers": [],
+            "attributes": { 
+                "$attConsentStatus": { "updated_at_ms": int(time.time() * 1000), "value": "notDetermined" } 
+            }
+        }
 
         payload = json.dumps(payload_data)
 
         headers = {
-            "X-Is-Sandbox": "true",
-            "Authorization": "Bearer appl_JngFETzdodyLmCREOlwTUtXdQik",
-            "Connection": "keep-alive",
-            "Content-Type": "application/json",
+            'Host': 'api.revenuecat.com',
+            'Authorization': 'Bearer appl_JngFETzdodyLmCREOlwTUtXdQik',
+            'Content-Type': 'application/json',
+            'Accept': '*/*',
+            'X-Platform': 'iOS',
+            'X-Platform-Version': 'Version 16.7.5 (Build 20H307)',
+            'X-Platform-Device': 'iPhone10,5',
+            'X-Platform-Flavor': 'native',
+            'X-Version': '5.41.0',
+            'X-Client-Version': '2.32.2',
+            'X-Client-Bundle-ID': 'com.locket.Locket',
+            'X-Client-Build-Version': '3',
+            'X-StoreKit2-Enabled': 'true',
+            'X-StoreKit-Version': '2',
+            'X-Observer-Mode-Enabled': 'false',
+            'X-Is-Sandbox': str(is_sandbox).lower(),
+            'X-Storefront': 'VNM',
+            'X-Apple-Device-Identifier': '2518071A-4AC9-44BE-B44C-A7056AD9BBFD',
+            'X-Preferred-Locales': 'vi_VN',
         }
+        
+        if token_config.get('hash_params'):
+            headers['X-Post-Params-Hash'] = token_config['hash_params']
+        if token_config.get('hash_headers'):
+            headers['X-Headers-Hash'] = token_config['hash_headers']
+
         response = requests.post(url, headers=headers, data=payload)
-        print(response.json())
+        self._update_rate_limit(response)
+        
         if response.ok:
             return response.json()
         else:
-            raise Exception(
-                f"API request failed with status code {response.status_code}: {response.text}"
-            )
+            raise Exception(f"API request failed with status code {response.status_code}: {response.text}")
 
-    def changeNameAccount(self, last="", first=""):
-        """Changes the first and last name of the account.
+    def _update_rate_limit(self, response):
+        """Extract rate limit info from response headers."""
+        import time as _time
+        self.rate_limit_info["remaining"] = response.headers.get("X-RateLimit-Remaining", response.headers.get("x-ratelimit-remaining"))
+        self.rate_limit_info["limit"] = response.headers.get("X-RateLimit-Limit", response.headers.get("x-ratelimit-limit"))
+        self.rate_limit_info["reset"] = response.headers.get("X-RateLimit-Reset", response.headers.get("x-ratelimit-reset"))
+        self.rate_limit_info["last_updated"] = _time.time()
+        # Convert to int if present
+        for key in ["remaining", "limit"]:
+            if self.rate_limit_info[key] is not None:
+                try:
+                    self.rate_limit_info[key] = int(self.rate_limit_info[key])
+                except (ValueError, TypeError):
+                    pass
 
-        Args:
-            last (str, optional): The new last name. Defaults to "".
-            first (str, optional): The new first name. Defaults to "".
+    def get_rate_limit_info(self):
+        """Return current rate limit tracking info."""
+        return self.rate_limit_info.copy()
 
-        Returns:
-            dict: The JSON response from the API if successful.
-
-        Raises:
-            Exception: If the API request fails.
-        """
-        request_payload = {
-            "data": {
-                "last_name": last,
-                "first_name": first,
-            }
-        }
-
-        response = requests.post(
-            "https://api.locketcamera.com/changeProfileInfo",
-            headers=self.headers,
-            json=request_payload,
-        )
-
-        if response.ok:
-            return response.json()
-        else:
-            raise Exception(
-                f"API request failed with status code {response.status_code}: {response.text}"
-            )
-
-    def GetAccountInfo(self):
-        """Gets the account info using the provided token.
-
-        Returns:
-            dict: The JSON response from the API if successful.
-
-        Raises:
-            Exception: If the API request fails.
-        """
-        url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/getAccountInfo?key=AIzaSyCQngaaXQIfJaH0aS2l7REgIjD7nL431So"
-        headers = {
-            "Accept": "*/*",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en",
-            "Content-Type": "application/json",
-            "Host": "www.googleapis.com",
-            "User-Agent": "FirebaseAuth.iOS/10.23.1 com.locket.Locket/1.82.0 iPhone/18.0 hw/iPhone12_1",
-            "X-Client-Version": "iOS/FirebaseSDK/10.23.1/FirebaseCore-iOS",
-            "X-Firebase-GMPID": "1:641029076083:ios:cc8eb46290d69b234fa606",
-            "X-Ios-Bundle-Identifier": "com.locket.Locket",
-        }
-        request_payload = {"idToken": self.token}
-
-        response = requests.post(url, headers=headers, json=request_payload)
-
-        if response.ok:
-            return response.json()
-        else:
-            raise Exception(
-                f"API request failed with status code {response.status_code}: {response.text}"
-            )
-
-    def getLastMoment(self):
-        """Gets the latest moment using the provided token.
-
-        Returns:
-            dict: The JSON response from the API if successful.
-
-        Raises:
-            Exception: If the API request fails.
-        """
-        request_payload = {
-            "data": {
-                "excluded_users": [],
-                "fetch_streak": False,
-                "should_count_missed_moments": True,
-            }
-        }
-
-        response = requests.post(
-            "https://api.locketcamera.com/getLatestMomentV2",
-            headers=self.headers,
-            json=request_payload,
-        )
-
-        if response.ok:
-            return response.json()
-        else:
-            raise Exception(
-                f"API request failed with status code {response.status_code}: {response.text}"
-            )
