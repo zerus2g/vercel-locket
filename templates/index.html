@@ -884,6 +884,24 @@
             color: var(--text-secondary);
             font-size: .75rem;
         }
+
+        .glass-report-btn {
+            background: rgba(255, 70, 70, 0.2) !important;
+            border: 1px solid rgba(255, 70, 70, 0.5) !important;
+            color: #ff6b6b !important;
+            font-weight: 600 !important;
+            border-radius: .75rem !important;
+            padding: .6rem 1.5rem !important;
+            font-family: 'Outfit', sans-serif !important;
+            font-size: .85rem !important;
+            cursor: pointer !important;
+            transition: all .2s !important;
+        }
+
+        .glass-report-btn:hover {
+            background: rgba(255, 70, 70, 0.4) !important;
+            transform: translateY(-1px) !important;
+        }
     </style>
 </head>
 
@@ -912,6 +930,13 @@
                 <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
                 <div class="loader" id="loader"></div>
             </button>
+
+            <a href="https://t.me/Benonivn" target="_blank" rel="noopener noreferrer"
+                style="display:inline-flex; align-items:center; gap:.4rem; margin-top:.8rem; padding:.5rem 1.2rem; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.3); border-radius:.75rem; color:#ff6b6b; text-decoration:none; font-size:.85rem; font-weight:600; transition:all .2s;"
+                onmouseover="this.style.background='rgba(255,70,70,0.25)';this.style.transform='translateY(-1px)'"
+                onmouseout="this.style.background='rgba(255,70,70,0.1)';this.style.transform='none'">
+                📩 <span data-i18n="reportError">Báo Lỗi</span>
+            </a>
         </div>
 
         <div class="instructions">
@@ -1083,7 +1108,7 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <footer>
-        <p><span data-i18n="createdBy">Created with ❤️ by</span> <a href="https://t.me/@Benonivn"
+        <p><span data-i18n="createdBy">Created with ❤️ by</span> <a href="https://t.me/Benonivn"
                 target="_blank">Benonivn</a></p>
     </footer>
 
@@ -1205,7 +1230,12 @@
                         title: t('errorTitle'),
                         text: errorText || t('restoreFailText').replace('{msg}', data.msg),
                         ...swalGlassParams,
-                        confirmButtonText: t('close')
+                        confirmButtonText: t('close'),
+                        showDenyButton: true,
+                        denyButtonText: t('reportError'),
+                        customClass: { ...swalGlassParams.customClass, denyButton: 'glass-report-btn' },
+                    }).then((result) => {
+                        if (result.isDenied) window.open('https://t.me/Benonivn', '_blank');
                     });
                 }
             } catch (error) {
@@ -1215,7 +1245,12 @@
                     title: t('connectionErrorTitle'),
                     text: t('connectionErrorText'),
                     ...swalGlassParams,
-                    confirmButtonText: t('close')
+                    confirmButtonText: t('close'),
+                    showDenyButton: true,
+                    denyButtonText: t('reportError'),
+                    customClass: { ...swalGlassParams.customClass, denyButton: 'glass-report-btn' },
+                }).then((result) => {
+                    if (result.isDenied) window.open('https://t.me/Benonivn', '_blank');
                 });
             } finally {
                 // Reset state
@@ -1443,6 +1478,7 @@
                 purchaseSuccess: '{product} unlocked successfully for {user}!',
                 copyBtn: 'COPY',
                 restoreFailText: 'Unlock failed: {msg}',
+                reportError: '📩 Report Error',
                 noName: 'No Name',
                 userInfoTitle: 'User Information',
                 unlockConfirm: 'Do you want to unlock Gold for this user?',
@@ -1502,6 +1538,7 @@
                 purchaseSuccess: 'Đã mở khóa {product} cho {user} thành công!',
                 copyBtn: 'SAO CHÉP',
                 restoreFailText: 'Lỗi khi mở khóa: {msg}',
+                reportError: '📩 Báo Lỗi',
                 noName: 'Chưa có tên',
                 userInfoTitle: 'Thông Tin Người Dùng',
                 unlockConfirm: 'Bạn có muốn mở khóa Gold cho người dùng này không?',
