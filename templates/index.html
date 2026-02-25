@@ -953,16 +953,14 @@
             <!-- iOS Content -->
             <div id="ios-content" class="platform-content active">
                 <ol>
-                    <li data-i18n="iosStep1">Open the Locket app and find your username in settings.</li>
-                    <li data-i18n="iosStep2">Enter your exact username in the field above.</li>
-                    <li data-i18n="iosStep3">Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li data-i18n="iosStep4">Review the information and click <strong>Continue</strong> to unlock Gold.
-                    </li>
-                    <li data-i18n="iosStep5"><strong>Important:</strong> After activation, you must install the
-                        configuration profile below
+                    <li>Open the Locket app and find your username in settings.</li>
+                    <li>Enter your exact username in the field above.</li>
+                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li>Review the information and click <strong>Continue</strong> to unlock Gold.</li>
+                    <li><strong>Important:</strong> After activation, you must install the configuration profile below
                         to
                         block revocation.</li>
-                    <li data-i18n="iosStep6">Restart your Locket app to see the changes.</li>
+                    <li>Restart your Locket app to see the changes.</li>
                 </ol>
                 <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="/static/locket.mobileconfig" class="download-btn" target="_blank" style="
@@ -986,7 +984,7 @@
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        <span data-i18n="downloadProfile">Download Profile</span>
+                        Download Profile
                     </a>
 
                     <button onclick="showTutorial()" style="
@@ -1010,7 +1008,7 @@
                             <circle cx="12" cy="12" r="10"></circle>
                             <polygon points="10 8 16 12 10 16 10 8"></polygon>
                         </svg>
-                        <span data-i18n="watchTutorial">Watch Tutorial</span>
+                        Watch Tutorial
                     </button>
                 </div>
             </div>
@@ -1018,18 +1016,17 @@
             <!-- Android Content -->
             <div id="android-content" class="platform-content">
                 <ol>
-                    <li data-i18n="androidStep1">Open the Locket app and find your username in Settings.</li>
-                    <li data-i18n="androidStep2">Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li data-i18n="androidStep3">Go to <strong>Settings → Network & Internet</strong> on your Android
-                        device.</li>
-                    <li data-i18n="androidStep4">Tap <strong>Private DNS</strong>.</li>
-                    <li data-i18n="androidStep5">Select <strong>Private DNS provider hostname</strong>.</li>
-                    <li data-i18n="androidStep6">Enter the following hostname:</li>
+                    <li>Open the Locket app and find your username in Settings.</li>
+                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li>Go to <strong>Settings → Network & Internet</strong> on your Android device.</li>
+                    <li>Tap <strong>Private DNS</strong>.</li>
+                    <li>Select <strong>Private DNS provider hostname</strong>.</li>
+                    <li>Enter the following hostname:</li>
                 </ol>
                 <div class="dns-hostname">62d63b.dns.nextdns.io</div>
                 <ol start="7">
-                    <li data-i18n="androidStep7">Tap <strong>Save</strong>.</li>
-                    <li data-i18n="androidStep8">Restart your Locket app to see the changes.</li>
+                    <li>Tap <strong>Save</strong>.</li>
+                    <li>Restart your Locket app to see the changes.</li>
                 </ol>
             </div>
         </div>
@@ -1147,10 +1144,10 @@
             if (!username) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Missing Input',
-                    text: 'Please enter a valid Locket username!',
+                    title: t('missingInputTitle'),
+                    text: t('missingInputText'),
                     ...swalGlassParams,
-                    confirmButtonText: 'OK'
+                    confirmButtonText: t('ok')
                 });
                 return;
             }
@@ -1179,21 +1176,20 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'User Not Found',
-                        text: data.msg || "Could not find user with this username",
+                        title: t('userNotFoundTitle'),
+                        text: data.msg || t('userNotFoundText'),
                         ...swalGlassParams,
-                        confirmButtonColor: undefined, // Override if needed or rely on class
-                        confirmButtonText: 'Close'
+                        confirmButtonText: t('close')
                     });
                 }
             } catch (error) {
                 console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Connection Error',
-                    text: 'Failed to connect to the server. Please check your internet.',
+                    title: t('connectionErrorTitle'),
+                    text: t('connectionErrorText'),
                     ...swalGlassParams,
-                    confirmButtonText: 'Close'
+                    confirmButtonText: t('close')
                 });
             } finally {
                 // Reset state
@@ -1204,11 +1200,11 @@
         }
 
         function showUserInfoConfirmation(userData) {
-            const fullName = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'No name';
+            const fullName = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || t('noName');
             const avatarUrl = userData.profile_picture_url || 'https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM';
 
             Swal.fire({
-                title: 'User Information',
+                title: t('userInfoTitle'),
                 html: `
                 <div class="user-info-card">
                     <div class="user-info-header">
@@ -1221,13 +1217,13 @@
                     <div class="user-uid">UID: ${userData.uid}</div>
                 </div>
                 <p style="margin-top: 1rem; color: #a0a0a0; font-size: 0.9rem;">
-                    Do you want to unlock Gold for this user?
+                    ${t('unlockConfirm')}
                 </p>
             `,
                 ...swalGlassParams,
                 showCancelButton: true,
-                confirmButtonText: 'Continue',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: t('continueBtn'),
+                cancelButtonText: t('cancelBtn')
             }).then((result) => {
                 if (result.isConfirmed) {
                     restorePurchase(userData.username);
@@ -1254,20 +1250,20 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: data.msg || "Failed to join queue",
+                        title: t('errorTitle'),
+                        text: data.msg || t('joinQueueFail'),
                         ...swalGlassParams,
-                        confirmButtonText: 'Close'
+                        confirmButtonText: t('close')
                     });
                 }
             } catch (error) {
                 console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Connection Error',
-                    text: 'Failed to connect to the server. Please check your internet.',
+                    title: t('connectionErrorTitle'),
+                    text: t('connectionErrorText'),
                     ...swalGlassParams,
-                    confirmButtonText: 'Close'
+                    confirmButtonText: t('close')
                 });
             }
         }
@@ -1290,25 +1286,25 @@
 
             // Show initial queue modal
             Swal.fire({
-                title: 'Queue Status',
+                title: t('queueStatusTitle'),
                 html: `
                     <div class="queue-status-container">
-                        <div class="queue-status-text">Joining queue...</div>
+                        <div class="queue-status-text">${t('joiningQueue')}</div>
                         <div class="queue-position" id="queuePosition">-</div>
                         <div class="queue-progress">
                             <div class="queue-progress-bar" id="queueProgressBar" style="width: 0%"></div>
                         </div>
                         <div class="queue-info">
                             <div class="queue-stat">
-                                <div class="queue-stat-label">Total Waiting</div>
+                                <div class="queue-stat-label">${t('totalWaiting')}</div>
                                 <div class="queue-stat-value" id="queueTotal">-</div>
                             </div>
                             <div class="queue-stat">
-                                <div class="queue-stat-label">Est. Time</div>
+                                <div class="queue-stat-label">${t('estTime')}</div>
                                 <div class="queue-stat-value" id="queueTime">-</div>
                             </div>
                         </div>
-                        <div class="queue-status-text" id="queueStatusText">Please wait...</div>
+                        <div class="queue-status-text" id="queueStatusText">${t('pleaseWait')}</div>
                     </div>
                 `,
                 ...swalGlassParams,
@@ -1349,10 +1345,10 @@
                         clearInterval(countdownInterval);
                         Swal.fire({
                             icon: 'error',
-                            title: 'Request Not Found',
-                            text: 'Your request could not be found. Please try again.',
+                            title: t('reqNotFoundTitle'),
+                            text: t('reqNotFoundText'),
                             ...swalGlassParams,
-                            confirmButtonText: 'Close'
+                            confirmButtonText: t('close')
                         });
                         resetGlobalQueueUI();
                         return;
@@ -1382,10 +1378,10 @@
                     clearInterval(countdownInterval);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: data.msg || 'Failed to get queue status',
+                        title: t('errorTitle'),
+                        text: data.msg || t('failGetQueue'),
                         ...swalGlassParams,
-                        confirmButtonText: 'Close'
+                        confirmButtonText: t('close')
                     });
                     resetGlobalQueueUI();
                 }
@@ -1406,16 +1402,16 @@
             if (positionEl && totalEl && timeEl && statusEl && progressBar) {
                 // Update position
                 if (data.status === 'processing') {
-                    positionEl.textContent = 'Processing';
-                    statusEl.textContent = `Processing request for ${username}...`;
+                    positionEl.textContent = t('processing');
+                    statusEl.textContent = t('processingReq').replace('{user}', username);
                     progressBar.style.width = '90%';
                 } else if (data.position === 0) {
-                    positionEl.textContent = 'Next';
-                    statusEl.textContent = 'You are next in queue!';
+                    positionEl.textContent = t('next');
+                    statusEl.textContent = t('youAreNext');
                     progressBar.style.width = '80%';
                 } else {
                     positionEl.textContent = `#${data.position}`;
-                    statusEl.textContent = `Position ${data.position} of ${data.total_queue}`;
+                    statusEl.textContent = t('positionOf').replace('{pos}', data.position).replace('{total}', data.total_queue);
 
                     // Calculate progress (inverse of position)
                     const progress = data.total_queue > 0 ?
@@ -1450,7 +1446,7 @@
             const timeEl = document.getElementById('queueTime');
             const globalTimeEl = document.getElementById('globalQueueTime');
 
-            let formatted = 'Soon';
+            let formatted = t('soon');
             if (currentEstimatedTime !== 0) {
                 if (currentEstimatedTime < 60) {
                     formatted = `${currentEstimatedTime}s`;
@@ -1480,7 +1476,7 @@
 
             if (containerEl) containerEl.style.display = 'grid';
             if (totalEl) totalEl.textContent = '0';
-            if (timeEl) timeEl.textContent = 'Soon';
+            if (timeEl) timeEl.textContent = t('soon');
         }
 
         async function fetchGlobalQueueStatus() {
@@ -1497,7 +1493,7 @@
                     if (totalEl) totalEl.textContent = data.total_queue;
 
                     // Update estimated time
-                    let formattedTime = 'Soon';
+                    let formattedTime = t('soon');
                     if (data.estimated_time > 0) {
                         if (data.estimated_time < 60) {
                             formattedTime = `${data.estimated_time}s`;
@@ -1524,18 +1520,18 @@
             if (data.result && data.result.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success!',
+                    title: t('successTitle'),
                     text: data.result.msg,
                     ...swalGlassParams,
-                    confirmButtonText: 'Cool!'
+                    confirmButtonText: t('coolBtn')
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Failed',
-                    text: 'Request completed but failed',
+                    title: t('failedTitle'),
+                    text: t('reqFailedText'),
                     ...swalGlassParams,
-                    confirmButtonText: 'Close'
+                    confirmButtonText: t('close')
                 });
             }
         }
@@ -1543,10 +1539,10 @@
         function showErrorStatus(data) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: data.error || 'An error occurred while processing your request',
+                title: t('errorTitle'),
+                text: data.error || t('reqErrorText'),
                 ...swalGlassParams,
-                confirmButtonText: 'Close'
+                confirmButtonText: t('close')
             });
         }
 
@@ -1578,25 +1574,17 @@
                 wrapper.className = 'copy-wrap';
                 el.parentNode.insertBefore(wrapper, el);
                 wrapper.appendChild(el);
-
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
-                btn.textContent = i18n[currentLang].copyBtn || 'COPY';
-                btn.setAttribute('data-i18n-copy', 'true'); // marker for applyLang
-
-                btn.onclick = () => {
-                    navigator.clipboard.writeText(el.innerText || el.textContent)
-                        .then(() => {
-                            btn.textContent = '✔';
-                            btn.style.background = 'rgba(76, 175, 80, 0.2)';
-                            btn.style.color = '#4caf50';
-                            btn.style.borderColor = 'rgba(76, 175, 80, 0.5)';
-                            showToast(i18n[currentLang].copied, 'success');
-                            setTimeout(() => {
-                                btn.textContent = i18n[currentLang].copyBtn || 'COPY';
-                                btn.style = '';
-                            }, 2000);
-                        });
+                btn.textContent = 'COPY';
+                btn.type = 'button';
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+                        showToast(t('copied'), 'success');
+                        btn.textContent = '✓';
+                        setTimeout(() => btn.textContent = 'COPY', 2000);
+                    });
                 };
                 wrapper.appendChild(btn);
             });
@@ -1625,22 +1613,39 @@
                 copied: 'Copied to clipboard!',
                 downloadProfile: 'Download Profile',
                 watchTutorial: 'Watch Tutorial',
-                copyBtn: 'COPY',
                 createdBy: 'Created with ❤️ by',
-                iosStep1: 'Open the Locket app and find your username in Settings.',
-                iosStep2: 'Enter your exact username in the field above.',
-                iosStep3: 'Click <strong>Check User Info</strong> to verify the account.',
-                iosStep4: 'Review the information and click <strong>Continue</strong> to unlock Gold.',
-                iosStep5: '<strong>Important:</strong> After activation, you must install the configuration profile below to block revocation.',
-                iosStep6: 'Restart your Locket app to see the changes.',
-                androidStep1: 'Open the Locket app and find your username in Settings.',
-                androidStep2: 'Click <strong>Check User Info</strong> to verify the account.',
-                androidStep3: 'Go to <strong>Settings → Network & Internet</strong> on your Android device.',
-                androidStep4: 'Tap <strong>Private DNS</strong>.',
-                androidStep5: 'Select <strong>Private DNS provider hostname</strong>.',
-                androidStep6: 'Enter the following hostname:',
-                androidStep7: 'Tap <strong>Save</strong>.',
-                androidStep8: 'Restart your Locket app to see the changes.',
+                missingInputTitle: 'Missing Input',
+                missingInputText: 'Please enter a valid Locket username!',
+                ok: 'OK',
+                userNotFoundTitle: 'User Not Found',
+                userNotFoundText: 'Could not find user with this username',
+                close: 'Close',
+                connectionErrorTitle: 'Connection Error',
+                connectionErrorText: 'Failed to connect to the server. Please check your internet.',
+                noName: 'No name',
+                userInfoTitle: 'User Information',
+                unlockConfirm: 'Do you want to unlock Gold for this user?',
+                continueBtn: 'Continue',
+                cancelBtn: 'Cancel',
+                errorTitle: 'Error',
+                joinQueueFail: 'Failed to join queue',
+                queueStatusTitle: 'Queue Status',
+                joiningQueue: 'Joining queue...',
+                pleaseWait: 'Please wait...',
+                reqNotFoundTitle: 'Request Not Found',
+                reqNotFoundText: 'Your request could not be found. Please try again.',
+                failGetQueue: 'Failed to get queue status',
+                processing: 'Processing',
+                processingReq: 'Processing request for {user}...',
+                next: 'Next',
+                youAreNext: 'You are next in queue!',
+                positionOf: 'Position {pos} of {total}',
+                soon: 'Soon',
+                successTitle: 'Success!',
+                coolBtn: 'Cool!',
+                failedTitle: 'Failed',
+                reqFailedText: 'Request completed but failed',
+                reqErrorText: 'An error occurred while processing your request'
             },
             vi: {
                 title: 'LOCKET GOLD',
@@ -1658,26 +1663,43 @@
                 goldValid: 'Gói Gold chỉ có hiệu lực cho đến khi bạn <strong>đăng xuất</strong> khỏi ứng dụng Locket.',
                 eduOnly: 'Dự án này được tạo ra <strong>chỉ nhằm mục đích giáo dục</strong>.',
                 recentUnlocks: 'Mở Khóa Gần Đây',
-                noActivity: 'Chưa có hoạt động nào',
-                copied: 'Đã copy vào bộ nhớ tạm!',
-                downloadProfile: 'Tải Về Profile',
+                noActivity: 'Chưa có hoạt động',
+                copied: 'Đã sao chép!',
+                downloadProfile: 'Tải Profile',
                 watchTutorial: 'Xem Hướng Dẫn',
-                copyBtn: 'SAO CHÉP',
                 createdBy: 'Tạo ra với ❤️ bởi',
-                iosStep1: 'Mở ứng dụng Locket và tìm tên người dùng của bạn trong Cài đặt.',
-                iosStep2: 'Nhập chính xác tên người dùng vào ô trống bên trên.',
-                iosStep3: 'Bấm <strong>Kiểm Tra Thông Tin</strong> để xác thực tài khoản.',
-                iosStep4: 'Kiểm tra lại thông tin và bấm <strong>Tiếp Tục</strong> để mở khóa Gold.',
-                iosStep5: '<strong>Quan trọng:</strong> Sau khi kích hoạt, bạn phải cài đặt cấu hình Profile bên dưới để tránh bị thu hồi (block revocation).',
-                iosStep6: 'Khởi động lại Locket để xem thay đổi.',
-                androidStep1: 'Mở ứng dụng Locket và tìm tên người dùng của bạn trong Cài đặt.',
-                androidStep2: 'Bấm <strong>Kiểm Tra Thông Tin</strong> để xác thực tài khoản.',
-                androidStep3: 'Vào <strong>Cài đặt → Mạng và Internet</strong> trên thiết bị Android.',
-                androidStep4: 'Chọn <strong>DNS riêng tư</strong>.',
-                androidStep5: 'Chọn <strong>Tên máy chủ nhà cung cấp DNS riêng tư</strong>.',
-                androidStep6: 'Nhập tên hostname sau vào:',
-                androidStep7: 'Nhấn <strong>Lưu</strong>.',
-                androidStep8: 'Khởi động lại Locket để xem thay đổi.',
+                missingInputTitle: 'Thiếu Thông Tin',
+                missingInputText: 'Vui lòng nhập tên người dùng Locket hợp lệ!',
+                ok: 'OK',
+                userNotFoundTitle: 'Không Tìm Thấy',
+                userNotFoundText: 'Không thể tìm thấy người dùng với tên này',
+                close: 'Đóng',
+                connectionErrorTitle: 'Lỗi Kết Nối',
+                connectionErrorText: 'Lỗi kết nối đến máy chủ. Vui lòng kiểm tra mạng.',
+                noName: 'Chưa có tên',
+                userInfoTitle: 'Thông Tin Người Dùng',
+                unlockConfirm: 'Bạn có muốn mở khóa Gold cho người dùng này không?',
+                continueBtn: 'Tiếp Tục',
+                cancelBtn: 'Hủy',
+                errorTitle: 'Lỗi',
+                joinQueueFail: 'Không thể tham gia hàng đợi',
+                queueStatusTitle: 'Trạng Thái Hàng Đợi',
+                joiningQueue: 'Đang tham gia hàng đợi...',
+                pleaseWait: 'Vui lòng đợi...',
+                reqNotFoundTitle: 'Không Tìm Thấy Yêu Cầu',
+                reqNotFoundText: 'Không tìm thấy yêu cầu của bạn. Vui lòng thử lại.',
+                failGetQueue: 'Lỗi lấy trạng thái hàng đợi',
+                processing: 'Đang Xử Lý',
+                processingReq: 'Đang xử lý yêu cầu cho {user}...',
+                next: 'Tiếp Theo',
+                youAreNext: 'Bạn là người tiếp theo!',
+                positionOf: 'Vị trí {pos} trên {total}',
+                soon: 'Sắp tới',
+                successTitle: 'Thành Công!',
+                coolBtn: 'Tuyệt!',
+                failedTitle: 'Thất Bại',
+                reqFailedText: 'Yêu cầu đã hoàn tất nhưng thất bại',
+                reqErrorText: 'Đã xảy ra lỗi khi xử lý yêu cầu của bạn'
             }
         };
 
@@ -1690,16 +1712,10 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (lang[key]) {
-                    if (el.tagName.toLowerCase() === 'input') el.placeholder = lang[key];
-                    else if (key.includes('Compat') || key.includes('Valid') || key.includes('Only') || key.includes('Step'))
+                    if (el.tagName === 'INPUT') el.placeholder = lang[key];
+                    else if (key.includes('Compat') || key.includes('Valid') || key.includes('Only'))
                         el.innerHTML = lang[key];
                     else el.textContent = lang[key];
-                }
-            });
-            // Update JS-generated copy buttons
-            document.querySelectorAll('[data-i18n-copy]').forEach(el => {
-                if (el.textContent !== '✔') {
-                    el.textContent = lang['copyBtn'] || 'COPY';
                 }
             });
         }

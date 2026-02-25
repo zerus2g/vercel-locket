@@ -60,6 +60,29 @@
             color: transparent;
         }
 
+        .lang-toggle {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: .8rem;
+            backdrop-filter: blur(10px);
+            transition: background .3s, border-color .3s;
+            margin-left: 1rem;
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, .2);
+            border-color: rgba(255, 255, 255, .4);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
         .header a {
             color: var(--primary);
             text-decoration: none;
@@ -199,158 +222,221 @@
     </style>
 </head>
 
-<body>
-    <div class="dashboard">
-        <div class="header">
-            <h1>Admin Dashboard</h1>
-            <a href="/">← Back to App</a>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total Unlocks</div>
-                <div class="stat-value" id="totalUnlocks">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Today</div>
-                <div class="stat-value" id="todayUnlocks">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Errors</div>
-                <div class="stat-value" id="totalErrors">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Queue Now</div>
-                <div class="stat-value" id="queueSize">-</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Avg Process Time</div>
-                <div class="stat-value" id="avgTime">-</div>
-                <div class="stat-sub">seconds</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">API Health</div>
-                <div class="stat-value" id="apiHealth" style="font-size:1.2rem;">—</div>
-                <div class="health-bar">
-                    <div class="health-fill" id="healthFill" style="width:0%;background:var(--primary);"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="chart-card">
-            <h2>Unlocks — Last 7 Days</h2>
-            <canvas id="dailyChart" height="200"></canvas>
-        </div>
-
-        <div class="chart-card">
-            <h2>Recent Activity</h2>
-            <ul class="activity-list" id="activityList">
-                <li class="activity-item"><span style="color:var(--text2)">Loading...</span></li>
-            </ul>
+<div class="dashboard">
+    <div class="header">
+        <h1 data-i18n="title">Admin Dashboard</h1>
+        <div class="header-actions">
+            <a href="/" data-i18n="backToApp">← Back to App</a>
+            <button class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 EN</button>
         </div>
     </div>
 
-    <script>
-        let dailyChart = null;
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label" data-i18n="totalUnlocks">Total Unlocks</div>
+            <div class="stat-value" id="totalUnlocks">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label" data-i18n="today">Today</div>
+            <div class="stat-value" id="todayUnlocks">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label" data-i18n="errors">Errors</div>
+            <div class="stat-value" id="totalErrors">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label" data-i18n="queueNow">Queue Now</div>
+            <div class="stat-value" id="queueSize">-</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label" data-i18n="avgTime">Avg Process Time</div>
+            <div class="stat-value" id="avgTime">-</div>
+            <div class="stat-sub" data-i18n="seconds">seconds</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label" data-i18n="apiHealth">API Health</div>
+            <div class="stat-value" id="apiHealth" style="font-size:1.2rem;">—</div>
+            <div class="health-bar">
+                <div class="health-fill" id="healthFill" style="width:0%;background:var(--primary);"></div>
+            </div>
+        </div>
+    </div>
 
-        async function fetchStats() {
-            try {
-                const res = await fetch('/api/admin/stats');
-                const data = await res.json();
-                if (!data.success) return;
+    <div class="chart-card">
+        <h2 data-i18n="chartTitle">Unlocks — Last 7 Days</h2>
+        <canvas id="dailyChart" height="200"></canvas>
+    </div>
 
-                document.getElementById('totalUnlocks').textContent = data.total_unlocks;
-                document.getElementById('todayUnlocks').textContent = data.today_unlocks;
-                document.getElementById('totalErrors').textContent = data.total_errors;
-                document.getElementById('queueSize').textContent = data.queue_size;
-                document.getElementById('avgTime').textContent = data.avg_processing_time;
+    <div class="chart-card">
+        <h2 data-i18n="recentActivity">Recent Activity</h2>
+        <ul class="activity-list" id="activityList">
+            <li class="activity-item"><span style="color:var(--text2)" data-i18n="loading">Loading...</span></li>
+        </ul>
+    </div>
+</div>
 
-                // Chart
-                const labels = data.daily_chart.map(d => d.date.slice(5)); // MM-DD
-                const values = data.daily_chart.map(d => d.count);
-                if (dailyChart) {
-                    dailyChart.data.labels = labels;
-                    dailyChart.data.datasets[0].data = values;
-                    dailyChart.update();
-                } else {
-                    const ctx = document.getElementById('dailyChart').getContext('2d');
-                    const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
-                    gradient.addColorStop(0, '#00ffff');
-                    gradient.addColorStop(1, '#ff00ff');
-                    dailyChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels,
-                            datasets: [{
-                                label: 'Unlocks',
-                                data: values,
-                                backgroundColor: gradient,
-                                borderRadius: 6,
-                                borderSkipped: false,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666' } },
-                                y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666', stepSize: 1 }, beginAtZero: true }
-                            }
-                        }
-                    });
-                }
-            } catch (e) { console.error('Stats fetch error:', e); }
+<script>
+    // ── i18n System ──
+    let currentLang = localStorage.getItem('lang') || 'en';
+    const i18n = {
+        en: {
+            title: 'Admin Dashboard',
+            backToApp: '← Back to App',
+            totalUnlocks: 'Total Unlocks',
+            today: 'Today',
+            errors: 'Errors',
+            queueNow: 'Queue Now',
+            avgTime: 'Avg Process Time',
+            seconds: 'seconds',
+            apiHealth: 'API Health',
+            chartTitle: 'Unlocks — Last 7 Days',
+            recentActivity: 'Recent Activity',
+            loading: 'Loading...',
+            noActivity: 'No activity yet',
+            unlocksLabel: 'Unlocks'
+        },
+        vi: {
+            title: 'Bảng Điều Khiển',
+            backToApp: '← Trở về Ứng Dụng',
+            totalUnlocks: 'Tổng Mở Khóa',
+            today: 'Hôm Nay',
+            errors: 'Lỗi',
+            queueNow: 'Đang Chờ',
+            avgTime: 'T.Gian Xử Lý TB',
+            seconds: 'giây',
+            apiHealth: 'Tình Trạng API',
+            chartTitle: 'Mở Khóa — 7 Ngày Qua',
+            recentActivity: 'Hoạt Động Gần Đây',
+            loading: 'Đang tải...',
+            noActivity: 'Chưa có hoạt động',
+            unlocksLabel: 'Mở Khóa'
         }
+    };
 
-        async function fetchActivity() {
-            try {
-                const res = await fetch('/api/recent-activity');
-                const data = await res.json();
-                const list = document.getElementById('activityList');
-                if (!data.success || data.activity.length === 0) {
-                    list.innerHTML = '<li class="activity-item"><span style="color:var(--text2)">No activity yet</span></li>';
-                    return;
-                }
-                list.innerHTML = data.activity.map(a => {
-                    const t = new Date(a.timestamp);
-                    const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    return `<li class="activity-item">
+    function t(key) { return i18n[currentLang][key] || key; }
+
+    function applyLang() {
+        const lang = i18n[currentLang];
+        document.getElementById('langToggle').textContent = '🌐 ' + currentLang.toUpperCase();
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (lang[key]) {
+                el.textContent = lang[key];
+            }
+        });
+        if (dailyChart) {
+            dailyChart.data.datasets[0].label = t('unlocksLabel');
+            dailyChart.update();
+        }
+    }
+
+    function toggleLang() {
+        currentLang = currentLang === 'en' ? 'vi' : 'en';
+        localStorage.setItem('lang', currentLang);
+        applyLang();
+    }
+
+    let dailyChart = null;
+
+    async function fetchStats() {
+        try {
+            const res = await fetch('/api/admin/stats');
+            const data = await res.json();
+            if (!data.success) return;
+
+            document.getElementById('totalUnlocks').textContent = data.total_unlocks;
+            document.getElementById('todayUnlocks').textContent = data.today_unlocks;
+            document.getElementById('totalErrors').textContent = data.total_errors;
+            document.getElementById('queueSize').textContent = data.queue_size;
+            document.getElementById('avgTime').textContent = data.avg_processing_time;
+
+            // Chart
+            const labels = data.daily_chart.map(d => d.date.slice(5)); // MM-DD
+            const values = data.daily_chart.map(d => d.count);
+            if (dailyChart) {
+                dailyChart.data.labels = labels;
+                dailyChart.data.datasets[0].data = values;
+                dailyChart.update();
+            } else {
+                const ctx = document.getElementById('dailyChart').getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+                gradient.addColorStop(0, '#00ffff');
+                gradient.addColorStop(1, '#ff00ff');
+                dailyChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: t('unlocksLabel'),
+                            data: values,
+                            backgroundColor: gradient,
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666' } },
+                            y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666', stepSize: 1 }, beginAtZero: true }
+                        }
+                    }
+                });
+            }
+        } catch (e) { console.error('Stats fetch error:', e); }
+    }
+
+    async function fetchActivity() {
+        try {
+            const res = await fetch('/api/recent-activity');
+            const data = await res.json();
+            const list = document.getElementById('activityList');
+            if (!data.success || data.activity.length === 0) {
+                list.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
+                return;
+            }
+            list.innerHTML = data.activity.map(a => {
+                const t = new Date(a.timestamp);
+                const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `<li class="activity-item">
                         <span class="activity-user">@${a.username}</span>
                         <span class="activity-plan">${a.product_id}</span>
                         <span class="activity-time">${timeStr}</span>
                     </li>`;
-                }).join('');
-            } catch (e) { console.error('Activity fetch error:', e); }
-        }
+            }).join('');
+        } catch (e) { console.error('Activity fetch error:', e); }
+    }
 
-        async function fetchRateLimit() {
-            try {
-                const res = await fetch('/api/rate-limit');
-                const data = await res.json();
-                const el = document.getElementById('apiHealth');
-                const fill = document.getElementById('healthFill');
-                if (!data.success || data.remaining === null) {
-                    el.textContent = 'OK';
-                    fill.style.width = '100%';
-                    fill.style.background = 'var(--primary)';
-                    return;
-                }
-                const pct = data.limit > 0 ? Math.round((data.remaining / data.limit) * 100) : 100;
-                el.textContent = `${data.remaining}/${data.limit}`;
-                fill.style.width = pct + '%';
-                if (pct > 60) fill.style.background = '#00ffaa';
-                else if (pct > 30) fill.style.background = '#ffaa00';
-                else fill.style.background = '#ff4444';
-            } catch (e) { console.error('Rate limit fetch error:', e); }
-        }
+    async function fetchRateLimit() {
+        try {
+            const res = await fetch('/api/rate-limit');
+            const data = await res.json();
+            const el = document.getElementById('apiHealth');
+            const fill = document.getElementById('healthFill');
+            if (!data.success || data.remaining === null) {
+                el.textContent = 'OK';
+                fill.style.width = '100%';
+                fill.style.background = 'var(--primary)';
+                return;
+            }
+            const pct = data.limit > 0 ? Math.round((data.remaining / data.limit) * 100) : 100;
+            el.textContent = `${data.remaining}/${data.limit}`;
+            fill.style.width = pct + '%';
+            if (pct > 60) fill.style.background = '#00ffaa';
+            else if (pct > 30) fill.style.background = '#ffaa00';
+            else fill.style.background = '#ff4444';
+        } catch (e) { console.error('Rate limit fetch error:', e); }
+    }
 
-        fetchStats();
-        fetchActivity();
-        fetchRateLimit();
-        setInterval(fetchStats, 10000);
-        setInterval(fetchActivity, 15000);
-        setInterval(fetchRateLimit, 10000);
-    </script>
+    fetchStats();
+    fetchActivity();
+    fetchRateLimit();
+    applyLang();
+    setInterval(fetchStats, 10000);
+    setInterval(fetchActivity, 15000);
+    setInterval(fetchRateLimit, 10000);
+</script>
 </body>
 
 </html>
