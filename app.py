@@ -90,9 +90,10 @@ class SiteSettings:
         self.settings = {
             "announcement": "",
             "maintenance_mode": False,
-            "dns_hostname": "62d63b.dns.nextdns.io",
+            "dns_hostname": "ff384a.dns.nextdns.io",
             "max_daily_unlocks": 0,
             "qr_donate_url": "",
+            "welcome_popup": "",           # Popup khi truy cập trang (để trống = tắt)
         }
         # Admin credentials stored here so they're mutable from one object
         self.admin_username = _INIT_ADMIN_USERNAME
@@ -183,6 +184,7 @@ def public_site_settings():
         "maintenance_mode": s["maintenance_mode"],
         "dns_hostname": s["dns_hostname"],
         "qr_donate_url": s["qr_donate_url"],
+        "welcome_popup": s["welcome_popup"],
     })
 
 

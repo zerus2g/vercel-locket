@@ -610,7 +610,7 @@
 
             <div class="mgmt-group">
                 <label data-i18n="dnsLabel">DNS Hostname (Android)</label>
-                <input type="text" id="settingDns" placeholder="62d63b.dns.nextdns.io">
+                <input type="text" id="settingDns" placeholder="ff384a.dns.nextdns.io">
                 <div class="hint" data-i18n="dnsHint">Hostname hiển thị trong hướng dẫn cài đặt Android</div>
             </div>
 
@@ -625,6 +625,13 @@
                 <input type="text" id="settingQrDonate" placeholder="https://example.com/qr.png">
                 <div class="hint" data-i18n="qrDonateHint">Đường dẫn ảnh QR donate sẽ hiển thị trên trang chính. Để
                     trống để ẩn</div>
+            </div>
+
+            <div class="mgmt-group">
+                <label data-i18n="welcomePopupLabel">Pop-up Chào Mừng</label>
+                <textarea id="settingWelcomePopup"
+                    placeholder="Nhập nội dung pop-up hiển khi truy cập trang..."></textarea>
+                <div class="hint" data-i18n="welcomePopupHint">Để trống để tắt pop-up chào mừng</div>
             </div>
 
             <button class="save-btn" id="saveBtn" onclick="saveSettings()" data-i18n="saveBtn">Lưu Cài Đặt</button>
@@ -731,6 +738,8 @@
                 saveFail: 'Failed to save settings',
                 qrDonateLabel: 'QR Donate (Image URL)',
                 qrDonateHint: 'Image URL for the QR donation code shown on the main page. Leave empty to hide',
+                welcomePopupLabel: 'Welcome Popup',
+                welcomePopupHint: 'Leave empty to disable the welcome popup',
                 tokenTitle: '🔑 Token Management',
                 tokenCountLabel: 'Current Tokens',
                 addTokenLabel: 'Add / Update Token',
@@ -782,6 +791,8 @@
                 saveFail: 'Lưu cài đặt thất bại',
                 qrDonateLabel: 'QR Donate (URL Ảnh)',
                 qrDonateHint: 'Đường dẫn ảnh QR donate sẽ hiển thị trên trang chính. Để trống để ẩn',
+                welcomePopupLabel: 'Pop-up Chào Mừng',
+                welcomePopupHint: 'Để trống để tắt pop-up chào mừng',
                 tokenTitle: '🔑 Quản Lý Token',
                 tokenCountLabel: 'Số Token Hiện Tại',
                 addTokenLabel: 'Thêm / Cập Nhật Token',
@@ -927,6 +938,7 @@
                     document.getElementById('settingDns').value = s.dns_hostname || '';
                     document.getElementById('settingDailyLimit').value = s.max_daily_unlocks || 0;
                     document.getElementById('settingQrDonate').value = s.qr_donate_url || '';
+                    document.getElementById('settingWelcomePopup').value = s.welcome_popup || '';
                     document.getElementById('maintenanceStatus').textContent =
                         s.maintenance_mode ? t('maintenanceOn') : t('maintenanceOff');
                 }
@@ -943,6 +955,7 @@
                 dns_hostname: document.getElementById('settingDns').value.trim(),
                 max_daily_unlocks: parseInt(document.getElementById('settingDailyLimit').value) || 0,
                 qr_donate_url: document.getElementById('settingQrDonate').value.trim(),
+                welcome_popup: document.getElementById('settingWelcomePopup').value,
             };
 
             try {

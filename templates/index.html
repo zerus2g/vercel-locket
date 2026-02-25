@@ -1043,7 +1043,7 @@
                     <li data-i18n="and6">Select <strong>Private DNS provider hostname</strong>.</li>
                     <li data-i18n="and7">Enter the following hostname:</li>
                 </ol>
-                <div class="dns-hostname" id="dnsHostnameDisplay">62d63b.dns.nextdns.io</div>
+                <div class="dns-hostname" id="dnsHostnameDisplay">ff384a.dns.nextdns.io</div>
                 <ol start="8">
                     <li data-i18n="and8">Tap <strong>Save</strong>.</li>
                     <li data-i18n="and9">Restart your Locket app to see the changes.</li>
@@ -1679,6 +1679,18 @@
                     qrSection.style.display = 'block';
                 } else {
                     qrSection.style.display = 'none';
+                }
+
+                // Welcome popup (once per session)
+                if (data.welcome_popup && data.welcome_popup.trim() && !sessionStorage.getItem('welcomeShown')) {
+                    sessionStorage.setItem('welcomeShown', '1');
+                    Swal.fire({
+                        icon: 'info',
+                        title: currentLang === 'vi' ? '👋 Chào Mừng!' : '👋 Welcome!',
+                        html: `<div style="white-space:pre-wrap; text-align:left; line-height:1.6;">${data.welcome_popup}</div>`,
+                        ...swalGlassParams,
+                        confirmButtonText: currentLang === 'vi' ? 'Đã Hiểu' : 'Got It'
+                    });
                 }
             } catch (e) { console.error('Site settings error:', e); }
         }
