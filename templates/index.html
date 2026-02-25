@@ -953,14 +953,16 @@
             <!-- iOS Content -->
             <div id="ios-content" class="platform-content active">
                 <ol>
-                    <li>Open the Locket app and find your username in settings.</li>
-                    <li>Enter your exact username in the field above.</li>
-                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li>Review the information and click <strong>Continue</strong> to unlock Gold.</li>
-                    <li><strong>Important:</strong> After activation, you must install the configuration profile below
+                    <li data-i18n="iosStep1">Open the Locket app and find your username in settings.</li>
+                    <li data-i18n="iosStep2">Enter your exact username in the field above.</li>
+                    <li data-i18n="iosStep3">Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li data-i18n="iosStep4">Review the information and click <strong>Continue</strong> to unlock Gold.
+                    </li>
+                    <li data-i18n="iosStep5"><strong>Important:</strong> After activation, you must install the
+                        configuration profile below
                         to
                         block revocation.</li>
-                    <li>Restart your Locket app to see the changes.</li>
+                    <li data-i18n="iosStep6">Restart your Locket app to see the changes.</li>
                 </ol>
                 <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="/static/locket.mobileconfig" class="download-btn" target="_blank" style="
@@ -984,7 +986,7 @@
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Download Profile
+                        <span data-i18n="downloadProfile">Download Profile</span>
                     </a>
 
                     <button onclick="showTutorial()" style="
@@ -1008,7 +1010,7 @@
                             <circle cx="12" cy="12" r="10"></circle>
                             <polygon points="10 8 16 12 10 16 10 8"></polygon>
                         </svg>
-                        Watch Tutorial
+                        <span data-i18n="watchTutorial">Watch Tutorial</span>
                     </button>
                 </div>
             </div>
@@ -1016,17 +1018,18 @@
             <!-- Android Content -->
             <div id="android-content" class="platform-content">
                 <ol>
-                    <li>Open the Locket app and find your username in Settings.</li>
-                    <li>Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li>Go to <strong>Settings → Network & Internet</strong> on your Android device.</li>
-                    <li>Tap <strong>Private DNS</strong>.</li>
-                    <li>Select <strong>Private DNS provider hostname</strong>.</li>
-                    <li>Enter the following hostname:</li>
+                    <li data-i18n="androidStep1">Open the Locket app and find your username in Settings.</li>
+                    <li data-i18n="androidStep2">Click <strong>Check User Info</strong> to verify the account.</li>
+                    <li data-i18n="androidStep3">Go to <strong>Settings → Network & Internet</strong> on your Android
+                        device.</li>
+                    <li data-i18n="androidStep4">Tap <strong>Private DNS</strong>.</li>
+                    <li data-i18n="androidStep5">Select <strong>Private DNS provider hostname</strong>.</li>
+                    <li data-i18n="androidStep6">Enter the following hostname:</li>
                 </ol>
                 <div class="dns-hostname">62d63b.dns.nextdns.io</div>
                 <ol start="7">
-                    <li>Tap <strong>Save</strong>.</li>
-                    <li>Restart your Locket app to see the changes.</li>
+                    <li data-i18n="androidStep7">Tap <strong>Save</strong>.</li>
+                    <li data-i18n="androidStep8">Restart your Locket app to see the changes.</li>
                 </ol>
             </div>
         </div>
@@ -1074,12 +1077,8 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <footer>
-        <p>Created with ❤️ by <a href="https://maihuybao.dev" target="_blank">Mai Huy Bao</a></p>
-        <p style="margin-top: 5px; font-size: 0.8rem;">
-            <a href="https://github.com/maihuybao/LocketGoldUnlockerWithUsername" target="_blank" style="opacity: 0.7;">
-                Open Source on GitHub
-            </a>
-        </p>
+        <p><span data-i18n="createdBy">Created with ❤️ by</span> <a href="https://t.me/@Benonivn"
+                target="_blank">Benonivn</a></p>
     </footer>
 
     <!-- SweetAlert2 JS -->
@@ -1579,17 +1578,25 @@
                 wrapper.className = 'copy-wrap';
                 el.parentNode.insertBefore(wrapper, el);
                 wrapper.appendChild(el);
+
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
-                btn.textContent = 'COPY';
-                btn.type = 'button';
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(el.textContent.trim()).then(() => {
-                        showToast(t('copied'), 'success');
-                        btn.textContent = '✓';
-                        setTimeout(() => btn.textContent = 'COPY', 2000);
-                    });
+                btn.textContent = i18n[currentLang].copyBtn || 'COPY';
+                btn.setAttribute('data-i18n-copy', 'true'); // marker for applyLang
+
+                btn.onclick = () => {
+                    navigator.clipboard.writeText(el.innerText || el.textContent)
+                        .then(() => {
+                            btn.textContent = '✔';
+                            btn.style.background = 'rgba(76, 175, 80, 0.2)';
+                            btn.style.color = '#4caf50';
+                            btn.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+                            showToast(i18n[currentLang].copied, 'success');
+                            setTimeout(() => {
+                                btn.textContent = i18n[currentLang].copyBtn || 'COPY';
+                                btn.style = '';
+                            }, 2000);
+                        });
                 };
                 wrapper.appendChild(btn);
             });
@@ -1618,6 +1625,22 @@
                 copied: 'Copied to clipboard!',
                 downloadProfile: 'Download Profile',
                 watchTutorial: 'Watch Tutorial',
+                copyBtn: 'COPY',
+                createdBy: 'Created with ❤️ by',
+                iosStep1: 'Open the Locket app and find your username in Settings.',
+                iosStep2: 'Enter your exact username in the field above.',
+                iosStep3: 'Click <strong>Check User Info</strong> to verify the account.',
+                iosStep4: 'Review the information and click <strong>Continue</strong> to unlock Gold.',
+                iosStep5: '<strong>Important:</strong> After activation, you must install the configuration profile below to block revocation.',
+                iosStep6: 'Restart your Locket app to see the changes.',
+                androidStep1: 'Open the Locket app and find your username in Settings.',
+                androidStep2: 'Click <strong>Check User Info</strong> to verify the account.',
+                androidStep3: 'Go to <strong>Settings → Network & Internet</strong> on your Android device.',
+                androidStep4: 'Tap <strong>Private DNS</strong>.',
+                androidStep5: 'Select <strong>Private DNS provider hostname</strong>.',
+                androidStep6: 'Enter the following hostname:',
+                androidStep7: 'Tap <strong>Save</strong>.',
+                androidStep8: 'Restart your Locket app to see the changes.',
             },
             vi: {
                 title: 'LOCKET GOLD',
@@ -1635,10 +1658,26 @@
                 goldValid: 'Gói Gold chỉ có hiệu lực cho đến khi bạn <strong>đăng xuất</strong> khỏi ứng dụng Locket.',
                 eduOnly: 'Dự án này được tạo ra <strong>chỉ nhằm mục đích giáo dục</strong>.',
                 recentUnlocks: 'Mở Khóa Gần Đây',
-                noActivity: 'Chưa có hoạt động',
-                copied: 'Đã sao chép!',
-                downloadProfile: 'Tải Profile',
+                noActivity: 'Chưa có hoạt động nào',
+                copied: 'Đã copy vào bộ nhớ tạm!',
+                downloadProfile: 'Tải Về Profile',
                 watchTutorial: 'Xem Hướng Dẫn',
+                copyBtn: 'SAO CHÉP',
+                createdBy: 'Tạo ra với ❤️ bởi',
+                iosStep1: 'Mở ứng dụng Locket và tìm tên người dùng của bạn trong Cài đặt.',
+                iosStep2: 'Nhập chính xác tên người dùng vào ô trống bên trên.',
+                iosStep3: 'Bấm <strong>Kiểm Tra Thông Tin</strong> để xác thực tài khoản.',
+                iosStep4: 'Kiểm tra lại thông tin và bấm <strong>Tiếp Tục</strong> để mở khóa Gold.',
+                iosStep5: '<strong>Quan trọng:</strong> Sau khi kích hoạt, bạn phải cài đặt cấu hình Profile bên dưới để tránh bị thu hồi (block revocation).',
+                iosStep6: 'Khởi động lại Locket để xem thay đổi.',
+                androidStep1: 'Mở ứng dụng Locket và tìm tên người dùng của bạn trong Cài đặt.',
+                androidStep2: 'Bấm <strong>Kiểm Tra Thông Tin</strong> để xác thực tài khoản.',
+                androidStep3: 'Vào <strong>Cài đặt → Mạng và Internet</strong> trên thiết bị Android.',
+                androidStep4: 'Chọn <strong>DNS riêng tư</strong>.',
+                androidStep5: 'Chọn <strong>Tên máy chủ nhà cung cấp DNS riêng tư</strong>.',
+                androidStep6: 'Nhập tên hostname sau vào:',
+                androidStep7: 'Nhấn <strong>Lưu</strong>.',
+                androidStep8: 'Khởi động lại Locket để xem thay đổi.',
             }
         };
 
@@ -1651,10 +1690,16 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (lang[key]) {
-                    if (el.tagName === 'INPUT') el.placeholder = lang[key];
-                    else if (key.includes('Compat') || key.includes('Valid') || key.includes('Only'))
+                    if (el.tagName.toLowerCase() === 'input') el.placeholder = lang[key];
+                    else if (key.includes('Compat') || key.includes('Valid') || key.includes('Only') || key.includes('Step'))
                         el.innerHTML = lang[key];
                     else el.textContent = lang[key];
+                }
+            });
+            // Update JS-generated copy buttons
+            document.querySelectorAll('[data-i18n-copy]').forEach(el => {
+                if (el.textContent !== '✔') {
+                    el.textContent = lang['copyBtn'] || 'COPY';
                 }
             });
         }
