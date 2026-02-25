@@ -15,9 +15,9 @@ dotenv.load_dotenv()
 # ── Session Config ──
 app.secret_key = os.getenv("SECRET_KEY", "locket-gold-default-secret-key-change-me")
 
-# ── Admin Credentials from .env ──
-ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
+# ── Admin Credentials (initial values from .env, stored in SiteSettings) ──
+_INIT_ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+_INIT_ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
 subscription_ids = [
     "locket_1600_1y",
@@ -92,8 +92,11 @@ class SiteSettings:
             "maintenance_mode": False,
             "dns_hostname": "62d63b.dns.nextdns.io",
             "max_daily_unlocks": 0,
-            "qr_donate_url": "",            # URL ảnh QR donate
+            "qr_donate_url": "",
         }
+        # Admin credentials stored here so they're mutable from one object
+        self.admin_username = _INIT_ADMIN_USERNAME
+        self.admin_password = _INIT_ADMIN_PASSWORD
 
     def get_all(self):
         return self.settings.copy()
@@ -133,7 +136,7 @@ def admin_login():
     username = data.get("username", "")
     password = data.get("password", "")
     
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+    if username == site_settings.admin_username and password == site_settings.admin_password:
         session["admin_logged_in"] = True
         session["admin_user"] = username
         return jsonify({"success": True, "msg": "Đăng nhập thành công!"})
@@ -226,13 +229,12 @@ def update_tokens():
 @app.route("/api/admin/change-password", methods=["POST"])
 @admin_required
 def change_password():
-    global ADMIN_PASSWORD
     data = request.json
     current = data.get("current_password", "")
     new_pw = data.get("new_password", "")
     confirm = data.get("confirm_password", "")
     
-    if current != ADMIN_PASSWORD:
+    if current != site_settings.admin_password:
         return jsonify({"success": False, "msg": "Mật khẩu hiện tại không đúng!"}), 400
     
     if len(new_pw) < 4:
@@ -241,7 +243,7 @@ def change_password():
     if new_pw != confirm:
         return jsonify({"success": False, "msg": "Mật khẩu xác nhận không khớp!"}), 400
     
-    ADMIN_PASSWORD = new_pw
+    site_settings.admin_password = new_pw
     return jsonify({"success": True, "msg": "Đổi mật khẩu thành công!"})
 
 
