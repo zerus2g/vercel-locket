@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #00ffff;
@@ -35,10 +37,120 @@
                 radial-gradient(circle at 90% 80%, rgba(255, 0, 255, .06) 0%, transparent 40%);
         }
 
+        /* ── Login Screen ── */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: rgba(10, 10, 15, 0.5);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            border-radius: 1.5rem;
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1), 0 0 80px rgba(255, 0, 255, 0.05);
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            margin-bottom: .5rem;
+        }
+
+        .login-card p {
+            color: var(--text2);
+            font-size: .85rem;
+            margin-bottom: 2rem;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .login-card label {
+            display: block;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text2);
+            margin-bottom: .5rem;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: .9rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            border-radius: .75rem;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: .95rem;
+            transition: border-color .3s, box-shadow .3s;
+            outline: none;
+        }
+
+        .login-card input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient);
+            border: none;
+            border-radius: .75rem;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .3s;
+            margin-top: .5rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 30px rgba(0, 255, 255, 0.4);
+        }
+
+        .login-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-error {
+            color: #ff4444;
+            font-size: .85rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* ── Dashboard ── */
         .dashboard {
             max-width: 960px;
             margin: 0 auto;
             padding: 2rem 1.5rem;
+            display: none;
         }
 
         .header {
@@ -46,6 +158,8 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: .8rem;
         }
 
         .header h1 {
@@ -60,27 +174,10 @@
             color: transparent;
         }
 
-        .lang-toggle {
-            background: rgba(255, 255, 255, .1);
-            border: 1px solid rgba(255, 255, 255, .2);
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: .8rem;
-            backdrop-filter: blur(10px);
-            transition: background .3s, border-color .3s;
-            margin-left: 1rem;
-        }
-
-        .lang-toggle:hover {
-            background: rgba(255, 255, 255, .2);
-            border-color: rgba(255, 255, 255, .4);
-        }
-
         .header-actions {
             display: flex;
             align-items: center;
+            gap: .6rem;
         }
 
         .header a {
@@ -93,6 +190,36 @@
 
         .header a:hover {
             opacity: 1;
+        }
+
+        .lang-toggle,
+        .logout-btn {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: .8rem;
+            backdrop-filter: blur(10px);
+            transition: background .3s, border-color .3s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .lang-toggle:hover,
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, .2);
+            border-color: rgba(255, 255, 255, .4);
+        }
+
+        .logout-btn {
+            border-color: rgba(255, 68, 68, .4);
+            color: #ff6666;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 68, 68, .15);
+            border-color: rgba(255, 68, 68, .6);
         }
 
         .stats-grid {
@@ -210,6 +337,174 @@
             border-radius: 4px;
         }
 
+        /* ── Management Panel ── */
+        .mgmt-card {
+            background: var(--card);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, .2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, .5);
+        }
+
+        .mgmt-card h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            color: var(--text2);
+        }
+
+        .mgmt-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .mgmt-group label {
+            display: block;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text2);
+            margin-bottom: .5rem;
+        }
+
+        .mgmt-group input[type="text"],
+        .mgmt-group input[type="number"],
+        .mgmt-group textarea {
+            width: 100%;
+            padding: .8rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            border-radius: .75rem;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: .9rem;
+            transition: border-color .3s;
+            outline: none;
+            resize: vertical;
+        }
+
+        .mgmt-group input:focus,
+        .mgmt-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+        }
+
+        .mgmt-group textarea {
+            min-height: 80px;
+        }
+
+        .mgmt-group .hint {
+            font-size: .75rem;
+            color: var(--text2);
+            margin-top: .3rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background .3s, border-color .3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            left: 2px;
+            bottom: 2px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform .3s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: rgba(255, 0, 255, 0.3);
+            border-color: var(--secondary);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(24px);
+            background: var(--secondary);
+        }
+
+        .toggle-label {
+            font-size: .9rem;
+            color: var(--text);
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient);
+            border: none;
+            border-radius: .75rem;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 30px rgba(0, 255, 255, 0.4);
+        }
+
+        .save-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Glass popup override for SweetAlert */
+        .glass-popup {
+            background: rgba(10, 10, 20, 0.85) !important;
+            backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(0, 255, 255, 0.15) !important;
+            border-radius: 1.5rem !important;
+        }
+
+        .glass-confirm-btn {
+            background: var(--gradient) !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            border-radius: .75rem !important;
+            padding: .7rem 2rem !important;
+            font-family: 'Outfit', sans-serif !important;
+            border: none !important;
+        }
+
         @media(max-width:600px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
@@ -218,225 +513,669 @@
             .stat-value {
                 font-size: 1.8rem;
             }
+
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
         }
     </style>
 </head>
 
-<div class="dashboard">
-    <div class="header">
-        <h1 data-i18n="title">Admin Dashboard</h1>
-        <div class="header-actions">
-            <a href="/" data-i18n="backToApp">← Back to App</a>
-            <button class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 EN</button>
+<body>
+
+    <!-- ═══════ LOGIN SCREEN ═══════ -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h1 data-i18n="loginTitle">Admin Panel</h1>
+            <p data-i18n="loginSubtitle">Đăng nhập để quản lý hệ thống</p>
+
+            <div class="form-group">
+                <label data-i18n="usernameLabel">Tên đăng nhập</label>
+                <input type="text" id="loginUsername" placeholder="admin" autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="passwordLabel">Mật khẩu</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+            </div>
+
+            <button class="login-btn" id="loginBtn" onclick="doLogin()" data-i18n="loginBtn">Đăng Nhập</button>
+            <div class="login-error" id="loginError"></div>
         </div>
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label" data-i18n="totalUnlocks">Total Unlocks</div>
-            <div class="stat-value" id="totalUnlocks">-</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label" data-i18n="today">Today</div>
-            <div class="stat-value" id="todayUnlocks">-</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label" data-i18n="errors">Errors</div>
-            <div class="stat-value" id="totalErrors">-</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label" data-i18n="queueNow">Queue Now</div>
-            <div class="stat-value" id="queueSize">-</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label" data-i18n="avgTime">Avg Process Time</div>
-            <div class="stat-value" id="avgTime">-</div>
-            <div class="stat-sub" data-i18n="seconds">seconds</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label" data-i18n="apiHealth">API Health</div>
-            <div class="stat-value" id="apiHealth" style="font-size:1.2rem;">—</div>
-            <div class="health-bar">
-                <div class="health-fill" id="healthFill" style="width:0%;background:var(--primary);"></div>
+    <!-- ═══════ DASHBOARD (Hidden until login) ═══════ -->
+    <div class="dashboard" id="dashboardScreen">
+        <div class="header">
+            <h1 data-i18n="title">Admin Dashboard</h1>
+            <div class="header-actions">
+                <a href="/" data-i18n="backToApp">← Trở về Ứng Dụng</a>
+                <button class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 VI</button>
+                <button class="logout-btn" id="logoutBtn" onclick="doLogout()" data-i18n="logoutBtn">Đăng Xuất</button>
             </div>
         </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label" data-i18n="totalUnlocks">Tổng Mở Khóa</div>
+                <div class="stat-value" id="totalUnlocks">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-i18n="today">Hôm Nay</div>
+                <div class="stat-value" id="todayUnlocks">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-i18n="errors">Lỗi</div>
+                <div class="stat-value" id="totalErrors">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label" data-i18n="apiHealth">Tình Trạng API</div>
+                <div class="stat-value" id="apiHealth" style="font-size:1.2rem;">—</div>
+                <div class="health-bar">
+                    <div class="health-fill" id="healthFill" style="width:0%;background:var(--primary);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-card">
+            <h2 data-i18n="chartTitle">Mở Khóa — 7 Ngày Qua</h2>
+            <canvas id="dailyChart" height="200"></canvas>
+        </div>
+
+        <!-- Management Panel -->
+        <div class="mgmt-card">
+            <h2 data-i18n="mgmtTitle">⚙️ Quản Lý Trang Web</h2>
+
+            <div class="mgmt-group">
+                <label data-i18n="announcementLabel">Thông Báo Toàn Trang</label>
+                <textarea id="settingAnnouncement"
+                    placeholder="Nhập nội dung thông báo hiển thị trên trang chính..."></textarea>
+                <div class="hint" data-i18n="announcementHint">Để trống để ẩn banner thông báo</div>
+            </div>
+
+            <div class="mgmt-group">
+                <label data-i18n="maintenanceLabel">Chế Độ Bảo Trì</label>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingMaintenance">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" id="maintenanceStatus" data-i18n="maintenanceOff">Tắt</span>
+                </div>
+                <div class="hint" data-i18n="maintenanceHint">Khi bật, nút mở khóa trên trang chính sẽ bị vô hiệu hóa
+                </div>
+            </div>
+
+            <div class="mgmt-group">
+                <label data-i18n="dnsLabel">DNS Hostname (Android)</label>
+                <input type="text" id="settingDns" placeholder="62d63b.dns.nextdns.io">
+                <div class="hint" data-i18n="dnsHint">Hostname hiển thị trong hướng dẫn cài đặt Android</div>
+            </div>
+
+            <div class="mgmt-group">
+                <label data-i18n="dailyLimitLabel">Giới Hạn Mở Khóa / Ngày</label>
+                <input type="number" id="settingDailyLimit" min="0" placeholder="0">
+                <div class="hint" data-i18n="dailyLimitHint">Nhập 0 để không giới hạn</div>
+            </div>
+
+            <div class="mgmt-group">
+                <label data-i18n="qrDonateLabel">QR Donate (URL Ảnh)</label>
+                <input type="text" id="settingQrDonate" placeholder="https://example.com/qr.png">
+                <div class="hint" data-i18n="qrDonateHint">Đường dẫn ảnh QR donate sẽ hiển thị trên trang chính. Để
+                    trống để ẩn</div>
+            </div>
+
+            <button class="save-btn" id="saveBtn" onclick="saveSettings()" data-i18n="saveBtn">Lưu Cài Đặt</button>
+        </div>
+
+        <!-- Token Editor -->
+        <div class="mgmt-card">
+            <h2 data-i18n="tokenTitle">🔑 Quản Lý Token</h2>
+            <div class="mgmt-group">
+                <label data-i18n="tokenCountLabel">Số Token Hiện Tại</label>
+                <div id="tokenCount" style="font-size:1.5rem; font-weight:700; color:var(--primary);">-</div>
+            </div>
+            <div id="tokenList"></div>
+            <div class="mgmt-group" style="margin-top:1rem;">
+                <label data-i18n="addTokenLabel">Thêm / Cập Nhật Token</label>
+                <div class="hint" data-i18n="tokenNameHint" style="margin-bottom:.5rem;">Tên token (đặt gì cũng được)
+                </div>
+                <input type="text" id="newTokenName" placeholder="Production_VNM_2" style="margin-bottom:.5rem;">
+                <div class="hint" style="margin-bottom:.3rem;">fetch_token</div>
+                <textarea id="newFetchToken" placeholder="Paste fetch_token tại đây..."
+                    style="min-height:60px; margin-bottom:.5rem;"></textarea>
+                <div class="hint" style="margin-bottom:.3rem;">app_transaction</div>
+                <textarea id="newAppTransaction" placeholder="Paste app_transaction tại đây..."
+                    style="min-height:60px; margin-bottom:.5rem;"></textarea>
+            </div>
+            <button class="save-btn" onclick="replaceToken()" data-i18n="replaceTokenBtn">Thay Thế Token</button>
+            <div class="hint" style="margin-top:.5rem; text-align:center;" data-i18n="replaceTokenHint">Sẽ thay thế toàn
+                bộ token hiện tại bằng token mới</div>
+        </div>
+
+        <!-- Password Change -->
+        <div class="mgmt-card">
+            <h2 data-i18n="pwTitle">🔒 Đổi Mật Khẩu Admin</h2>
+            <div class="mgmt-group">
+                <label data-i18n="currentPwLabel">Mật Khẩu Hiện Tại</label>
+                <input type="password" id="currentPassword" placeholder="••••••••">
+            </div>
+            <div class="mgmt-group">
+                <label data-i18n="newPwLabel">Mật Khẩu Mới</label>
+                <input type="password" id="newPassword" placeholder="Ít nhất 4 ký tự">
+            </div>
+            <div class="mgmt-group">
+                <label data-i18n="confirmPwLabel">Xác Nhận Mật Khẩu Mới</label>
+                <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới">
+            </div>
+            <button class="save-btn" onclick="changePassword()" data-i18n="changePwBtn">Đổi Mật Khẩu</button>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="chart-card">
+            <h2 data-i18n="recentActivity">Hoạt Động Gần Đây</h2>
+            <ul class="activity-list" id="activityList">
+                <li class="activity-item"><span style="color:var(--text2)" data-i18n="loading">Đang tải...</span></li>
+            </ul>
+        </div>
     </div>
 
-    <div class="chart-card">
-        <h2 data-i18n="chartTitle">Unlocks — Last 7 Days</h2>
-        <canvas id="dailyChart" height="200"></canvas>
-    </div>
+    <script>
+        // ── Swal Glass Theme ──
+        const swalGlass = {
+            background: 'transparent',
+            customClass: {
+                popup: 'glass-popup',
+                confirmButton: 'glass-confirm-btn',
+            },
+            buttonsStyling: false
+        };
 
-    <div class="chart-card">
-        <h2 data-i18n="recentActivity">Recent Activity</h2>
-        <ul class="activity-list" id="activityList">
-            <li class="activity-item"><span style="color:var(--text2)" data-i18n="loading">Loading...</span></li>
-        </ul>
-    </div>
-</div>
-
-<script>
-    // ── i18n System ──
-    let currentLang = localStorage.getItem('lang') || 'en';
-    const i18n = {
-        en: {
-            title: 'Admin Dashboard',
-            backToApp: '← Back to App',
-            totalUnlocks: 'Total Unlocks',
-            today: 'Today',
-            errors: 'Errors',
-            queueNow: 'Queue Now',
-            avgTime: 'Avg Process Time',
-            seconds: 'seconds',
-            apiHealth: 'API Health',
-            chartTitle: 'Unlocks — Last 7 Days',
-            recentActivity: 'Recent Activity',
-            loading: 'Loading...',
-            noActivity: 'No activity yet',
-            unlocksLabel: 'Unlocks'
-        },
-        vi: {
-            title: 'Bảng Điều Khiển',
-            backToApp: '← Trở về Ứng Dụng',
-            totalUnlocks: 'Tổng Mở Khóa',
-            today: 'Hôm Nay',
-            errors: 'Lỗi',
-            queueNow: 'Đang Chờ',
-            avgTime: 'T.Gian Xử Lý TB',
-            seconds: 'giây',
-            apiHealth: 'Tình Trạng API',
-            chartTitle: 'Mở Khóa — 7 Ngày Qua',
-            recentActivity: 'Hoạt Động Gần Đây',
-            loading: 'Đang tải...',
-            noActivity: 'Chưa có hoạt động',
-            unlocksLabel: 'Mở Khóa'
-        }
-    };
-
-    function t(key) { return i18n[currentLang][key] || key; }
-
-    function applyLang() {
-        const lang = i18n[currentLang];
-        document.getElementById('langToggle').textContent = '🌐 ' + currentLang.toUpperCase();
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (lang[key]) {
-                el.textContent = lang[key];
+        // ── i18n System ──
+        let currentLang = localStorage.getItem('lang') || 'vi';
+        const i18n = {
+            en: {
+                loginTitle: 'Admin Panel',
+                loginSubtitle: 'Sign in to manage the system',
+                usernameLabel: 'Username',
+                passwordLabel: 'Password',
+                loginBtn: 'Sign In',
+                loginFail: 'Incorrect username or password!',
+                title: 'Admin Dashboard',
+                backToApp: '← Back to App',
+                logoutBtn: 'Sign Out',
+                totalUnlocks: 'Total Unlocks',
+                today: 'Today',
+                errors: 'Errors',
+                apiHealth: 'API Health',
+                chartTitle: 'Unlocks — Last 7 Days',
+                recentActivity: 'Recent Activity',
+                loading: 'Loading...',
+                noActivity: 'No activity yet',
+                unlocksLabel: 'Unlocks',
+                mgmtTitle: '⚙️ Website Management',
+                announcementLabel: 'Site-Wide Announcement',
+                announcementHint: 'Leave empty to hide the announcement banner',
+                maintenanceLabel: 'Maintenance Mode',
+                maintenanceOn: 'ON',
+                maintenanceOff: 'OFF',
+                maintenanceHint: 'When enabled, the unlock button on the main page will be disabled',
+                dnsLabel: 'DNS Hostname (Android)',
+                dnsHint: 'Hostname shown in Android setup instructions',
+                dailyLimitLabel: 'Daily Unlock Limit',
+                dailyLimitHint: 'Set to 0 for unlimited',
+                saveBtn: 'Save Settings',
+                saveSuccess: 'Settings saved successfully!',
+                saveFail: 'Failed to save settings',
+                qrDonateLabel: 'QR Donate (Image URL)',
+                qrDonateHint: 'Image URL for the QR donation code shown on the main page. Leave empty to hide',
+                tokenTitle: '🔑 Token Management',
+                tokenCountLabel: 'Current Tokens',
+                addTokenLabel: 'Add / Update Token',
+                tokenNameHint: 'Token name (any label)',
+                replaceTokenBtn: 'Replace Token',
+                replaceTokenHint: 'Will replace all current tokens with this new one',
+                tokenSuccess: 'Token updated successfully!',
+                tokenFail: 'Failed to update token',
+                pwTitle: '🔒 Change Admin Password',
+                currentPwLabel: 'Current Password',
+                newPwLabel: 'New Password',
+                confirmPwLabel: 'Confirm New Password',
+                changePwBtn: 'Change Password',
+                pwSuccess: 'Password changed successfully!',
+                pwFail: 'Failed to change password',
+            },
+            vi: {
+                loginTitle: 'Admin Panel',
+                loginSubtitle: 'Đăng nhập để quản lý hệ thống',
+                usernameLabel: 'Tên Đăng Nhập',
+                passwordLabel: 'Mật Khẩu',
+                loginBtn: 'Đăng Nhập',
+                loginFail: 'Sai tên đăng nhập hoặc mật khẩu!',
+                title: 'Bảng Điều Khiển',
+                backToApp: '← Trở về Ứng Dụng',
+                logoutBtn: 'Đăng Xuất',
+                totalUnlocks: 'Tổng Mở Khóa',
+                today: 'Hôm Nay',
+                errors: 'Lỗi',
+                apiHealth: 'Tình Trạng API',
+                chartTitle: 'Mở Khóa — 7 Ngày Qua',
+                recentActivity: 'Hoạt Động Gần Đây',
+                loading: 'Đang tải...',
+                noActivity: 'Chưa có hoạt động',
+                unlocksLabel: 'Mở Khóa',
+                mgmtTitle: '⚙️ Quản Lý Trang Web',
+                announcementLabel: 'Thông Báo Toàn Trang',
+                announcementHint: 'Để trống để ẩn banner thông báo',
+                maintenanceLabel: 'Chế Độ Bảo Trì',
+                maintenanceOn: 'BẬT',
+                maintenanceOff: 'TẮT',
+                maintenanceHint: 'Khi bật, nút mở khóa trên trang chính sẽ bị vô hiệu hóa',
+                dnsLabel: 'DNS Hostname (Android)',
+                dnsHint: 'Hostname hiển thị trong hướng dẫn cài đặt Android',
+                dailyLimitLabel: 'Giới Hạn Mở Khóa / Ngày',
+                dailyLimitHint: 'Nhập 0 để không giới hạn',
+                saveBtn: 'Lưu Cài Đặt',
+                saveSuccess: 'Đã lưu cài đặt thành công!',
+                saveFail: 'Lưu cài đặt thất bại',
+                qrDonateLabel: 'QR Donate (URL Ảnh)',
+                qrDonateHint: 'Đường dẫn ảnh QR donate sẽ hiển thị trên trang chính. Để trống để ẩn',
+                tokenTitle: '🔑 Quản Lý Token',
+                tokenCountLabel: 'Số Token Hiện Tại',
+                addTokenLabel: 'Thêm / Cập Nhật Token',
+                tokenNameHint: 'Tên token (đặt gì cũng được)',
+                replaceTokenBtn: 'Thay Thế Token',
+                replaceTokenHint: 'Sẽ thay thế toàn bộ token hiện tại bằng token mới',
+                tokenSuccess: 'Cập nhật token thành công!',
+                tokenFail: 'Cập nhật token thất bại',
+                pwTitle: '🔒 Đổi Mật Khẩu Admin',
+                currentPwLabel: 'Mật Khẩu Hiện Tại',
+                newPwLabel: 'Mật Khẩu Mới',
+                confirmPwLabel: 'Xác Nhận Mật Khẩu Mới',
+                changePwBtn: 'Đổi Mật Khẩu',
+                pwSuccess: 'Đổi mật khẩu thành công!',
+                pwFail: 'Đổi mật khẩu thất bại',
             }
-        });
-        if (dailyChart) {
-            dailyChart.data.datasets[0].label = t('unlocksLabel');
-            dailyChart.update();
-        }
-    }
+        };
 
-    function toggleLang() {
-        currentLang = currentLang === 'en' ? 'vi' : 'en';
-        localStorage.setItem('lang', currentLang);
-        applyLang();
-    }
+        function t(key) { return i18n[currentLang][key] || key; }
 
-    let dailyChart = null;
-
-    async function fetchStats() {
-        try {
-            const res = await fetch('/api/admin/stats');
-            const data = await res.json();
-            if (!data.success) return;
-
-            document.getElementById('totalUnlocks').textContent = data.total_unlocks;
-            document.getElementById('todayUnlocks').textContent = data.today_unlocks;
-            document.getElementById('totalErrors').textContent = data.total_errors;
-            document.getElementById('queueSize').textContent = data.queue_size;
-            document.getElementById('avgTime').textContent = data.avg_processing_time;
-
-            // Chart
-            const labels = data.daily_chart.map(d => d.date.slice(5)); // MM-DD
-            const values = data.daily_chart.map(d => d.count);
+        function applyLang() {
+            const lang = i18n[currentLang];
+            document.getElementById('langToggle').textContent = '🌐 ' + currentLang.toUpperCase();
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (lang[key]) el.textContent = lang[key];
+            });
+            // Update maintenance toggle label
+            const mc = document.getElementById('settingMaintenance');
+            if (mc) {
+                document.getElementById('maintenanceStatus').textContent = mc.checked ? t('maintenanceOn') : t('maintenanceOff');
+            }
             if (dailyChart) {
-                dailyChart.data.labels = labels;
-                dailyChart.data.datasets[0].data = values;
+                dailyChart.data.datasets[0].label = t('unlocksLabel');
                 dailyChart.update();
-            } else {
-                const ctx = document.getElementById('dailyChart').getContext('2d');
-                const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
-                gradient.addColorStop(0, '#00ffff');
-                gradient.addColorStop(1, '#ff00ff');
-                dailyChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: t('unlocksLabel'),
-                            data: values,
-                            backgroundColor: gradient,
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666' } },
-                            y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666', stepSize: 1 }, beginAtZero: true }
-                        }
-                    }
-                });
             }
-        } catch (e) { console.error('Stats fetch error:', e); }
-    }
+        }
 
-    async function fetchActivity() {
-        try {
-            const res = await fetch('/api/recent-activity');
-            const data = await res.json();
-            const list = document.getElementById('activityList');
-            if (!data.success || data.activity.length === 0) {
-                list.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'vi' : 'en';
+            localStorage.setItem('lang', currentLang);
+            applyLang();
+        }
+
+        // ── Maintenance toggle label update ──
+        document.getElementById('settingMaintenance').addEventListener('change', function () {
+            document.getElementById('maintenanceStatus').textContent = this.checked ? t('maintenanceOn') : t('maintenanceOff');
+        });
+
+        // ── Auth Functions ──
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/admin/check');
+                const data = await res.json();
+                if (data.success && data.logged_in) {
+                    showDashboard();
+                } else {
+                    showLogin();
+                }
+            } catch (e) {
+                showLogin();
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            fetchStats();
+            fetchActivity();
+            fetchRateLimit();
+            loadSettings();
+            loadTokens();
+            applyLang();
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            if (!username || !password) {
+                errorEl.textContent = t('loginFail');
+                errorEl.style.display = 'block';
                 return;
             }
-            list.innerHTML = data.activity.map(a => {
-                const t = new Date(a.timestamp);
-                const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                return `<li class="activity-item">
+
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    errorEl.style.display = 'none';
+                    showDashboard();
+                } else {
+                    errorEl.textContent = data.msg || t('loginFail');
+                    errorEl.style.display = 'block';
+                }
+            } catch (e) {
+                errorEl.textContent = 'Connection error';
+                errorEl.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function doLogout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+            } catch (e) { }
+            showLogin();
+        }
+
+        // Enter key to login
+        document.getElementById('loginPassword').addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') doLogin();
+        });
+        document.getElementById('loginUsername').addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+        });
+
+        // ── Settings Management ──
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/admin/settings');
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+                if (data.success) {
+                    const s = data.settings;
+                    document.getElementById('settingAnnouncement').value = s.announcement || '';
+                    document.getElementById('settingMaintenance').checked = s.maintenance_mode || false;
+                    document.getElementById('settingDns').value = s.dns_hostname || '';
+                    document.getElementById('settingDailyLimit').value = s.max_daily_unlocks || 0;
+                    document.getElementById('settingQrDonate').value = s.qr_donate_url || '';
+                    document.getElementById('maintenanceStatus').textContent =
+                        s.maintenance_mode ? t('maintenanceOn') : t('maintenanceOff');
+                }
+            } catch (e) { console.error('Load settings error:', e); }
+        }
+
+        async function saveSettings() {
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+
+            const settings = {
+                announcement: document.getElementById('settingAnnouncement').value,
+                maintenance_mode: document.getElementById('settingMaintenance').checked,
+                dns_hostname: document.getElementById('settingDns').value.trim(),
+                max_daily_unlocks: parseInt(document.getElementById('settingDailyLimit').value) || 0,
+                qr_donate_url: document.getElementById('settingQrDonate').value.trim(),
+            };
+
+            try {
+                const res = await fetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? t('saveSuccess') : t('saveFail'),
+                    text: data.msg || '',
+                    ...swalGlass,
+                    confirmButtonText: 'OK'
+                });
+            } catch (e) {
+                Swal.fire({
+                    icon: 'error',
+                    title: t('saveFail'),
+                    ...swalGlass,
+                    confirmButtonText: 'OK'
+                });
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // ── Token Management ──
+        async function loadTokens() {
+            try {
+                const res = await fetch('/api/admin/tokens');
+                if (res.status === 401) return;
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('tokenCount').textContent = data.count;
+                    const list = document.getElementById('tokenList');
+                    if (data.tokens.length === 0) {
+                        list.innerHTML = '<div style="color:var(--text2); font-size:.85rem;">No tokens configured</div>';
+                    } else {
+                        list.innerHTML = data.tokens.map((tok, i) => `
+                            <div style="margin-bottom:.8rem; padding:.8rem; background:rgba(0,255,255,.03); border:1px solid rgba(0,255,255,.1); border-radius:.5rem;">
+                                <div style="font-weight:600; color:var(--primary); margin-bottom:.3rem;">${tok.name}</div>
+                                <div style="font-size:.75rem; color:var(--text2); word-break:break-all;">fetch_token: ${tok.fetch_token}</div>
+                                <div style="font-size:.75rem; color:var(--text2); word-break:break-all; margin-top:.2rem;">app_transaction: ${tok.app_transaction}</div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (e) { console.error('Load tokens error:', e); }
+        }
+
+        async function replaceToken() {
+            const name = document.getElementById('newTokenName').value.trim() || 'Custom_Token';
+            const fetchToken = document.getElementById('newFetchToken').value.trim();
+            const appTransaction = document.getElementById('newAppTransaction').value.trim();
+
+            if (!fetchToken || !appTransaction) {
+                Swal.fire({ icon: 'warning', title: 'Thiếu dữ liệu', text: 'Vui lòng nhập cả fetch_token và app_transaction', ...swalGlass, confirmButtonText: 'OK' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/tokens', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tokens: [{
+                            name: name,
+                            fetch_token: fetchToken,
+                            app_transaction: appTransaction,
+                            hash_params: '',
+                            hash_headers: '',
+                            is_sandbox: false
+                        }]
+                    })
+                });
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? t('tokenSuccess') : t('tokenFail'),
+                    text: data.msg || '',
+                    ...swalGlass, confirmButtonText: 'OK'
+                });
+                if (data.success) {
+                    document.getElementById('newTokenName').value = '';
+                    document.getElementById('newFetchToken').value = '';
+                    document.getElementById('newAppTransaction').value = '';
+                    loadTokens();
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: t('tokenFail'), ...swalGlass, confirmButtonText: 'OK' });
+            }
+        }
+
+        // ── Change Password ──
+        async function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPw = document.getElementById('newPassword').value;
+            const confirmPw = document.getElementById('confirmPassword').value;
+
+            if (!current || !newPw || !confirmPw) {
+                Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập đầy đủ các trường', ...swalGlass, confirmButtonText: 'OK' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: current, new_password: newPw, confirm_password: confirmPw })
+                });
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? t('pwSuccess') : t('pwFail'),
+                    text: data.msg || '',
+                    ...swalGlass, confirmButtonText: 'OK'
+                });
+                if (data.success) {
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: t('pwFail'), ...swalGlass, confirmButtonText: 'OK' });
+            }
+        }
+
+        // ── Stats / Activity / Rate Limit ── (same as before, with auth check)
+        let dailyChart = null;
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+                if (!data.success) return;
+
+                document.getElementById('totalUnlocks').textContent = data.total_unlocks;
+                document.getElementById('todayUnlocks').textContent = data.today_unlocks;
+                document.getElementById('totalErrors').textContent = data.total_errors;
+
+                const labels = data.daily_chart.map(d => d.date.slice(5));
+                const values = data.daily_chart.map(d => d.count);
+                if (dailyChart) {
+                    dailyChart.data.labels = labels;
+                    dailyChart.data.datasets[0].data = values;
+                    dailyChart.update();
+                } else {
+                    const ctx = document.getElementById('dailyChart').getContext('2d');
+                    const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+                    gradient.addColorStop(0, '#00ffff');
+                    gradient.addColorStop(1, '#ff00ff');
+                    dailyChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: t('unlocksLabel'),
+                                data: values,
+                                backgroundColor: gradient,
+                                borderRadius: 6,
+                                borderSkipped: false,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666' } },
+                                y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#666', stepSize: 1 }, beginAtZero: true }
+                            }
+                        }
+                    });
+                }
+            } catch (e) { console.error('Stats fetch error:', e); }
+        }
+
+        async function fetchActivity() {
+            try {
+                const res = await fetch('/api/recent-activity');
+                const data = await res.json();
+                const list = document.getElementById('activityList');
+                if (!data.success || data.activity.length === 0) {
+                    list.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
+                    return;
+                }
+                list.innerHTML = data.activity.map(a => {
+                    const time = new Date(a.timestamp);
+                    const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `<li class="activity-item">
                         <span class="activity-user">@${a.username}</span>
                         <span class="activity-plan">${a.product_id}</span>
                         <span class="activity-time">${timeStr}</span>
                     </li>`;
-            }).join('');
-        } catch (e) { console.error('Activity fetch error:', e); }
-    }
+                }).join('');
+            } catch (e) { console.error('Activity fetch error:', e); }
+        }
 
-    async function fetchRateLimit() {
-        try {
-            const res = await fetch('/api/rate-limit');
-            const data = await res.json();
-            const el = document.getElementById('apiHealth');
-            const fill = document.getElementById('healthFill');
-            if (!data.success || data.remaining === null) {
-                el.textContent = 'OK';
-                fill.style.width = '100%';
-                fill.style.background = 'var(--primary)';
-                return;
-            }
-            const pct = data.limit > 0 ? Math.round((data.remaining / data.limit) * 100) : 100;
-            el.textContent = `${data.remaining}/${data.limit}`;
-            fill.style.width = pct + '%';
-            if (pct > 60) fill.style.background = '#00ffaa';
-            else if (pct > 30) fill.style.background = '#ffaa00';
-            else fill.style.background = '#ff4444';
-        } catch (e) { console.error('Rate limit fetch error:', e); }
-    }
+        async function fetchRateLimit() {
+            try {
+                const res = await fetch('/api/rate-limit');
+                const data = await res.json();
+                const el = document.getElementById('apiHealth');
+                const fill = document.getElementById('healthFill');
+                if (!data.success || data.remaining === null) {
+                    el.textContent = 'OK';
+                    fill.style.width = '100%';
+                    fill.style.background = 'var(--primary)';
+                    return;
+                }
+                const pct = data.limit > 0 ? Math.round((data.remaining / data.limit) * 100) : 100;
+                el.textContent = `${data.remaining}/${data.limit}`;
+                fill.style.width = pct + '%';
+                if (pct > 60) fill.style.background = '#00ffaa';
+                else if (pct > 30) fill.style.background = '#ffaa00';
+                else fill.style.background = '#ff4444';
+            } catch (e) { console.error('Rate limit fetch error:', e); }
+        }
 
-    fetchStats();
-    fetchActivity();
-    fetchRateLimit();
-    applyLang();
-    setInterval(fetchStats, 10000);
-    setInterval(fetchActivity, 15000);
-    setInterval(fetchRateLimit, 10000);
-</script>
+        // ── Init ──
+        checkAuth();
+        applyLang();
+        setInterval(fetchStats, 10000);
+        setInterval(fetchActivity, 15000);
+        setInterval(fetchRateLimit, 10000);
+    </script>
 </body>
 
 </html>

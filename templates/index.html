@@ -890,6 +890,12 @@
 <body>
 
     <div class="main-wrapper">
+        <!-- Announcement Banner (dynamic from admin) -->
+        <div id="announcementBanner"
+            style="display:none; width:100%; max-width:520px; margin: 0 auto 1rem; padding: .8rem 1.2rem; background: rgba(255, 200, 0, 0.1); border: 1px solid rgba(255, 200, 0, 0.3); border-radius: .75rem; text-align: center; color: #ffcc00; font-size: .9rem; backdrop-filter: blur(10px);">
+            <span id="announcementText"></span>
+        </div>
+
         <div class="container">
             <img src="https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM"
                 alt="Locket Icon" class="app-icon">
@@ -897,24 +903,13 @@
             <p class="subtitle" data-i18n="subtitle">Unlock premium features instantly</p>
 
             <div class="form-group">
-                <div class="global-queue-container" id="globalQueueContainer">
-                    <div class="global-queue-item">
-                        <div class="global-queue-label" data-i18n="totalWaiting">Total Waiting</div>
-                        <div class="global-queue-value" id="globalQueueTotal">-</div>
-                    </div>
-                    <div class="global-queue-item">
-                        <div class="global-queue-label" data-i18n="estTime">Est. Time</div>
-                        <div class="global-queue-value" id="globalQueueTime">-</div>
-                    </div>
-                </div>
-
                 <label for="username" data-i18n="targetUsername">Target Username</label>
                 <input type="text" id="username" data-i18n="placeholder" placeholder="Enter Locket username..." required
                     autocomplete="off">
             </div>
 
-            <button id="submitBtn" onclick="checkUserInfo()">
-                <span class="btn-text" data-i18n="checkBtn">Check User Info</span>
+            <button id="submitBtn" onclick="unlockGold()">
+                <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
                 <div class="loader" id="loader"></div>
             </button>
         </div>
@@ -955,11 +950,10 @@
                 <ol>
                     <li data-i18n="ios1">Open the Locket app and find your username in settings.</li>
                     <li data-i18n="ios2">Enter your exact username in the field above.</li>
-                    <li data-i18n="ios3">Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li data-i18n="ios4">Review the information and click <strong>Continue</strong> to unlock Gold.</li>
-                    <li data-i18n="ios5"><strong>Important:</strong> After activation, you must install the
+                    <li data-i18n="ios3">Click <strong>Unlock Locket Gold</strong> to activate premium.</li>
+                    <li data-i18n="ios4"><strong>Important:</strong> After activation, you must install the
                         configuration profile below to block revocation.</li>
-                    <li data-i18n="ios6">Restart your Locket app to see the changes.</li>
+                    <li data-i18n="ios5">Restart your Locket app to see the changes.</li>
                 </ol>
                 <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="/static/locket.mobileconfig" class="download-btn" target="_blank" style="
@@ -1016,17 +1010,18 @@
             <div id="android-content" class="platform-content">
                 <ol>
                     <li data-i18n="and1">Open the Locket app and find your username in Settings.</li>
-                    <li data-i18n="and2">Click <strong>Check User Info</strong> to verify the account.</li>
-                    <li data-i18n="and3">Go to <strong>Settings → Network & Internet</strong> on your Android device.
+                    <li data-i18n="and2">Enter your exact username in the field above.</li>
+                    <li data-i18n="and3">Click <strong>Unlock Locket Gold</strong> to activate premium.</li>
+                    <li data-i18n="and4">Go to <strong>Settings → Network & Internet</strong> on your Android device.
                     </li>
-                    <li data-i18n="and4">Tap <strong>Private DNS</strong>.</li>
-                    <li data-i18n="and5">Select <strong>Private DNS provider hostname</strong>.</li>
-                    <li data-i18n="and6">Enter the following hostname:</li>
+                    <li data-i18n="and5">Tap <strong>Private DNS</strong>.</li>
+                    <li data-i18n="and6">Select <strong>Private DNS provider hostname</strong>.</li>
+                    <li data-i18n="and7">Enter the following hostname:</li>
                 </ol>
-                <div class="dns-hostname">62d63b.dns.nextdns.io</div>
-                <ol start="7">
-                    <li data-i18n="and7">Tap <strong>Save</strong>.</li>
-                    <li data-i18n="and8">Restart your Locket app to see the changes.</li>
+                <div class="dns-hostname" id="dnsHostnameDisplay">62d63b.dns.nextdns.io</div>
+                <ol start="8">
+                    <li data-i18n="and8">Tap <strong>Save</strong>.</li>
+                    <li data-i18n="and9">Restart your Locket app to see the changes.</li>
                 </ol>
             </div>
         </div>
@@ -1051,7 +1046,21 @@
         </div>
     </div>
 
-    <!-- Activity Feed -->
+    <!-- QR Donate Section (dynamic from admin) -->
+    <div class="main-wrapper" id="qrDonateSection" style="display:none;">
+        <div
+            style="max-width:520px; margin:0 auto; background:rgba(10,10,15,0.4); backdrop-filter:blur(15px); border:1px solid rgba(0,255,255,0.15); border-radius:1.5rem; padding:2rem; text-align:center;">
+            <h3
+                style="font-size:1rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-secondary); margin-bottom:1rem;">
+                ❤️ <span data-i18n="donateTitle">Donate</span>
+            </h3>
+            <img id="qrDonateImg" src="" alt="QR Donate"
+                style="max-width:280px; width:100%; border-radius:1rem; border:1px solid rgba(0,255,255,0.15);">
+            <p style="margin-top:.8rem; font-size:.85rem; color:var(--text-secondary);" data-i18n="donateDesc">Scan QR
+                to support us</p>
+        </div>
+    </div>
+
     <div class="main-wrapper">
         <div class="activity-feed">
             <h3>
@@ -1133,6 +1142,88 @@
             },
             buttonsStyling: false
         };
+
+        async function unlockGold() {
+            const usernameInput = document.getElementById('username');
+            const username = usernameInput.value.trim();
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const btnText = document.querySelector('.btn-text');
+
+            if (!username) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: t('missingInputTitle'),
+                    text: t('missingInputText'),
+                    ...swalGlassParams,
+                    confirmButtonText: t('ok')
+                });
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.style.display = 'none';
+
+            // Show loading modal immediately for better UX
+            Swal.fire({
+                title: t('unlockingTitle'),
+                html: `<div style="text-align:center; padding: 20px;">
+                        <div class="loader" style="display:inline-block; width: 40px; height: 40px; border-width: 4px; margin-bottom: 20px;"></div>
+                        <div>${t('unlockingText').replace('{user}', username)}</div>
+                       </div>`,
+                ...swalGlassParams,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
+
+            try {
+                // Synchronous request
+                const response = await fetch('/api/restore', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showCompletedStatus(data);
+                } else {
+                    let errorText = data.msg;
+                    if (errorText === "User not found or API error" || errorText === "User data not found") {
+                        errorText = t('userNotFoundText');
+                    } else if (errorText === "Username is required") {
+                        errorText = t('missingInputText');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: t('errorTitle'),
+                        text: errorText || t('restoreFailText').replace('{msg}', data.msg),
+                        ...swalGlassParams,
+                        confirmButtonText: t('close')
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: t('connectionErrorTitle'),
+                    text: t('connectionErrorText'),
+                    ...swalGlassParams,
+                    confirmButtonText: t('close')
+                });
+            } finally {
+                // Reset state
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.style.display = 'inline-block';
+            }
+        }
 
         async function checkUserInfo() {
             const usernameInput = document.getElementById('username');
@@ -1232,308 +1323,14 @@
                 cancelButtonText: t('cancelBtn')
             }).then((result) => {
                 if (result.isConfirmed) {
-                    restorePurchase(userData.username);
+                    unlockGold(); // Call the new unlockGold function
                 }
             });
         }
-
-        async function restorePurchase(username) {
-            try {
-                // Join queue
-                const response = await fetch('/api/restore', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username: username }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    // Show queue status and start polling
-                    showQueueStatus(data.client_id, username);
-                } else {
-                    let errorText = data.msg;
-                    if (errorText === "Username is required") {
-                        errorText = t('missingInputText');
-                    } else if (errorText === "API not initialized. Check server logs.") {
-                        errorText = t('connectionErrorText');
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: t('errorTitle'),
-                        text: errorText || t('joinQueueFail'),
-                        ...swalGlassParams,
-                        confirmButtonText: t('close')
-                    });
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: t('connectionErrorTitle'),
-                    text: t('connectionErrorText'),
-                    ...swalGlassParams,
-                    confirmButtonText: t('close')
-                });
-            }
-        }
-
-        let pollInterval = null;
-        let countdownInterval = null;
-        let currentEstimatedTime = 0;
-        let lastPosition = null;
-        let pollRetryCount = 0;
-        const MAX_POLL_RETRIES = 3;
-
-        function showQueueStatus(clientId, username) {
-            // Reset state
-            lastPosition = null;
-            currentEstimatedTime = 0;
-            pollRetryCount = 0;
-            if (pollInterval) clearTimeout(pollInterval);
-            if (countdownInterval) clearInterval(countdownInterval);
-            countdownInterval = null;
-
-            // Show initial queue modal
-            Swal.fire({
-                title: t('queueStatusTitle'),
-                html: `
-                    <div class="queue-status-container">
-                        <div class="queue-status-text">${t('joiningQueue')}</div>
-                        <div class="queue-position" id="queuePosition">-</div>
-                        <div class="queue-progress">
-                            <div class="queue-progress-bar" id="queueProgressBar" style="width: 0%"></div>
-                        </div>
-                        <div class="queue-info">
-                            <div class="queue-stat">
-                                <div class="queue-stat-label">${t('totalWaiting')}</div>
-                                <div class="queue-stat-value" id="queueTotal">-</div>
-                            </div>
-                            <div class="queue-stat">
-                                <div class="queue-stat-label">${t('estTime')}</div>
-                                <div class="queue-stat-value" id="queueTime">-</div>
-                            </div>
-                        </div>
-                        <div class="queue-status-text" id="queueStatusText">${t('pleaseWait')}</div>
-                    </div>
-                `,
-                ...swalGlassParams,
-                showConfirmButton: false,
-                showCancelButton: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-            });
-
-            // Start polling
-            pollQueueStatus(clientId, username);
-        }
-
-        async function pollQueueStatus(clientId, username) {
-            try {
-                const response = await fetch('/api/queue/status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ client_id: clientId }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    if (data.status === 'not_found') {
-                        // Retry a few times before giving up
-                        pollRetryCount++;
-                        if (pollRetryCount < MAX_POLL_RETRIES) {
-                            console.log(`Request not found, retry ${pollRetryCount}/${MAX_POLL_RETRIES}`);
-                            pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 2000);
-                            return;
-                        }
-
-                        // Request not found after retries - stop polling and show error
-                        clearInterval(pollInterval);
-                        clearInterval(countdownInterval);
-                        Swal.fire({
-                            icon: 'error',
-                            title: t('reqNotFoundTitle'),
-                            text: t('reqNotFoundText'),
-                            ...swalGlassParams,
-                            confirmButtonText: t('close')
-                        });
-                        resetGlobalQueueUI();
-                        return;
-                    }
-
-                    // Reset retry count on successful status
-                    pollRetryCount = 0;
-                    updateQueueUI(data, username);
-
-                    // Check if completed or error
-                    if (data.status === 'completed') {
-                        clearInterval(pollInterval);
-                        clearInterval(countdownInterval);
-                        showCompletedStatus(data);
-                        resetGlobalQueueUI();
-                    } else if (data.status === 'error') {
-                        clearInterval(pollInterval);
-                        clearInterval(countdownInterval);
-                        showErrorStatus(data);
-                        resetGlobalQueueUI();
-                    } else {
-                        // Continue polling
-                        pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 1000);
-                    }
-                } else {
-                    clearInterval(pollInterval);
-                    clearInterval(countdownInterval);
-                    let errorText = data.msg;
-                    if (errorText === "client_id is required") errorText = t('reqNotFoundText');
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: t('errorTitle'),
-                        text: errorText || t('failGetQueue'),
-                        ...swalGlassParams,
-                        confirmButtonText: t('close')
-                    });
-                    resetGlobalQueueUI();
-                }
-            } catch (error) {
-                console.error('Polling error:', error);
-                // Retry after 2 seconds on network error
-                pollInterval = setTimeout(() => pollQueueStatus(clientId, username), 2000);
-            }
-        }
-
-        function updateQueueUI(data, username) {
-            const positionEl = document.getElementById('queuePosition');
-            const totalEl = document.getElementById('queueTotal');
-            const timeEl = document.getElementById('queueTime');
-            const statusEl = document.getElementById('queueStatusText');
-            const progressBar = document.getElementById('queueProgressBar');
-
-            if (positionEl && totalEl && timeEl && statusEl && progressBar) {
-                // Update position
-                if (data.status === 'processing') {
-                    positionEl.textContent = t('processing');
-                    statusEl.textContent = t('processingReq').replace('{user}', username);
-                    progressBar.style.width = '90%';
-                } else if (data.position === 0) {
-                    positionEl.textContent = t('next');
-                    statusEl.textContent = t('youAreNext');
-                    progressBar.style.width = '80%';
-                } else {
-                    positionEl.textContent = `#${data.position}`;
-                    statusEl.textContent = t('positionOf').replace('{pos}', data.position).replace('{total}', data.total_queue);
-
-                    // Calculate progress (inverse of position)
-                    const progress = data.total_queue > 0 ?
-                        Math.max(10, (1 - (data.position / (data.total_queue + 1))) * 70) : 10;
-                    progressBar.style.width = `${progress}%`;
-                }
-
-                // Update total
-                totalEl.textContent = data.total_queue;
-                updateGlobalQueueUI(data);
-
-                // Update time ONLY if position changed to prevent jitter
-                if (lastPosition !== data.position) {
-                    currentEstimatedTime = data.estimated_time;
-                    lastPosition = data.position;
-                    updateTimeDisplay();
-                }
-
-                // Ensure countdown is running
-                if (!countdownInterval) {
-                    countdownInterval = setInterval(() => {
-                        if (currentEstimatedTime > 0) {
-                            currentEstimatedTime--;
-                            updateTimeDisplay();
-                        }
-                    }, 1000);
-                }
-            }
-        }
-
-        function updateTimeDisplay() {
-            const timeEl = document.getElementById('queueTime');
-            const globalTimeEl = document.getElementById('globalQueueTime');
-
-            let formatted = t('soon');
-            if (currentEstimatedTime !== 0) {
-                if (currentEstimatedTime < 60) {
-                    formatted = `${currentEstimatedTime}s`;
-                } else {
-                    const minutes = Math.floor(currentEstimatedTime / 60);
-                    const seconds = currentEstimatedTime % 60;
-                    formatted = `${minutes}m ${seconds}s`;
-                }
-            }
-
-            if (timeEl) timeEl.textContent = formatted;
-            if (globalTimeEl) globalTimeEl.textContent = formatted;
-        }
-
-        function updateGlobalQueueUI(data) {
-            const containerEl = document.getElementById('globalQueueContainer');
-            const totalEl = document.getElementById('globalQueueTotal');
-
-            if (containerEl) containerEl.style.display = 'grid';
-            if (totalEl) totalEl.textContent = data.total_queue;
-        }
-
-        function resetGlobalQueueUI() {
-            const containerEl = document.getElementById('globalQueueContainer');
-            const totalEl = document.getElementById('globalQueueTotal');
-            const timeEl = document.getElementById('globalQueueTime');
-
-            if (containerEl) containerEl.style.display = 'grid';
-            if (totalEl) totalEl.textContent = '0';
-            if (timeEl) timeEl.textContent = t('soon');
-        }
-
-        async function fetchGlobalQueueStatus() {
-            try {
-                const response = await fetch('/api/queue/global-status');
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    const totalEl = document.getElementById('globalQueueTotal');
-                    const timeEl = document.getElementById('globalQueueTime');
-                    const containerEl = document.getElementById('globalQueueContainer');
-
-                    if (containerEl) containerEl.style.display = 'grid';
-                    if (totalEl) totalEl.textContent = data.total_queue;
-
-                    // Update estimated time
-                    let formattedTime = t('soon');
-                    if (data.estimated_time > 0) {
-                        if (data.estimated_time < 60) {
-                            formattedTime = `${data.estimated_time}s`;
-                        } else {
-                            const minutes = Math.floor(data.estimated_time / 60);
-                            const seconds = data.estimated_time % 60;
-                            formattedTime = `${minutes}m ${seconds}s`;
-                        }
-                    }
-                    if (timeEl) timeEl.textContent = formattedTime;
-                }
-            } catch (error) {
-                console.error('Error fetching global queue status:', error);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchGlobalQueueStatus();
-            setInterval(fetchGlobalQueueStatus, 5000);
-            resetGlobalQueueUI();
-        });
 
         function showCompletedStatus(data) {
-            if (data.result && data.result.success) {
-                let successText = data.result.msg;
+            if (data.success) { // Check data.success directly
+                let successText = data.msg;
 
                 // Intercept backend English success message
                 // Format: Purchase locket_199_1m for username successfully!
@@ -1558,16 +1355,6 @@
                     confirmButtonText: t('close')
                 });
             }
-        }
-
-        function showErrorStatus(data) {
-            Swal.fire({
-                icon: 'error',
-                title: t('errorTitle'),
-                text: data.error || t('reqErrorText'),
-                ...swalGlassParams,
-                confirmButtonText: t('close')
-            });
         }
 
         // Allow pressing Enter to submit
@@ -1620,11 +1407,9 @@
             en: {
                 title: 'LOCKET GOLD',
                 subtitle: 'UNLOCK PREMIUM FEATURES INSTANTLY',
-                totalWaiting: 'Total Waiting',
-                estTime: 'Est. Time',
                 targetUsername: 'Target Username',
                 placeholder: 'Enter Locket username...',
-                checkBtn: 'Check User Info',
+                unlockBtn: 'Unlock Locket Gold',
                 howToUse: 'How to Use',
                 ios: 'iOS',
                 android: 'Android',
@@ -1646,25 +1431,9 @@
                 close: 'Close',
                 connectionErrorTitle: 'Connection Error',
                 connectionErrorText: 'Failed to connect to the server. Please check your internet.',
-                noName: 'No name',
-                userInfoTitle: 'User Information',
-                unlockConfirm: 'Do you want to unlock Gold for this user?',
-                continueBtn: 'Continue',
-                cancelBtn: 'Cancel',
                 errorTitle: 'Error',
-                joinQueueFail: 'Failed to join queue',
-                queueStatusTitle: 'Queue Status',
-                joiningQueue: 'Joining queue...',
-                pleaseWait: 'Please wait...',
-                reqNotFoundTitle: 'Request Not Found',
-                reqNotFoundText: 'Your request could not be found. Please try again.',
-                failGetQueue: 'Failed to get queue status',
-                processing: 'Processing',
-                processingReq: 'Processing request for {user}...',
-                next: 'Next',
-                youAreNext: 'You are next in queue!',
-                positionOf: 'Position {pos} of {total}',
-                soon: 'Soon',
+                unlockingTitle: 'Unlocking',
+                unlockingText: 'Unlocking Gold for {user}...',
                 successTitle: 'Success!',
                 coolBtn: 'Cool!',
                 failedTitle: 'Failed',
@@ -1673,39 +1442,41 @@
                 howToInstallTitle: 'How to Install',
                 purchaseSuccess: '{product} unlocked successfully for {user}!',
                 copyBtn: 'COPY',
-                timeoutQueue: 'Timeout waiting for position in queue',
-                restoreFailText: 'Restore purchase failed: {msg}',
+                restoreFailText: 'Unlock failed: {msg}',
+                noName: 'No Name',
+                userInfoTitle: 'User Information',
+                unlockConfirm: 'Do you want to unlock Gold for this user?',
+                continueBtn: 'Continue',
+                cancelBtn: 'Cancel',
                 ios1: 'Open the Locket app and find your username in settings.',
                 ios2: 'Enter your exact username in the field above.',
-                ios3: 'Click <strong>Check User Info</strong> to verify the account.',
-                ios4: 'Review the information and click <strong>Continue</strong> to unlock Gold.',
-                ios5: '<strong>Important:</strong> After activation, you must install the configuration profile below to block revocation.',
-                ios6: 'Restart your Locket app to see the changes.',
+                ios3: 'Click <strong>Unlock Locket Gold</strong> to activate premium.',
+                ios4: '<strong>Important:</strong> After activation, you must install the configuration profile below to block revocation.',
+                ios5: 'Restart your Locket app to see the changes.',
                 and1: 'Open the Locket app and find your username in Settings.',
-                and2: 'Click <strong>Check User Info</strong> to verify the account.',
-                and3: 'Go to <strong>Settings → Network & Internet</strong> on your Android device.',
-                and4: 'Tap <strong>Private DNS</strong>.',
-                and5: 'Select <strong>Private DNS provider hostname</strong>.',
-                and6: 'Enter the following hostname:',
-                and7: 'Tap <strong>Save</strong>.',
-                and8: 'Restart your Locket app to see the changes.',
+                and2: 'Enter your exact username in the field above.',
+                and3: 'Click <strong>Unlock Locket Gold</strong> to activate premium.',
+                and4: 'Go to <strong>Settings → Network & Internet</strong> on your Android device.',
+                and5: 'Tap <strong>Private DNS</strong>.',
+                and6: 'Select <strong>Private DNS provider hostname</strong>.',
+                and7: 'Enter the following hostname:',
+                and8: 'Tap <strong>Save</strong>.',
+                and9: 'Restart your Locket app to see the changes.',
             },
             vi: {
                 title: 'LOCKET GOLD',
-                subtitle: 'MỞ KHÓA TÍNH NĂNG PREMIUM NGAY',
-                totalWaiting: 'Đang Chờ',
-                estTime: 'Thời Gian',
-                targetUsername: 'Tên Người Dùng',
-                placeholder: 'Nhập tên người dùng Locket...',
-                checkBtn: 'Kiểm Tra Thông Tin',
-                howToUse: 'Hướng Dẫn',
+                subtitle: 'MỞ KHÓA TÍNH NĂNG PREMIUM TỨC THÌ',
+                targetUsername: 'Tên Người Dùng (Username)',
+                placeholder: 'Nhập username Locket...',
+                unlockBtn: 'Mở khóa Locket Gold',
+                howToUse: 'Hướng Dẫn Sử Dụng',
                 ios: 'iOS',
                 android: 'Android',
                 importantNote: 'Lưu Ý Quan Trọng',
                 iosCompat: 'Công cụ này tương thích với <strong>thiết bị iOS và Android</strong>.',
-                goldValid: 'Gói Gold chỉ có hiệu lực cho đến khi bạn <strong>đăng xuất</strong> khỏi ứng dụng Locket.',
+                goldValid: 'Gói Gold chỉ có hiệu lực cho đến khi bạn <strong>đăng xuất</strong> khỏi Locket.',
                 eduOnly: 'Dự án này được tạo ra <strong>chỉ nhằm mục đích giáo dục</strong>.',
-                recentUnlocks: 'Mở Khóa Gần Đây',
+                recentUnlocks: 'Mới Mở Khóa',
                 noActivity: 'Chưa có hoạt động',
                 copied: 'Đã sao chép!',
                 downloadProfile: 'Tải Profile',
@@ -1719,25 +1490,9 @@
                 close: 'Đóng',
                 connectionErrorTitle: 'Lỗi Kết Nối',
                 connectionErrorText: 'Lỗi kết nối đến máy chủ. Vui lòng kiểm tra mạng.',
-                noName: 'Chưa có tên',
-                userInfoTitle: 'Thông Tin Người Dùng',
-                unlockConfirm: 'Bạn có muốn mở khóa Gold cho người dùng này không?',
-                continueBtn: 'Tiếp Tục',
-                cancelBtn: 'Hủy',
                 errorTitle: 'Lỗi',
-                joinQueueFail: 'Không thể tham gia hàng đợi',
-                queueStatusTitle: 'Trạng Thái Hàng Đợi',
-                joiningQueue: 'Đang tham gia hàng đợi...',
-                pleaseWait: 'Vui lòng đợi...',
-                reqNotFoundTitle: 'Không Tìm Thấy Yêu Cầu',
-                reqNotFoundText: 'Không tìm thấy yêu cầu của bạn. Vui lòng thử lại.',
-                failGetQueue: 'Lỗi lấy trạng thái hàng đợi',
-                processing: 'Đang Xử Lý',
-                processingReq: 'Đang xử lý yêu cầu cho {user}...',
-                next: 'Tiếp Theo',
-                youAreNext: 'Bạn là người tiếp theo!',
-                positionOf: 'Vị trí {pos} trên {total}',
-                soon: 'Sắp tới',
+                unlockingTitle: 'Đang Mở Khóa',
+                unlockingText: 'Đang mở khóa Gold cho {user}...',
                 successTitle: 'Thành Công!',
                 coolBtn: 'Tuyệt!',
                 failedTitle: 'Thất Bại',
@@ -1746,22 +1501,26 @@
                 howToInstallTitle: 'Hướng Dẫn Cài Đặt',
                 purchaseSuccess: 'Đã mở khóa {product} cho {user} thành công!',
                 copyBtn: 'SAO CHÉP',
-                timeoutQueue: 'Đã hết thời gian chờ tại hàng đợi',
                 restoreFailText: 'Lỗi khi mở khóa: {msg}',
+                noName: 'Chưa có tên',
+                userInfoTitle: 'Thông Tin Người Dùng',
+                unlockConfirm: 'Bạn có muốn mở khóa Gold cho người dùng này không?',
+                continueBtn: 'Tiếp Tục',
+                cancelBtn: 'Hủy',
                 ios1: 'Mở ứng dụng Locket và tìm tên người dùng trong cài đặt.',
                 ios2: 'Nhập chính xác tên người dùng vào ô trống bên trên.',
-                ios3: 'Nhấn <strong>Kiểm Tra Thông Tin</strong> để xác minh tài khoản.',
-                ios4: 'Kiểm tra lại thông tin và nhấn <strong>Tiếp Tục</strong> để được mở khóa Gold.',
-                ios5: '<strong>Quan trọng:</strong> Sau khi kích hoạt, bạn phải cài đặt profile cấu hình bên dưới để chặn thu hồi chứng chỉ.',
-                ios6: 'Khởi động lại Locket và tận hưởng.',
+                ios3: 'Nhấn <strong>Mở khóa Locket Gold</strong> để kích hoạt premium.',
+                ios4: '<strong>Quan trọng:</strong> Sau khi kích hoạt, bạn phải cài đặt profile cấu hình bên dưới để chặn thu hồi chứng chỉ.',
+                ios5: 'Khởi động lại Locket và tận hưởng.',
                 and1: 'Mở ứng dụng Locket và tìm tên người dùng trong cài đặt.',
-                and2: 'Nhấn <strong>Kiểm Tra Thông Tin</strong> để xác minh tài khoản.',
-                and3: 'Vào phần <strong>Cài đặt → Mạng & Internet</strong> trên thiết bị Android của bạn.',
-                and4: 'Nhấn vào <strong>DNS Cá nhân (Private DNS)</strong>.',
-                and5: 'Chọn <strong>Tên máy chủ của nhà cung cấp DNS Cá nhân</strong>.',
-                and6: 'Nhập tên máy chủ sau đây:',
-                and7: 'Nhấn <strong>Lưu</strong>.',
-                and8: 'Khởi động lại Locket và tận hưởng.'
+                and2: 'Nhập chính xác tên người dùng vào ô trống bên trên.',
+                and3: 'Nhấn <strong>Mở khóa Locket Gold</strong> để kích hoạt premium.',
+                and4: 'Vào phần <strong>Cài đặt → Mạng & Internet</strong> trên thiết bị Android của bạn.',
+                and5: 'Nhấn vào <strong>DNS Cá nhân (Private DNS)</strong>.',
+                and6: 'Chọn <strong>Tên máy chủ của nhà cung cấp DNS Cá nhân</strong>.',
+                and7: 'Nhập tên máy chủ sau đây:',
+                and8: 'Nhấn <strong>Lưu</strong>.',
+                and9: 'Khởi động lại Locket và tận hưởng.'
             }
         };
 
@@ -1842,13 +1601,60 @@
                 .catch(e => console.log('SW fail:', e));
         }
 
-        // ── Init new features on DOMContentLoaded ──
+        // ── Fetch Site Settings (from admin panel) ──
+        async function fetchSiteSettings() {
+            try {
+                const res = await fetch('/api/site-settings');
+                const data = await res.json();
+                if (!data.success) return;
+
+                // Announcement banner
+                const banner = document.getElementById('announcementBanner');
+                const bannerText = document.getElementById('announcementText');
+                if (data.announcement && data.announcement.trim()) {
+                    bannerText.textContent = data.announcement;
+                    banner.style.display = 'block';
+                } else {
+                    banner.style.display = 'none';
+                }
+
+                // Maintenance mode
+                const btn = document.getElementById('submitBtn');
+                const btnText = document.querySelector('.btn-text');
+                if (data.maintenance_mode) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btnText.textContent = currentLang === 'vi' ? '🔧 Đang Bảo Trì' : '🔧 Under Maintenance';
+                }
+
+                // Dynamic DNS hostname
+                if (data.dns_hostname) {
+                    const dnsEl = document.getElementById('dnsHostnameDisplay');
+                    if (dnsEl) dnsEl.textContent = data.dns_hostname;
+                }
+
+                // QR Donate
+                const qrSection = document.getElementById('qrDonateSection');
+                const qrImg = document.getElementById('qrDonateImg');
+                if (data.qr_donate_url && data.qr_donate_url.trim()) {
+                    qrImg.src = data.qr_donate_url;
+                    qrSection.style.display = 'block';
+                } else {
+                    qrSection.style.display = 'none';
+                }
+            } catch (e) { console.error('Site settings error:', e); }
+        }
+
+        // ── Initialization ──
         document.addEventListener('DOMContentLoaded', () => {
-            applyLang();
+            fetchSiteSettings();
             fetchActivityFeed();
-            setInterval(fetchActivityFeed, 30000);
             fetchRateLimit();
-            setInterval(fetchRateLimit, 15000);
+            applyLang();
+            setInterval(fetchSiteSettings, 30000);
+            setInterval(fetchActivityFeed, 15000);
+            setInterval(fetchRateLimit, 30000);
         });
     </script>
 
