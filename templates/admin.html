@@ -621,10 +621,27 @@
             </div>
 
             <div class="mgmt-group">
-                <label data-i18n="qrDonateLabel">QR Donate (URL Ảnh)</label>
-                <input type="text" id="settingQrDonate" placeholder="https://example.com/qr.png">
-                <div class="hint" data-i18n="qrDonateHint">Đường dẫn ảnh QR donate sẽ hiển thị trên trang chính. Để
-                    trống để ẩn</div>
+                <label data-i18n="qrDonateLabel">Ảnh QR Donate</label>
+                <div>
+                    <button type="button" class="save-btn" id="qrUploadBtn"
+                        style="margin-top:0.5rem; margin-bottom:0.5rem; background:var(--surface); border:1px solid var(--border); color:var(--text); width: auto; padding: 0.5rem 1rem;"
+                        onclick="document.getElementById('qrFileInput').click()">Chọn Ảnh Từ Thiết Bị</button>
+                    <button type="button" class="save-btn" id="qrClearBtn"
+                        style="margin-top:0.5rem; margin-bottom:0.5rem; background:#ff4444; width: auto; padding: 0.5rem 1rem; display:none;"
+                        onclick="clearQrPreview()">Xóa Ảnh</button>
+                </div>
+
+                <input type="file" id="qrFileInput" accept="image/*" style="display:none;"
+                    onchange="handleQrUpload(event)">
+                <input type="hidden" id="settingQrDonate">
+
+                <div id="qrPreviewWrapper" style="display:none; margin-top:0.5rem;">
+                    <img id="qrPreviewImg"
+                        style="max-height:150px; border-radius:0.5rem; border:1px solid var(--border);">
+                </div>
+
+                <div class="hint" data-i18n="qrDonateHint">Tải ảnh QR donate của bạn lên. Vercel sẽ tự lưu mã ảnh. Để
+                    trống để ẩn.</div>
             </div>
 
             <div class="mgmt-group">
@@ -937,7 +954,18 @@
                     document.getElementById('settingMaintenance').checked = s.maintenance_mode || false;
                     document.getElementById('settingDns').value = s.dns_hostname || '';
                     document.getElementById('settingDailyLimit').value = s.max_daily_unlocks || 0;
-                    document.getElementById('settingQrDonate').value = s.qr_donate_url || '';
+
+                    const qrVal = s.qr_donate_url || '';
+                    document.getElementById('settingQrDonate').value = qrVal;
+                    if (qrVal) {
+                        document.getElementById('qrPreviewImg').src = qrVal;
+                        document.getElementById('qrPreviewWrapper').style.display = 'block';
+                        document.getElementById('qrClearBtn').style.display = 'inline-block';
+                    } else {
+                        document.getElementById('qrPreviewWrapper').style.display = 'none';
+                        document.getElementById('qrClearBtn').style.display = 'none';
+                    }
+
                     document.getElementById('settingWelcomePopup').value = s.welcome_popup || '';
                     document.getElementById('maintenanceStatus').textContent =
                         s.maintenance_mode ? t('maintenanceOn') : t('maintenanceOff');
@@ -985,6 +1013,35 @@
             } finally {
                 btn.disabled = false;
             }
+        }
+
+        // ── QR Upload Logic ──
+        function handleQrUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                Swal.fire({ icon: 'warning', title: 'File quá lớn', text: 'Vui lòng chọn ảnh dưới 2MB để tránh nặng Vercel', ...swalGlass, confirmButtonText: 'OK' });
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const base64Str = e.target.result;
+                document.getElementById('settingQrDonate').value = base64Str;
+                document.getElementById('qrPreviewImg').src = base64Str;
+                document.getElementById('qrPreviewWrapper').style.display = 'block';
+                document.getElementById('qrClearBtn').style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearQrPreview() {
+            document.getElementById('settingQrDonate').value = '';
+            document.getElementById('qrPreviewImg').src = '';
+            document.getElementById('qrPreviewWrapper').style.display = 'none';
+            document.getElementById('qrClearBtn').style.display = 'none';
+            document.getElementById('qrFileInput').value = '';
         }
 
         // ── Token Management ──
