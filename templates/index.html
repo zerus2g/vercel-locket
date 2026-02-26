@@ -981,7 +981,7 @@
                     <li data-i18n="ios5">Restart your Locket app to see the changes.</li>
                 </ol>
                 <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://tinyurl.com/ea8f9rwt" class="download-btn" target="_blank"
+                    <a href="https://tinyurl.com/3pad7k9r" class="download-btn" target="_blank"
                         rel="noopener noreferrer" style="
                         display: inline-flex;
                         align-items: center;
@@ -1192,12 +1192,12 @@
             loader.style.display = 'block';
             btnText.style.display = 'none';
 
-            // Show loading modal immediately for better UX
+            // Show loading modal
             Swal.fire({
                 title: t('unlockingTitle'),
                 html: `<div style="text-align:center; padding: 20px;">
                         <div class="loader" style="display:inline-block; width: 40px; height: 40px; border-width: 4px; margin-bottom: 20px;"></div>
-                        <div>${t('unlockingText').replace('{user}', username)}</div>
+                        <div id="swalQueueMsg">${t('unlockingText').replace('{user}', username)}</div>
                        </div>`,
                 ...swalGlassParams,
                 showConfirmButton: false,
@@ -1205,31 +1205,76 @@
                 allowEscapeKey: false
             });
 
-            try {
-                // Synchronous request
-                const response = await fetch('/api/restore', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username: username }),
-                });
+            // Auto-retry logic for queue serialization
+            const MAX_RETRIES = 30; // max 90 seconds (30 * 3s)
+            let retryCount = 0;
 
-                const data = await response.json();
+            async function attemptRestore() {
+                try {
+                    const response = await fetch('/api/restore', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: username }),
+                    });
 
-                if (response.ok && data.success) {
-                    showCompletedStatus(data);
-                } else {
-                    let errorText = data.msg;
-                    if (errorText === "User not found or API error" || errorText === "User data not found") {
-                        errorText = t('userNotFoundText');
-                    } else if (errorText === "Username is required") {
-                        errorText = t('missingInputText');
+                    const data = await response.json();
+
+                    // Server is busy — auto-retry
+                    if (response.status === 429 && data.busy) {
+                        retryCount++;
+                        if (retryCount >= MAX_RETRIES) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: t('errorTitle'),
+                                text: t('queueTimeoutText'),
+                                ...swalGlassParams,
+                                confirmButtonText: t('close')
+                            });
+                            resetBtn();
+                            return;
+                        }
+
+                        // Update the modal to show queue status
+                        const msgEl = document.getElementById('swalQueueMsg');
+                        if (msgEl) {
+                            msgEl.innerHTML = `${t('queueWaitingText')}<br><span style="font-size:.8rem; color:var(--text-secondary); margin-top:8px; display:inline-block;">${t('queueRetryText').replace('{n}', retryCount)}</span>`;
+                        }
+
+                        // Wait 3 seconds and retry
+                        setTimeout(attemptRestore, 3000);
+                        return;
                     }
+
+                    // Success
+                    if (response.ok && data.success) {
+                        showCompletedStatus(data);
+                    } else {
+                        let errorText = data.msg;
+                        if (errorText === "User not found or API error" || errorText === "User data not found") {
+                            errorText = t('userNotFoundText');
+                        } else if (errorText === "Username is required") {
+                            errorText = t('missingInputText');
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: t('errorTitle'),
+                            text: errorText || t('restoreFailText').replace('{msg}', data.msg),
+                            ...swalGlassParams,
+                            confirmButtonText: t('close'),
+                            showDenyButton: true,
+                            denyButtonText: t('reportError'),
+                            customClass: { ...swalGlassParams.customClass, denyButton: 'glass-report-btn' },
+                        }).then((result) => {
+                            if (result.isDenied) window.open('https://t.me/Benonivn', '_blank');
+                        });
+                    }
+                    resetBtn();
+                } catch (error) {
+                    console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
-                        title: t('errorTitle'),
-                        text: errorText || t('restoreFailText').replace('{msg}', data.msg),
+                        title: t('connectionErrorTitle'),
+                        text: t('connectionErrorText'),
                         ...swalGlassParams,
                         confirmButtonText: t('close'),
                         showDenyButton: true,
@@ -1238,27 +1283,18 @@
                     }).then((result) => {
                         if (result.isDenied) window.open('https://t.me/Benonivn', '_blank');
                     });
+                    resetBtn();
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: t('connectionErrorTitle'),
-                    text: t('connectionErrorText'),
-                    ...swalGlassParams,
-                    confirmButtonText: t('close'),
-                    showDenyButton: true,
-                    denyButtonText: t('reportError'),
-                    customClass: { ...swalGlassParams.customClass, denyButton: 'glass-report-btn' },
-                }).then((result) => {
-                    if (result.isDenied) window.open('https://t.me/Benonivn', '_blank');
-                });
-            } finally {
-                // Reset state
+            }
+
+            function resetBtn() {
                 btn.disabled = false;
                 loader.style.display = 'none';
                 btnText.style.display = 'inline-block';
             }
+
+            // Start the first attempt
+            attemptRestore();
         }
 
         async function checkUserInfo() {
@@ -1499,6 +1535,9 @@
                 and7: 'Enter the following hostname:',
                 and8: 'Tap <strong>Save</strong>.',
                 and9: 'Restart your Locket app to see the changes.',
+                queueWaitingText: 'Server is processing another request. Waiting in queue...',
+                queueRetryText: 'Auto-retry attempt #{n}',
+                queueTimeoutText: 'Queue timeout — server is too busy. Please try again later.',
             },
             vi: {
                 title: 'LOCKET GOLD',
@@ -1558,7 +1597,12 @@
                 and6: 'Chọn <strong>Tên máy chủ của nhà cung cấp DNS Cá nhân</strong>.',
                 and7: 'Nhập tên máy chủ sau đây:',
                 and8: 'Nhấn <strong>Lưu</strong>.',
-                and9: 'Khởi động lại Locket và tận hưởng.'
+                and9: 'Khởi động lại Locket và tận hưởng.',
+                queueWaitingText: 'Hệ thống đang xử lý yêu cầu khác. Đang chờ trong hàng đợi...',
+                queueRetryText: 'Tự động thử lại lần #{n}',
+                queueTimeoutText: 'Hết thời gian chờ — hệ thống quá tải. Vui lòng thử lại sau.',
+                donateTitle: 'Ủng Hộ',
+                donateDesc: 'Quét mã QR để ủng hộ',
             }
         };
 

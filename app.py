@@ -7,6 +7,7 @@ import dotenv
 import os
 import time
 import json
+import threading
 from notifications import send_telegram_notification
 
 app = Flask(__name__)
@@ -82,6 +83,10 @@ class StatsTracker:
         }
 
 tracker = StatsTracker()
+
+# ── Restore Lock (Vercel-compatible serialization) ──
+restore_lock = threading.Lock()
+restore_busy = False  # Track if currently processing
 
 
 # ── In-Memory Site Settings (Admin-editable) ──
@@ -249,10 +254,23 @@ def change_password():
     return jsonify({"success": True, "msg": "Đổi mật khẩu thành công!"})
 
 
-# ── Restore Purchase (Synchronous 1-Click) ──
+# ── Queue Status (For frontend polling) ──
+@app.route("/api/queue-status", methods=["GET"])
+def queue_status():
+    """Return whether the server is currently processing a request."""
+    return jsonify({
+        "success": True,
+        "busy": restore_busy,
+        "status": "processing" if restore_busy else "idle"
+    })
+
+
+# ── Restore Purchase (Serialized 1-Click) ──
 @app.route("/api/restore", methods=["POST"])
 def restore_purchase():
-    """Synchronous Endpoint for Vercel (1-Click)"""
+    """Serialized Endpoint for Vercel — only 1 request at a time."""
+    global restore_busy
+
     # Check maintenance mode
     if site_settings.settings.get("maintenance_mode"):
         return jsonify({"success": False, "msg": "Hệ thống đang bảo trì. Vui lòng quay lại sau!"}), 503
@@ -274,7 +292,18 @@ def restore_purchase():
     if not username:
         return jsonify({"success": False, "msg": "Username is required"}), 400
 
+    # ── Serialize: Only 1 restore at a time ──
+    acquired = restore_lock.acquire(blocking=False)
+    if not acquired:
+        return jsonify({
+            "success": False,
+            "busy": True,
+            "msg": "Hệ thống đang xử lý yêu cầu khác. Vui lòng đợi..."
+        }), 429
+
     try:
+        restore_busy = True
+
         # 1. Scrape the UID from locket.cam silently
         print(f"Scraping UID for: {username}")
         account_info = api.getUserByUsername(username)
@@ -296,7 +325,9 @@ def restore_purchase():
         product_id = "locket_199_1m"
         try:
             entitlements = restore_result.get("subscriber", {}).get("entitlements", {})
-            if "gold" in entitlements:
+            if "Gold" in entitlements:
+                product_id = entitlements["Gold"].get("product_identifier", "locket_199_1m")
+            elif "gold" in entitlements:
                 product_id = entitlements["gold"].get("product_identifier", "locket_199_1m")
         except:
             pass
@@ -306,9 +337,9 @@ def restore_purchase():
         # Update stats
         tracker.add_success(username, product_id)
         
-        # Notification
+        # Notification (correct 4-param signature)
         try:
-            send_telegram_notification(f"✅ *Gold Unlocked!*\nUser: `{username}`\nProduct: `{product_id}`")
+            send_telegram_notification(username, uid, product_id, restore_result)
         except:
             pass
             
@@ -322,10 +353,14 @@ def restore_purchase():
         print(f"Error processing restore: {e}")
         tracker.add_error()
         try:
-            send_telegram_notification(f"❌ *Fail!*\nUser: `{username}`\nError: `{str(e)}`")
+            send_telegram_notification(username, "", "error", {"error": str(e)})
         except:
             pass
         return jsonify({"success": False, "msg": f"An error occurred: {str(e)}"}), 500
+
+    finally:
+        restore_busy = False
+        restore_lock.release()
 
 
 # ── Activity Feed ──
