@@ -14,9 +14,8 @@ from redis_store import site_settings, tracker
 app = Flask(__name__)
 dotenv.load_dotenv()
 
-# ── Admin Credentials Fallback ──
-_INIT_ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
-_INIT_ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
+# ── Session Config ──
+app.secret_key = os.getenv("SECRET_KEY", "locket-gold-default-secret-key-[SECRET_KEY_PLACEHOLDER]")
 
 subscription_ids = [
     "locket_1600_1y",
