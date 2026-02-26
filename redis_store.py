@@ -43,16 +43,33 @@ class RedisSiteSettings:
 
     @property
     def admin_username(self):
+        # 1. Check Store first (Redis or Memory Fallback)
+        data = self.settings
+        if "admin_username" in data:
+            return data["admin_username"]
+        # 2. Fallback to Env
         return os.environ.get("ADMIN_USERNAME", "admin")
+
+    @admin_username.setter
+    def admin_username(self, value):
+        s = self.settings
+        s["admin_username"] = value
+        self.settings = s
 
     @property
     def admin_password(self):
+        # 1. Check Store first (Redis or Memory Fallback)
+        data = self.settings
+        if "admin_password" in data:
+            return data["admin_password"]
+        # 2. Fallback to Env
         return os.environ.get("ADMIN_PASSWORD", "123456")
 
     @admin_password.setter
     def admin_password(self, value):
-        logger.warning("Vercel environment variables are read-only at runtime. Changing admin password won't persist across restarts. Please change it in Vercel Dashboard.")
-        os.environ["ADMIN_PASSWORD"] = value
+        s = self.settings
+        s["admin_password"] = value
+        self.settings = s
 
     @property
     def settings(self):
