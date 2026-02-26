@@ -8,6 +8,7 @@ import os
 import time
 import json
 import threading
+from datetime import datetime, timezone, timedelta
 from notifications import send_telegram_notification
 from redis_store import site_settings, tracker
 
@@ -199,7 +200,7 @@ def restore_purchase():
     # Check daily limit
     max_daily = site_settings.settings.get("max_daily_unlocks", 0)
     if max_daily > 0:
-        today = time.strftime("%Y-%m-%d")
+        today = datetime.now(timezone(timedelta(hours=7))).strftime("%Y-%m-%d")
         today_count = tracker.stats.get("daily_unlocks", {}).get(today, 0)
         if today_count >= max_daily:
             return jsonify({"success": False, "msg": f"Đã đạt giới hạn {max_daily} lần mở khóa trong ngày. Vui lòng quay lại ngày mai!"}), 429
@@ -304,10 +305,11 @@ def admin_stats():
         daily_chart.append({"date": d, "count": c})
         
     # Ensure at least today's data for the chart by padding with zero
+    vn_tz = timezone(timedelta(hours=7))
+    today = datetime.now(vn_tz).strftime("%Y-%m-%d")
     if not daily_chart:
-        daily_chart = [{"date": time.strftime("%Y-%m-%d"), "count": 0}]
+        daily_chart = [{"date": today, "count": 0}]
         
-    today = time.strftime("%Y-%m-%d")
     return jsonify({
         "success": True, 
         "total_unlocks": stats.get("total_unlocks", 0),

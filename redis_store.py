@@ -2,7 +2,7 @@ import os
 import json
 import time
 import redis
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import logging
 
 # Configure logger
@@ -148,7 +148,8 @@ class RedisStatsTracker:
             return self._mem_stats
 
     def add_success(self, username, product_id="locket_199_1m"):
-        today = time.strftime("%Y-%m-%d")
+        vn_tz = timezone(timedelta(hours=7))
+        today = datetime.now(vn_tz).strftime("%Y-%m-%d")
         
         if not redis_client:
             self._mem_stats["total_unlocks"] += 1
@@ -157,7 +158,7 @@ class RedisStatsTracker:
             self._mem_activity.insert(0, {
                 "username": username,
                 "product_id": product_id,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now(vn_tz).isoformat()
             })
             self._mem_activity = self._mem_activity[:20]
             return
@@ -171,7 +172,7 @@ class RedisStatsTracker:
             activity = json.dumps({
                 "username": username,
                 "product_id": product_id,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now(vn_tz).isoformat()
             })
             redis_client.lpush(self.ACTIVITY_KEY, activity)
             
