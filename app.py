@@ -9,14 +9,12 @@ import time
 import json
 import threading
 from notifications import send_telegram_notification
+from redis_store import site_settings, tracker
 
 app = Flask(__name__)
 dotenv.load_dotenv()
 
-# ── Session Config ──
-app.secret_key = os.getenv("SECRET_KEY", "locket-gold-default-secret-key-change-me")
-
-# ── Admin Credentials (initial values from .env, stored in SiteSettings) ──
+# ── Admin Credentials Fallback ──
 _INIT_ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 _INIT_ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
@@ -30,89 +28,9 @@ subscription_ids = [
 
 api = LocketAPI()
 
-# ── In-Memory Stats Tracker (Vercel Serverless Compatible) ──
-class StatsTracker:
-    def __init__(self):
-        self.stats = {
-            "total_unlocks": 0,
-            "daily_unlocks": {},
-            "errors": 0,
-            "start_time": time.time()
-        }
-        self.recent_activity = []
-        self.max_activity = 10
-
-    def add_success(self, username, product_id):
-        self.stats["total_unlocks"] += 1
-        
-        today = time.strftime("%Y-%m-%d")
-        self.stats["daily_unlocks"][today] = self.stats["daily_unlocks"].get(today, 0) + 1
-        
-        activity = {
-            "username": username,
-            "timestamp": int(time.time() * 1000),
-            "product_id": product_id,
-            "status": "success"
-        }
-        self.recent_activity.insert(0, activity)
-        if len(self.recent_activity) > self.max_activity:
-            self.recent_activity.pop()
-
-    def add_error(self):
-        self.stats["errors"] += 1
-
-    def get_recent(self):
-        return self.recent_activity
-
-    def get_admin_stats(self):
-        today = time.strftime("%Y-%m-%d")
-        today_unlocks = self.stats["daily_unlocks"].get(today, 0)
-        
-        daily_chart = []
-        for d, count in sorted(self.stats["daily_unlocks"].items())[-7:]:
-            daily_chart.append({"date": d, "count": count})
-            
-        return {
-            "total_unlocks": self.stats["total_unlocks"],
-            "today_unlocks": today_unlocks,
-            "total_errors": self.stats["errors"],
-            "queue_size": 0,
-            "avg_processing_time": 0,
-            "daily_chart": daily_chart,
-            "uptime_seconds": int(time.time() - self.stats["start_time"])
-        }
-
-tracker = StatsTracker()
-
 # ── Restore Lock (Vercel-compatible serialization) ──
 restore_lock = threading.Lock()
 restore_busy = False  # Track if currently processing
-
-
-# ── In-Memory Site Settings (Admin-editable) ──
-class SiteSettings:
-    def __init__(self):
-        self.settings = {
-            "announcement": "",
-            "maintenance_mode": False,
-            "dns_hostname": "ff384a.dns.nextdns.io",
-            "max_daily_unlocks": 0,
-            "qr_donate_url": "",
-            "welcome_popup": "",           # Popup khi truy cập trang (để trống = tắt)
-        }
-        # Admin credentials stored here so they're mutable from one object
-        self.admin_username = _INIT_ADMIN_USERNAME
-        self.admin_password = _INIT_ADMIN_PASSWORD
-
-    def get_all(self):
-        return self.settings.copy()
-
-    def update(self, new_settings):
-        for key in self.settings:
-            if key in new_settings:
-                self.settings[key] = new_settings[key]
-
-site_settings = SiteSettings()
 
 
 # ── Auth Decorator ──
@@ -166,7 +84,7 @@ def admin_check():
 @app.route("/api/admin/settings", methods=["GET"])
 @admin_required
 def get_admin_settings():
-    return jsonify({"success": True, "settings": site_settings.get_all()})
+    return jsonify({"success": True, "settings": site_settings.settings})
 
 @app.route("/api/admin/settings", methods=["POST"])
 @admin_required
@@ -174,22 +92,26 @@ def update_admin_settings():
     data = request.json
     if not data:
         return jsonify({"success": False, "msg": "No data provided"}), 400
-    site_settings.update(data)
-    return jsonify({"success": True, "msg": "Cài đặt đã được lưu!", "settings": site_settings.get_all()})
+    
+    current = site_settings.settings
+    current.update(data)
+    site_settings.settings = current
+    
+    return jsonify({"success": True, "msg": "Cài đặt đã được lưu!", "settings": site_settings.settings})
 
 
 # ── Public Site Settings (read-only, for index.html) ──
 @app.route("/api/site-settings", methods=["GET"])
 def public_site_settings():
     """Return public-facing site settings (announcement, maintenance, dns)."""
-    s = site_settings.get_all()
+    s = site_settings.settings
     return jsonify({
         "success": True,
-        "announcement": s["announcement"],
-        "maintenance_mode": s["maintenance_mode"],
-        "dns_hostname": s["dns_hostname"],
-        "qr_donate_url": s["qr_donate_url"],
-        "welcome_popup": s["welcome_popup"],
+        "announcement": s.get("announcement", ""),
+        "maintenance_mode": s.get("maintenance_mode", False),
+        "dns_hostname": s.get("dns_hostname", ""),
+        "qr_donate_url": s.get("qr_donate_url", ""),
+        "welcome_popup": s.get("welcome_popup", ""),
     })
 
 
@@ -279,7 +201,7 @@ def restore_purchase():
     max_daily = site_settings.settings.get("max_daily_unlocks", 0)
     if max_daily > 0:
         today = time.strftime("%Y-%m-%d")
-        today_count = tracker.stats["daily_unlocks"].get(today, 0)
+        today_count = tracker.stats.get("daily_unlocks", {}).get(today, 0)
         if today_count >= max_daily:
             return jsonify({"success": False, "msg": f"Đã đạt giới hạn {max_daily} lần mở khóa trong ngày. Vui lòng quay lại ngày mai!"}), 429
 
@@ -373,8 +295,29 @@ def recent_activity():
 @app.route("/api/admin/stats", methods=["GET"])
 @admin_required
 def admin_stats():
-    """Return in-memory admin stats."""
-    return jsonify({"success": True, **tracker.get_admin_stats()})
+    """Return admin stats retrieved from Redis."""
+    stats = tracker.stats
+    
+    # Format daily unlocks for charts
+    daily_chart = []
+    daily_unlocks = stats.get("daily_unlocks", {})
+    for d, c in sorted(daily_unlocks.items()):
+        daily_chart.append({"date": d, "count": c})
+        
+    # Ensure at least today's data for the chart by padding with zero
+    if not daily_chart:
+        daily_chart = [{"date": time.strftime("%Y-%m-%d"), "count": 0}]
+        
+    today = time.strftime("%Y-%m-%d")
+    return jsonify({
+        "success": True, 
+        "total_unlocks": stats.get("total_unlocks", 0),
+        "today_unlocks": daily_unlocks.get(today, 0),
+        "total_errors": stats.get("total_errors", 0),
+        "avg_processing_time": 0,
+        "daily_chart": daily_chart,
+        "uptime_seconds": int(tracker.get_uptime())
+    })
 
 # ── Rate Limit ──
 @app.route("/api/rate-limit", methods=["GET"])
