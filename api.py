@@ -96,6 +96,7 @@ class LocketAPI:
 
         # Select random payload config
         token_config = random.choice(tokens)
+        token_name = token_config.get('name', 'Unknown')
         
         fetch_token = token_config.get('fetch_token')
         app_transaction = token_config.get('app_transaction')
