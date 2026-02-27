@@ -297,10 +297,16 @@ def restore_purchase():
         })
 
     except Exception as e:
-        print(f"Error processing restore: {e}")
-        tracker.add_error()
+        # Update stats and error log
+        error_msg = str(e)
+        used_token = "Unknown"
+        # Try to extract token name if it was injected before the crash
+        if 'token_name' in locals():
+            used_token = locals()['token_name']
+            
+        tracker.add_error(username=username, error_msg=error_msg, used_token=used_token)
         try:
-            send_telegram_notification(username, "", "error", {"error": str(e)})
+            send_telegram_notification(username, "", "error", {"error": error_msg, "__used_token_name": used_token})
         except:
             pass
         return jsonify({"success": False, "msg": f"An error occurred: {str(e)}"}), 500

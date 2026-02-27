@@ -159,6 +159,7 @@ class RedisStatsTracker:
                 "username": username,
                 "product_id": product_id,
                 "used_token": used_token,
+                "status": "success",
                 "timestamp": datetime.now(vn_tz).isoformat()
             })
             self._mem_activity = self._mem_activity[:20]
@@ -174,6 +175,7 @@ class RedisStatsTracker:
                 "username": username,
                 "product_id": product_id,
                 "used_token": used_token,
+                "status": "success",
                 "timestamp": datetime.now(vn_tz).isoformat()
             })
             redis_client.lpush(self.ACTIVITY_KEY, activity)
@@ -184,13 +186,33 @@ class RedisStatsTracker:
         except Exception as e:
             logger.error(f"Redis add_success error: {e}")
 
-    def add_error(self):
+    def add_error(self, username="Unknown", error_msg="Unknown Error", used_token="Unknown"):
+        vn_tz = timezone(timedelta(hours=7))
         if not redis_client:
             self._mem_stats["total_errors"] += 1
+            
+            self._mem_activity.insert(0, {
+                "username": username,
+                "product_id": error_msg,
+                "used_token": used_token,
+                "status": "error",
+                "timestamp": datetime.now(vn_tz).isoformat()
+            })
+            self._mem_activity = self._mem_activity[:20]
             return
             
         try:
             redis_client.hincrby(self.STATS_KEY, "total_errors", 1)
+            
+            activity = json.dumps({
+                "username": username,
+                "product_id": error_msg,
+                "used_token": used_token,
+                "status": "error",
+                "timestamp": datetime.now(vn_tz).isoformat()
+            })
+            redis_client.lpush(self.ACTIVITY_KEY, activity)
+            redis_client.ltrim(self.ACTIVITY_KEY, 0, 19)
         except Exception as e:
             logger.error(f"Redis add_error error: {e}")
 

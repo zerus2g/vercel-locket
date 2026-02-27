@@ -1252,14 +1252,30 @@
                 list.innerHTML = data.activity.map(a => {
                     const time = new Date(a.timestamp);
                     const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    return `<li class="activity-item" style="flex-wrap: wrap;">
-                        <span class="activity-user">@${a.username}</span>
-                        <span class="activity-plan">${a.product_id}</span>
-                        <span class="activity-time">${timeStr}</span>
-                        <div style="flex-basis: 100%; font-size: 0.75rem; color: var(--text2); margin-top: 5px; text-align: center; background: rgba(0,255,255,.05); padding: 2px; border-radius: 4px;">
-                            🔑 Token: <span style="color:var(--primary)">${a.used_token || 'Unknown'}</span>
-                        </div>
-                    </li>`;
+
+                    if (a.status === 'error') {
+                        return `<li class="activity-item" style="flex-wrap: wrap; border-left: 3px solid var(--danger); padding-left: 10px; background: rgba(255,0,0,0.02)">
+                            <div style="display:flex; justify-content:space-between; width:100%;">
+                                <span class="activity-user" style="color:var(--danger)">@${a.username}</span>
+                                <span class="activity-time">${timeStr}</span>
+                            </div>
+                            <div style="flex-basis: 100%; font-size: 0.75rem; color: #ff9999; margin-top: 5px; word-break: break-all;">
+                                ⚠️ Lỗi: ${a.product_id}
+                            </div>
+                            <div style="flex-basis: 100%; font-size: 0.75rem; color: var(--text2); margin-top: 5px; text-align: center; background: rgba(255,0,0,.05); padding: 2px; border-radius: 4px;">
+                                🔑 Token: <span style="color:#ffcccc">${a.used_token || 'Unknown'}</span>
+                            </div>
+                        </li>`;
+                    } else {
+                        return `<li class="activity-item" style="flex-wrap: wrap;">
+                            <span class="activity-user">@${a.username}</span>
+                            <span class="activity-plan">${a.product_id}</span>
+                            <span class="activity-time">${timeStr}</span>
+                            <div style="flex-basis: 100%; font-size: 0.75rem; color: var(--text2); margin-top: 5px; text-align: center; background: rgba(0,255,255,.05); padding: 2px; border-radius: 4px;">
+                                🔑 Token: <span style="color:var(--primary)">${a.used_token || 'Unknown'}</span>
+                            </div>
+                        </li>`;
+                    }
                 }).join('');
             } catch (e) { console.error('Activity fetch error:', e); }
         }
