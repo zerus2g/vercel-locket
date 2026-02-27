@@ -1896,6 +1896,8 @@
         }
 
         // ── Fetch Site Settings (from admin panel) ──
+        let welcomeShownThisSession = false;
+
         async function fetchSiteSettings() {
             try {
                 const res = await fetch('/api/site-settings');
@@ -1938,9 +1940,9 @@
                     qrSection.style.display = 'none';
                 }
 
-                // Welcome popup (once per session)
-                if (data.welcome_popup && data.welcome_popup.trim() && !sessionStorage.getItem('welcomeShown')) {
-                    sessionStorage.setItem('welcomeShown', '1');
+                // Welcome popup (once per page load)
+                if (data.welcome_popup && data.welcome_popup.trim() && !welcomeShownThisSession) {
+                    welcomeShownThisSession = true;
 
                     const swalConfig = {
                         icon: 'info',
