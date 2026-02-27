@@ -278,7 +278,11 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+
+            /* Enable 3D Tilt Effect */
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease;
         }
 
         .container:hover {
@@ -315,6 +319,21 @@
             background-clip: padding-box;
             background-image: var(--primary-gradient);
             padding: 2px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         .app-icon img {
@@ -338,6 +357,34 @@
             z-index: 1;
             text-transform: uppercase;
             text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            animation: glitch-anim 4s infinite;
+        }
+
+        @keyframes glitch-anim {
+
+            0%,
+            94%,
+            98%,
+            100% {
+                transform: translate(0) skew(0deg);
+                opacity: 1;
+            }
+
+            95% {
+                transform: translate(-2px, 2px) skew(5deg);
+                opacity: 0.8;
+            }
+
+            96% {
+                transform: translate(2px, -2px) skew(-5deg);
+                opacity: 0.9;
+            }
+
+            97% {
+                transform: translate(0px, 0px) skew(0deg);
+                opacity: 1;
+                text-shadow: -2px 0 red, 2px 0 cyan;
+            }
         }
 
         p.subtitle {
@@ -1101,6 +1148,76 @@
             background: rgba(255, 70, 70, 0.4) !important;
             transform: translateY(-1px) !important;
         }
+
+        /* ── Hacker Overlay ── */
+        .hacker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 999999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            font-family: 'Courier New', Courier, monospace;
+            color: #00ff00;
+        }
+
+        .hacker-terminal {
+            width: 90%;
+            max-width: 600px;
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+            text-align: left;
+        }
+
+        .hacker-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .hacker-progress-container {
+            width: 100%;
+            height: 20px;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .hacker-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #00ff00;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -1110,6 +1227,22 @@
     <div class="aurora-bg"></div>
     <!-- Floating Particles -->
     <canvas id="particlesCanvas"></canvas>
+
+    <!-- Hacker Terminal Overlay -->
+    <div class="hacker-overlay" id="hackerOverlay">
+        <div class="hacker-terminal">
+            <div
+                style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(0,255,0,0.5); padding-bottom:10px; margin-bottom:15px; font-weight:bold; font-size:0.9rem;">
+                <span>root@locket-exploit:~# ./inject_gold.sh</span>
+                <span class="cursor-blink">_</span>
+            </div>
+            <div class="hacker-text" id="hackerText"></div>
+            <div style="font-size:0.8rem; margin-bottom:5px; color:rgba(0,255,0,0.7);">PAYLOAD UPLOAD PROGRESS:</div>
+            <div class="hacker-progress-container">
+                <div class="hacker-progress-bar" id="hackerProgressBar"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Live Server Status LED -->
     <div class="server-status-led" id="serverLed">
@@ -1403,6 +1536,41 @@
             btn.disabled = true;
             loader.style.display = 'block';
             btnText.style.display = 'none';
+
+            // Show Hacker Overlay Fake Loading
+            const hackerOverlay = document.getElementById('hackerOverlay');
+            const hackerText = document.getElementById('hackerText');
+            const hackerProgressBar = document.getElementById('hackerProgressBar');
+
+            if (hackerOverlay) {
+                hackerOverlay.style.display = 'flex';
+                hackerText.innerHTML = '';
+                hackerProgressBar.style.width = '0%';
+
+                const lines = [
+                    "> Initializing Locket Gold protocol bypass...",
+                    "> Establishing secure connection to target server...",
+                    "> Translating user ID for: @" + username + "...",
+                    "> Target validated. Calculating memory offset...",
+                    "> Injecting premium token payload...",
+                    "> Waiting for server-side cryptographic validation...",
+                    "> Bypassing security checks... (2/3)"
+                ];
+
+                for (let i = 0; i < lines.length; i++) {
+                    // Random delay between 300ms and 700ms simulating processing
+                    await new Promise(r => setTimeout(r, 300 + Math.random() * 400));
+                    hackerText.innerHTML += lines[i] + "\n";
+                    hackerProgressBar.style.width = ((i + 1) / lines.length * 100) + '%';
+                }
+
+                await new Promise(r => setTimeout(r, 600));
+                hackerText.innerHTML += "> Payload injected successfully. Preparing connection lock... <span class='cursor-blink'>█</span>";
+                await new Promise(r => setTimeout(r, 800));
+
+                // Hide overlay and show normal SWAL loading
+                hackerOverlay.style.display = 'none';
+            }
 
             // Show loading modal
             Swal.fire({
@@ -1978,6 +2146,17 @@
             let particles = [];
             const PARTICLE_COUNT = 35;
 
+            // Interactive mouse tracking
+            let mouse = { x: null, y: null, radius: 100 };
+            window.addEventListener('mousemove', function (e) {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+            window.addEventListener('mouseout', function () {
+                mouse.x = null;
+                mouse.y = null;
+            });
+
             function resize() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -2002,6 +2181,21 @@
                     this.opacity += (Math.random() - 0.5) * 0.01;
                     this.opacity = Math.max(0.05, Math.min(0.5, this.opacity));
                     if (this.x < -10 || this.x > canvas.width + 10 || this.y < -10 || this.y > canvas.height + 10) this.reset();
+
+                    // Mouse Interaction
+                    if (mouse.x != null && mouse.y != null) {
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < mouse.radius) {
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const force = (mouse.radius - distance) / mouse.radius;
+                            const maxDist = 3; // repel intensity
+                            this.x -= forceDirectionX * force * maxDist;
+                            this.y -= forceDirectionY * force * maxDist;
+                        }
+                    }
                 }
                 draw() {
                     ctx.beginPath();
@@ -2021,6 +2215,19 @@
                 requestAnimationFrame(animate);
             }
             animate();
+        }
+
+        function initTiltEffect() {
+            const container = document.querySelector('.container');
+            if (!container) return;
+            document.addEventListener('mousemove', (e) => {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 40; // Max rotation
+                const yAxis = (window.innerHeight / 2 - e.pageY) / -30;
+                container.style.transform = `perspective(1000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+            container.addEventListener('mouseleave', () => {
+                container.style.transform = `perspective(1000px) rotateY(0deg) rotateX(0deg)`;
+            });
         }
 
         // ══════════════════════════════════════════════
@@ -2143,6 +2350,7 @@
 
             // NEW: UI/UX Modules
             initParticles();
+            initTiltEffect();
             initRipple();
             initNeonInput();
             pollServerStatus();
