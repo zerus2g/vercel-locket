@@ -111,6 +111,7 @@ def public_site_settings():
         "dns_hostname": s.get("dns_hostname", ""),
         "qr_donate_url": s.get("qr_donate_url", ""),
         "welcome_popup": s.get("welcome_popup", ""),
+        "telegram_group_link": s.get("telegram_group_link", "https://t.me/Benonivn"),
     })
 
 

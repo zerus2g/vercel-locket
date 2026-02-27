@@ -702,6 +702,13 @@
             <div class="hint" data-i18n="welcomePopupHint">Để trống để tắt pop-up chào mừng</div>
         </div>
 
+        <div class="mgmt-group">
+            <label data-i18n="telegramLinkLabel">Link Nhóm Telegram (Popup)</label>
+            <input type="text" id="settingTelegramLink" placeholder="https://t.me/yourgroup">
+            <div class="hint" data-i18n="telegramLinkHint">Sẽ hiển thị thành Nút chuyển tiếp cạnh Nút Đã Hiểu của Popup
+                Chào mừng.</div>
+        </div>
+
         <button class="save-btn" id="saveBtn" onclick="saveSettings()" data-i18n="saveBtn">Lưu Cài Đặt</button>
     </div>
 
@@ -802,6 +809,8 @@
                 qrDonateHint: 'Image URL for the QR donation code shown on the main page. Leave empty to hide',
                 welcomePopupLabel: 'Welcome Popup',
                 welcomePopupHint: 'Leave empty to disable the welcome popup',
+                telegramLinkLabel: 'Telegram Group Link',
+                telegramLinkHint: 'Will be shown as a Join button next to the Got It button on the Welcome Popup.',
                 tokenTitle: '🔑 Token Management',
                 tokenCountLabel: 'Current Tokens',
                 addTokenLabel: 'Add / Update Token',
@@ -857,6 +866,8 @@
                 qrDonateHint: 'Đường dẫn ảnh QR donate sẽ hiển thị trên trang chính. Để trống để ẩn',
                 welcomePopupLabel: 'Pop-up Chào Mừng',
                 welcomePopupHint: 'Để trống để tắt pop-up chào mừng',
+                telegramLinkLabel: 'Link Nhóm Telegram (Popup)',
+                telegramLinkHint: 'Sẽ hiển thị thành Nút chuyển tiếp cạnh Nút Đã Hiểu của Popup Chào mừng.',
                 tokenTitle: '🔑 Quản Lý Token',
                 tokenCountLabel: 'Số Token Hiện Tại',
                 addTokenLabel: 'Thêm / Cập Nhật Token',
@@ -1015,6 +1026,7 @@
                     }
 
                     document.getElementById('settingWelcomePopup').value = s.welcome_popup || '';
+                    document.getElementById('settingTelegramLink').value = s.telegram_group_link || '';
                     document.getElementById('maintenanceStatus').textContent =
                         s.maintenance_mode ? t('maintenanceOn') : t('maintenanceOff');
                 }
@@ -1032,6 +1044,7 @@
                 max_daily_unlocks: parseInt(document.getElementById('settingDailyLimit').value) || 0,
                 qr_donate_url: document.getElementById('settingQrDonate').value.trim(),
                 welcome_popup: document.getElementById('settingWelcomePopup').value,
+                telegram_group_link: document.getElementById('settingTelegramLink').value.trim(),
             };
 
             try {

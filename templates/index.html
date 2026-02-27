@@ -1941,12 +1941,26 @@
                 // Welcome popup (once per session)
                 if (data.welcome_popup && data.welcome_popup.trim() && !sessionStorage.getItem('welcomeShown')) {
                     sessionStorage.setItem('welcomeShown', '1');
-                    Swal.fire({
+
+                    const swalConfig = {
                         icon: 'info',
                         title: currentLang === 'vi' ? '👋 Chào Mừng!' : '👋 Welcome!',
                         html: `<div style="white-space:pre-wrap; text-align:left; line-height:1.6;">${data.welcome_popup}</div>`,
                         ...swalGlassParams,
                         confirmButtonText: currentLang === 'vi' ? 'Đã Hiểu' : 'Got It'
+                    };
+
+                    if (data.telegram_group_link && data.telegram_group_link.trim()) {
+                        swalConfig.showCancelButton = true;
+                        swalConfig.cancelButtonText = currentLang === 'vi' ? 'Tham gia Nhóm Telegram' : 'Join Telegram Group';
+                        // Switch buttons position: Telegram on right, Got it on left (optional, or rely on reverseButtons)
+                        swalConfig.reverseButtons = true;
+                    }
+
+                    Swal.fire(swalConfig).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.cancel && data.telegram_group_link) {
+                            window.open(data.telegram_group_link, '_blank');
+                        }
                     });
                 }
             } catch (e) { console.error('Site settings error:', e); }
