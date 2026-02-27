@@ -251,6 +251,15 @@ class RedisTokenStore:
         self.save_tokens(current_tokens)
         return current_tokens
 
+    def delete_token(self, token_name):
+        """Delete a token by its name."""
+        tokens = self.get_tokens()
+        updated_tokens = [t for t in tokens if t.get("name") != token_name]
+        if len(tokens) != len(updated_tokens):
+            self.save_tokens(updated_tokens)
+            return True
+        return False
+
     def clear_tokens(self):
         """Clear all tokens except fallback memory."""
         self._mem_tokens = []

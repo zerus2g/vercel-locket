@@ -1060,8 +1060,9 @@
                         list.innerHTML = '<div style="color:var(--text2); font-size:.85rem;">No tokens configured</div>';
                     } else {
                         list.innerHTML = data.tokens.map((tok, i) => `
-                            <div style="margin-bottom:.8rem; padding:.8rem; background:rgba(0,255,255,.03); border:1px solid rgba(0,255,255,.1); border-radius:.5rem;">
-                                <div style="font-weight:600; color:var(--primary); margin-bottom:.3rem;">${tok.name}</div>
+                            <div style="margin-bottom:.8rem; padding:.8rem; background:rgba(0,255,255,.03); border:1px solid rgba(0,255,255,.1); border-radius:.5rem; position:relative;">
+                                <div style="font-weight:600; color:var(--primary); margin-bottom:.3rem; padding-right:60px;">${tok.name}</div>
+                                <button onclick="deleteToken('${tok.name}')" style="position:absolute; top:10px; right:10px; background:var(--danger); border:none; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">Xóa</button>
                                 <div style="font-size:.75rem; color:var(--text2); word-break:break-all;">fetch_token: ${tok.fetch_token}</div>
                                 <div style="font-size:.75rem; color:var(--text2); word-break:break-all; margin-top:.2rem;">app_transaction: ${tok.app_transaction}</div>
                             </div>
@@ -1111,6 +1112,26 @@
                 }
             } catch (e) {
                 Swal.fire({ icon: 'error', title: t('tokenFail'), ...swalGlass, confirmButtonText: 'OK' });
+            }
+        }
+
+        async function deleteToken(name) {
+            if (!confirm(`Bạn có chắc muốn xóa token '${name}'?`)) return;
+            try {
+                const res = await fetch(`/api/admin/tokens/${name}`, { method: 'DELETE' });
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? 'Thành công' : 'Thất bại',
+                    text: data.msg || '',
+                    ...swalGlass, confirmButtonText: 'OK'
+                });
+                if (data.success) {
+                    loadTokens();
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Lỗi', text: e.message, ...swalGlass, confirmButtonText: 'OK' });
             }
         }
 

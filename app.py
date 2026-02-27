@@ -166,6 +166,16 @@ def clear_tokens():
     token_store.clear_tokens()
     return jsonify({"success": True, "msg": "Đã xóa toàn bộ Token thành công!"})
 
+@app.route("/api/admin/tokens/<token_name>", methods=["DELETE"])
+@admin_required
+def delete_token(token_name):
+    """Delete a specific token by name from Redis."""
+    success = token_store.delete_token(token_name)
+    if success:
+        return jsonify({"success": True, "msg": f"Đã xóa Token '{token_name}' thành công!"})
+    else:
+        return jsonify({"success": False, "msg": f"Không tìm thấy Token '{token_name}'"}), 404
+
 
 # ── Change Admin Password (Protected) ──
 @app.route("/api/admin/change-password", methods=["POST"])
