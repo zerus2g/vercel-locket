@@ -10,7 +10,7 @@ import json
 import threading
 from datetime import datetime, timezone, timedelta
 from notifications import send_telegram_notification
-from redis_store import site_settings, tracker
+from redis_store import site_settings, tracker, token_store
 
 app = Flask(__name__)
 dotenv.load_dotenv()
@@ -121,19 +121,20 @@ def public_site_settings():
 def get_tokens():
     """Return current TOKEN_SETS (sanitized for display)."""
     tokens = []
-    for t in config.TOKEN_SETS:
+    tokens_list = token_store.get_tokens()
+    for t in tokens_list:
         tokens.append({
             "name": t.get("name", "Unnamed"),
             "fetch_token": t.get("fetch_token", "")[:80] + "..." if len(t.get("fetch_token", "")) > 80 else t.get("fetch_token", ""),
             "app_transaction": t.get("app_transaction", "")[:80] + "..." if len(t.get("app_transaction", "")) > 80 else t.get("app_transaction", ""),
             "is_sandbox": t.get("is_sandbox", False),
         })
-    return jsonify({"success": True, "tokens": tokens, "count": len(config.TOKEN_SETS)})
+    return jsonify({"success": True, "tokens": tokens, "count": len(tokens_list)})
 
 @app.route("/api/admin/tokens", methods=["POST"])
 @admin_required
-def update_tokens():
-    """Update TOKEN_SETS at runtime."""
+def append_tokens():
+    """Append new tokens at runtime via Redis."""
     data = request.json
     if not data or "tokens" not in data:
         return jsonify({"success": False, "msg": "No token data provided"}), 400
@@ -142,16 +143,28 @@ def update_tokens():
     if not isinstance(new_tokens, list) or len(new_tokens) == 0:
         return jsonify({"success": False, "msg": "tokens must be a non-empty list"}), 400
     
+    from config import TOKEN_SETS
+    default_app_tx = TOKEN_SETS[0].get("app_transaction") if TOKEN_SETS else ""
+
     # Validate each token
     for i, tok in enumerate(new_tokens):
+        if not tok.get("app_transaction"):
+            tok["app_transaction"] = default_app_tx
+            
         if not tok.get("fetch_token") or not tok.get("app_transaction"):
             return jsonify({"success": False, "msg": f"Token #{i+1} thiếu fetch_token hoặc app_transaction"}), 400
     
-    # Replace in-memory TOKEN_SETS
-    config.TOKEN_SETS.clear()
-    config.TOKEN_SETS.extend(new_tokens)
+    # Append to Redis
+    current_tokens = token_store.append_tokens(new_tokens)
     
-    return jsonify({"success": True, "msg": f"Đã cập nhật {len(new_tokens)} token(s) thành công!", "count": len(new_tokens)})
+    return jsonify({"success": True, "msg": f"Đã thêm {len(new_tokens)} token(s) thành công!", "count": len(current_tokens)})
+
+@app.route("/api/admin/tokens/clear", methods=["DELETE"])
+@admin_required
+def clear_tokens():
+    """Clear all tokens from Redis."""
+    token_store.clear_tokens()
+    return jsonify({"success": True, "msg": "Đã xóa toàn bộ Token thành công!"})
 
 
 # ── Change Admin Password (Protected) ──

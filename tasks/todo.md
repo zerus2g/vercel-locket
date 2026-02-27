@@ -4,6 +4,11 @@
 _None_
 
 ## Completed Tasks
+### Sửa lỗi Lưu Trữ nhiều Token trên Vercel
+- [x] Cập nhật `redis_store.py`: Thêm `RedisTokenStore`.
+- [x] Cập nhật `app.py`: Sửa API Load/Save Token dùng mảng Append array trên Redis.
+- [x] Cập nhật `api.py`: Import RedisTokenStore và Random từ đó.
+- [x] Cập nhật `admin.html`: Sửa JS Append token thay vì đè & Nút Clear Token.
 
 ### Tính năng mới: Upload Ảnh QR Donate
 - [x] Sửa `admin.html`: Thay thẻ text input thành thẻ `<input type="file">`

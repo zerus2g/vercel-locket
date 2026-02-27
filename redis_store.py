@@ -203,6 +203,65 @@ class RedisStatsTracker:
             logger.error(f"Redis get_recent error: {e}")
             return self._mem_activity[:limit]
 
+# --- TOKEN STORE ---
+class RedisTokenStore:
+    """
+    Manages fetch tokens using Redis list. Falls back to in-memory list if Redis is unavailable.
+    """
+    TOKENS_KEY = "locket_admin:fetch_tokens"
+
+    def __init__(self):
+        from config import TOKEN_SETS
+        self._mem_tokens = list(TOKEN_SETS)
+
+    def get_tokens(self):
+        """Get list of token dicts."""
+        if not redis_client:
+            return self._mem_tokens
+            
+        try:
+            tokens_json = redis_client.get(self.TOKENS_KEY)
+            if tokens_json:
+                return json.loads(tokens_json)
+            else:
+                # If missing, populate from config
+                from config import TOKEN_SETS
+                default_tokens = list(TOKEN_SETS)
+                self.save_tokens(default_tokens)
+                return default_tokens
+        except Exception as e:
+            logger.error(f"Redis get_tokens error: {e}")
+            return self._mem_tokens
+
+    def save_tokens(self, tokens_list):
+        """Save list of token dicts."""
+        if not redis_client:
+            self._mem_tokens = tokens_list
+            return
+            
+        try:
+            redis_client.set(self.TOKENS_KEY, json.dumps(tokens_list))
+        except Exception as e:
+            logger.error(f"Redis save_tokens error: {e}")
+
+    def append_tokens(self, new_tokens):
+        """Append new tokens to list."""
+        current_tokens = self.get_tokens()
+        current_tokens.extend(new_tokens)
+        self.save_tokens(current_tokens)
+        return current_tokens
+
+    def clear_tokens(self):
+        """Clear all tokens except fallback memory."""
+        self._mem_tokens = []
+        if redis_client:
+            try:
+                redis_client.delete(self.TOKENS_KEY)
+            except Exception as e:
+                logger.error(f"Redis clear_tokens error: {e}")
+
+
 # Instantiate globals
 site_settings = RedisSiteSettings()
 tracker = RedisStatsTracker()
+token_store = RedisTokenStore()

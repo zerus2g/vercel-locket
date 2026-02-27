@@ -670,13 +670,14 @@
                 <div class="hint" style="margin-bottom:.3rem;">fetch_token</div>
                 <textarea id="newFetchToken" placeholder="Paste fetch_token tại đây..."
                     style="min-height:60px; margin-bottom:.5rem;"></textarea>
-                <div class="hint" style="margin-bottom:.3rem;">app_transaction</div>
-                <textarea id="newAppTransaction" placeholder="Paste app_transaction tại đây..."
-                    style="min-height:60px; margin-bottom:.5rem;"></textarea>
             </div>
-            <button class="save-btn" onclick="replaceToken()" data-i18n="replaceTokenBtn">Thay Thế Token</button>
-            <div class="hint" style="margin-top:.5rem; text-align:center;" data-i18n="replaceTokenHint">Sẽ thay thế toàn
-                bộ token hiện tại bằng token mới</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="save-btn" onclick="appendToken()" data-i18n="addTokenBtn">Thêm Token</button>
+                <button class="save-btn" style="background:var(--danger);" onclick="clearTokens()"
+                    data-i18n="clearTokenBtn">Xóa Tất Cả</button>
+            </div>
+            <div class="hint" style="margin-top:.5rem; text-align:center;" data-i18n="addTokenHint">Sẽ thêm token mạng
+                này vào danh sách hiện tại</div>
         </div>
 
         <!-- Password Change -->
@@ -761,8 +762,9 @@
                 tokenCountLabel: 'Current Tokens',
                 addTokenLabel: 'Add / Update Token',
                 tokenNameHint: 'Token name (any label)',
-                replaceTokenBtn: 'Replace Token',
-                replaceTokenHint: 'Will replace all current tokens with this new one',
+                addTokenBtn: 'Add Token',
+                addTokenHint: 'Will append this new token to the current list',
+                clearTokenBtn: 'Clear All',
                 tokenSuccess: 'Token updated successfully!',
                 tokenFail: 'Failed to update token',
                 pwTitle: '🔒 Change Admin Password',
@@ -814,8 +816,9 @@
                 tokenCountLabel: 'Số Token Hiện Tại',
                 addTokenLabel: 'Thêm / Cập Nhật Token',
                 tokenNameHint: 'Tên token (đặt gì cũng được)',
-                replaceTokenBtn: 'Thay Thế Token',
-                replaceTokenHint: 'Sẽ thay thế toàn bộ token hiện tại bằng token mới',
+                addTokenBtn: 'Thêm Token Mới',
+                addTokenHint: 'Sẽ lưu nối tiếp token này vào danh sách hiện tại',
+                clearTokenBtn: 'Xóa Tất Cả',
                 tokenSuccess: 'Cập nhật token thành công!',
                 tokenFail: 'Cập nhật token thất bại',
                 pwTitle: '🔒 Đổi Mật Khẩu Admin',
@@ -1068,13 +1071,13 @@
             } catch (e) { console.error('Load tokens error:', e); }
         }
 
-        async function replaceToken() {
+        async function appendToken() {
             const name = document.getElementById('newTokenName').value.trim() || 'Custom_Token';
             const fetchToken = document.getElementById('newFetchToken').value.trim();
-            const appTransaction = document.getElementById('newAppTransaction').value.trim();
+            const appTransaction = "";
 
-            if (!fetchToken || !appTransaction) {
-                Swal.fire({ icon: 'warning', title: 'Thiếu dữ liệu', text: 'Vui lòng nhập cả fetch_token và app_transaction', ...swalGlass, confirmButtonText: 'OK' });
+            if (!fetchToken) {
+                Swal.fire({ icon: 'warning', title: 'Thiếu dữ liệu', text: 'Vui lòng nhập fetch_token', ...swalGlass, confirmButtonText: 'OK' });
                 return;
             }
 
@@ -1104,7 +1107,26 @@
                 if (data.success) {
                     document.getElementById('newTokenName').value = '';
                     document.getElementById('newFetchToken').value = '';
-                    document.getElementById('newAppTransaction').value = '';
+                    loadTokens();
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: t('tokenFail'), ...swalGlass, confirmButtonText: 'OK' });
+            }
+        }
+
+        async function clearTokens() {
+            if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ Token? (Sẽ chỉ còn token mặc định)')) return;
+            try {
+                const res = await fetch('/api/admin/tokens/clear', { method: 'DELETE' });
+                if (res.status === 401) { showLogin(); return; }
+                const data = await res.json();
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? t('tokenSuccess') : t('tokenFail'),
+                    text: data.msg || '',
+                    ...swalGlass, confirmButtonText: 'OK'
+                });
+                if (data.success) {
                     loadTokens();
                 }
             } catch (e) {

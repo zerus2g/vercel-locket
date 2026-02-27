@@ -4,7 +4,7 @@ import time
 import os
 import random
 import re
-from config import TOKEN_SETS
+from redis_store import token_store
 
 class LocketAPI:
     def __init__(self):
@@ -86,15 +86,16 @@ class LocketAPI:
 
     def restorePurchase(self, uid):
         """
-        Restores the purchase using a token set from config.py.
+        Restores the purchase using a token set from Redis.
         """
         url = "https://api.revenuecat.com/v1/receipts"
 
-        if not TOKEN_SETS:
-            raise Exception("TOKEN_SETS is empty in config.py")
+        tokens = token_store.get_tokens()
+        if not tokens:
+            raise Exception("No fetch tokens found in Redis Store.")
 
         # Select random payload config
-        token_config = random.choice(TOKEN_SETS)
+        token_config = random.choice(tokens)
         
         fetch_token = token_config.get('fetch_token')
         app_transaction = token_config.get('app_transaction')
