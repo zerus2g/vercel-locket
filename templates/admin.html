@@ -147,7 +147,7 @@
 
         /* ── Dashboard ── */
         .dashboard {
-            max-width: 960px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 2rem 1.5rem;
             display: none;
@@ -301,6 +301,26 @@
             transition: width .5s ease, background .5s ease;
         }
 
+        .scrollable-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .scrollable-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .scrollable-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        .scrollable-list::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
         .activity-list {
             list-style: none;
             padding: 0;
@@ -335,6 +355,19 @@
             background: rgba(255, 0, 255, .1);
             padding: 2px 8px;
             border-radius: 4px;
+        }
+
+        .main-dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media(max-width: 1100px) {
+            .main-dashboard-content {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ── Management Panel ── */
@@ -578,133 +611,143 @@
             </div>
         </div>
 
-        <!-- Chart -->
-        <div class="chart-card">
-            <h2 data-i18n="chartTitle">Mở Khóa — 7 Ngày Qua</h2>
-            <canvas id="dailyChart" height="200"></canvas>
-        </div>
+    </div>
 
-        <!-- Management Panel -->
-        <div class="mgmt-card">
-            <h2 data-i18n="mgmtTitle">⚙️ Quản Lý Trang Web</h2>
-
-            <div class="mgmt-group">
-                <label data-i18n="announcementLabel">Thông Báo Toàn Trang</label>
-                <textarea id="settingAnnouncement"
-                    placeholder="Nhập nội dung thông báo hiển thị trên trang chính..."></textarea>
-                <div class="hint" data-i18n="announcementHint">Để trống để ẩn banner thông báo</div>
-            </div>
-
-            <div class="mgmt-group">
-                <label data-i18n="maintenanceLabel">Chế Độ Bảo Trì</label>
-                <div class="toggle-container">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="settingMaintenance">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span class="toggle-label" id="maintenanceStatus" data-i18n="maintenanceOff">Tắt</span>
-                </div>
-                <div class="hint" data-i18n="maintenanceHint">Khi bật, nút mở khóa trên trang chính sẽ bị vô hiệu hóa
-                </div>
-            </div>
-
-            <div class="mgmt-group">
-                <label data-i18n="dnsLabel">DNS Hostname (Android)</label>
-                <input type="text" id="settingDns" placeholder="ff384a.dns.nextdns.io">
-                <div class="hint" data-i18n="dnsHint">Hostname hiển thị trong hướng dẫn cài đặt Android</div>
-            </div>
-
-            <div class="mgmt-group">
-                <label data-i18n="dailyLimitLabel">Giới Hạn Mở Khóa / Ngày</label>
-                <input type="number" id="settingDailyLimit" min="0" placeholder="0">
-                <div class="hint" data-i18n="dailyLimitHint">Nhập 0 để không giới hạn</div>
-            </div>
-
-            <div class="mgmt-group">
-                <label data-i18n="qrDonateLabel">Ảnh QR Donate</label>
-                <div>
-                    <button type="button" class="save-btn" id="qrUploadBtn"
-                        style="margin-top:0.5rem; margin-bottom:0.5rem; background:var(--surface); border:1px solid var(--border); color:var(--text); width: auto; padding: 0.5rem 1rem;"
-                        onclick="document.getElementById('qrFileInput').click()">Chọn Ảnh Từ Thiết Bị</button>
-                    <button type="button" class="save-btn" id="qrClearBtn"
-                        style="margin-top:0.5rem; margin-bottom:0.5rem; background:#ff4444; width: auto; padding: 0.5rem 1rem; display:none;"
-                        onclick="clearQrPreview()">Xóa Ảnh</button>
-                </div>
-
-                <input type="file" id="qrFileInput" accept="image/*" style="display:none;"
-                    onchange="handleQrUpload(event)">
-                <input type="hidden" id="settingQrDonate">
-
-                <div id="qrPreviewWrapper" style="display:none; margin-top:0.5rem;">
-                    <img id="qrPreviewImg"
-                        style="max-height:150px; border-radius:0.5rem; border:1px solid var(--border);">
-                </div>
-
-                <div class="hint" data-i18n="qrDonateHint">Tải ảnh QR donate của bạn lên. Vercel sẽ tự lưu mã ảnh. Để
-                    trống để ẩn.</div>
-            </div>
-
-            <div class="mgmt-group">
-                <label data-i18n="welcomePopupLabel">Pop-up Chào Mừng</label>
-                <textarea id="settingWelcomePopup"
-                    placeholder="Nhập nội dung pop-up hiển khi truy cập trang..."></textarea>
-                <div class="hint" data-i18n="welcomePopupHint">Để trống để tắt pop-up chào mừng</div>
-            </div>
-
-            <button class="save-btn" id="saveBtn" onclick="saveSettings()" data-i18n="saveBtn">Lưu Cài Đặt</button>
-        </div>
-
-        <!-- Token Editor -->
-        <div class="mgmt-card">
-            <h2 data-i18n="tokenTitle">🔑 Quản Lý Token</h2>
-            <div class="mgmt-group">
-                <label data-i18n="tokenCountLabel">Số Token Hiện Tại</label>
-                <div id="tokenCount" style="font-size:1.5rem; font-weight:700; color:var(--primary);">-</div>
-            </div>
-            <div id="tokenList"></div>
-            <div class="mgmt-group" style="margin-top:1rem;">
-                <label data-i18n="addTokenLabel">Thêm / Cập Nhật Token</label>
-                <div class="hint" data-i18n="tokenNameHint" style="margin-bottom:.5rem;">Tên token (đặt gì cũng được)
-                </div>
-                <input type="text" id="newTokenName" placeholder="Production_VNM_2" style="margin-bottom:.5rem;">
-                <div class="hint" style="margin-bottom:.3rem;">fetch_token</div>
-                <textarea id="newFetchToken" placeholder="Paste fetch_token tại đây..."
-                    style="min-height:60px; margin-bottom:.5rem;"></textarea>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="save-btn" onclick="appendToken()" data-i18n="addTokenBtn">Thêm Token</button>
-                <button class="save-btn" style="background:var(--danger);" onclick="clearTokens()"
-                    data-i18n="clearTokenBtn">Xóa Tất Cả</button>
-            </div>
-            <div class="hint" style="margin-top:.5rem; text-align:center;" data-i18n="addTokenHint">Sẽ thêm token mạng
-                này vào danh sách hiện tại</div>
-        </div>
-
-        <!-- Password Change -->
-        <div class="mgmt-card">
-            <h2 data-i18n="pwTitle">🔒 Đổi Mật Khẩu Admin</h2>
-            <div class="mgmt-group">
-                <label data-i18n="currentPwLabel">Mật Khẩu Hiện Tại</label>
-                <input type="password" id="currentPassword" placeholder="••••••••">
-            </div>
-            <div class="mgmt-group">
-                <label data-i18n="newPwLabel">Mật Khẩu Mới</label>
-                <input type="password" id="newPassword" placeholder="Ít nhất 4 ký tự">
-            </div>
-            <div class="mgmt-group">
-                <label data-i18n="confirmPwLabel">Xác Nhận Mật Khẩu Mới</label>
-                <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới">
-            </div>
-            <button class="save-btn" onclick="changePassword()" data-i18n="changePwBtn">Đổi Mật Khẩu</button>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="chart-card">
+    <!-- 3 Column Layout -->
+    <div class="main-dashboard-content">
+        <!-- Left: Recent Activity -->
+        <div class="chart-card" style="margin-bottom:0">
             <h2 data-i18n="recentActivity">Hoạt Động Gần Đây</h2>
-            <ul class="activity-list" id="activityList">
+            <ul class="activity-list scrollable-list" id="activityList">
                 <li class="activity-item"><span style="color:var(--text2)" data-i18n="loading">Đang tải...</span></li>
             </ul>
         </div>
+
+        <!-- Middle: Chart -->
+        <div class="chart-card" style="margin-bottom:0">
+            <h2 data-i18n="chartTitle">Mở Khóa — 7 Ngày Qua</h2>
+            <canvas id="dailyChart" height="250"></canvas>
+        </div>
+
+        <!-- Right: Error Logs -->
+        <div class="chart-card" style="margin-bottom:0">
+            <h2 data-i18n="errorLogTitle" style="color:var(--danger)">Debug Log Lỗi</h2>
+            <ul class="activity-list scrollable-list" id="errorLogList">
+                <li class="activity-item"><span style="color:var(--text2)" data-i18n="loading">Đang tải...</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Management Panel -->
+    <div class="mgmt-card">
+        <h2 data-i18n="mgmtTitle">⚙️ Quản Lý Trang Web</h2>
+
+        <div class="mgmt-group">
+            <label data-i18n="announcementLabel">Thông Báo Toàn Trang</label>
+            <textarea id="settingAnnouncement"
+                placeholder="Nhập nội dung thông báo hiển thị trên trang chính..."></textarea>
+            <div class="hint" data-i18n="announcementHint">Để trống để ẩn banner thông báo</div>
+        </div>
+
+        <div class="mgmt-group">
+            <label data-i18n="maintenanceLabel">Chế Độ Bảo Trì</label>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="settingMaintenance">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label" id="maintenanceStatus" data-i18n="maintenanceOff">Tắt</span>
+            </div>
+            <div class="hint" data-i18n="maintenanceHint">Khi bật, nút mở khóa trên trang chính sẽ bị vô hiệu hóa
+            </div>
+        </div>
+
+        <div class="mgmt-group">
+            <label data-i18n="dnsLabel">DNS Hostname (Android)</label>
+            <input type="text" id="settingDns" placeholder="ff384a.dns.nextdns.io">
+            <div class="hint" data-i18n="dnsHint">Hostname hiển thị trong hướng dẫn cài đặt Android</div>
+        </div>
+
+        <div class="mgmt-group">
+            <label data-i18n="dailyLimitLabel">Giới Hạn Mở Khóa / Ngày</label>
+            <input type="number" id="settingDailyLimit" min="0" placeholder="0">
+            <div class="hint" data-i18n="dailyLimitHint">Nhập 0 để không giới hạn</div>
+        </div>
+
+        <div class="mgmt-group">
+            <label data-i18n="qrDonateLabel">Ảnh QR Donate</label>
+            <div>
+                <button type="button" class="save-btn" id="qrUploadBtn"
+                    style="margin-top:0.5rem; margin-bottom:0.5rem; background:var(--surface); border:1px solid var(--border); color:var(--text); width: auto; padding: 0.5rem 1rem;"
+                    onclick="document.getElementById('qrFileInput').click()">Chọn Ảnh Từ Thiết Bị</button>
+                <button type="button" class="save-btn" id="qrClearBtn"
+                    style="margin-top:0.5rem; margin-bottom:0.5rem; background:#ff4444; width: auto; padding: 0.5rem 1rem; display:none;"
+                    onclick="clearQrPreview()">Xóa Ảnh</button>
+            </div>
+
+            <input type="file" id="qrFileInput" accept="image/*" style="display:none;" onchange="handleQrUpload(event)">
+            <input type="hidden" id="settingQrDonate">
+
+            <div id="qrPreviewWrapper" style="display:none; margin-top:0.5rem;">
+                <img id="qrPreviewImg" style="max-height:150px; border-radius:0.5rem; border:1px solid var(--border);">
+            </div>
+
+            <div class="hint" data-i18n="qrDonateHint">Tải ảnh QR donate của bạn lên. Vercel sẽ tự lưu mã ảnh. Để
+                trống để ẩn.</div>
+        </div>
+
+        <div class="mgmt-group">
+            <label data-i18n="welcomePopupLabel">Pop-up Chào Mừng</label>
+            <textarea id="settingWelcomePopup" placeholder="Nhập nội dung pop-up hiển khi truy cập trang..."></textarea>
+            <div class="hint" data-i18n="welcomePopupHint">Để trống để tắt pop-up chào mừng</div>
+        </div>
+
+        <button class="save-btn" id="saveBtn" onclick="saveSettings()" data-i18n="saveBtn">Lưu Cài Đặt</button>
+    </div>
+
+    <!-- Token Editor -->
+    <div class="mgmt-card">
+        <h2 data-i18n="tokenTitle">🔑 Quản Lý Token</h2>
+        <div class="mgmt-group">
+            <label data-i18n="tokenCountLabel">Số Token Hiện Tại</label>
+            <div id="tokenCount" style="font-size:1.5rem; font-weight:700; color:var(--primary);">-</div>
+        </div>
+        <div id="tokenList"></div>
+        <div class="mgmt-group" style="margin-top:1rem;">
+            <label data-i18n="addTokenLabel">Thêm / Cập Nhật Token</label>
+            <div class="hint" data-i18n="tokenNameHint" style="margin-bottom:.5rem;">Tên token (đặt gì cũng được)
+            </div>
+            <input type="text" id="newTokenName" placeholder="Production_VNM_2" style="margin-bottom:.5rem;">
+            <div class="hint" style="margin-bottom:.3rem;">fetch_token</div>
+            <textarea id="newFetchToken" placeholder="Paste fetch_token tại đây..."
+                style="min-height:60px; margin-bottom:.5rem;"></textarea>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="save-btn" onclick="appendToken()" data-i18n="addTokenBtn">Thêm Token</button>
+            <button class="save-btn" style="background:var(--danger);" onclick="clearTokens()"
+                data-i18n="clearTokenBtn">Xóa Tất Cả</button>
+        </div>
+        <div class="hint" style="margin-top:.5rem; text-align:center;" data-i18n="addTokenHint">Sẽ thêm token mạng
+            này vào danh sách hiện tại</div>
+    </div>
+
+    <!-- Password Change -->
+    <div class="mgmt-card">
+        <h2 data-i18n="pwTitle">🔒 Đổi Mật Khẩu Admin</h2>
+        <div class="mgmt-group">
+            <label data-i18n="currentPwLabel">Mật Khẩu Hiện Tại</label>
+            <input type="password" id="currentPassword" placeholder="••••••••">
+        </div>
+        <div class="mgmt-group">
+            <label data-i18n="newPwLabel">Mật Khẩu Mới</label>
+            <input type="password" id="newPassword" placeholder="Ít nhất 4 ký tự">
+        </div>
+        <div class="mgmt-group">
+            <label data-i18n="confirmPwLabel">Xác Nhận Mật Khẩu Mới</label>
+            <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới">
+        </div>
+        <button class="save-btn" onclick="changePassword()" data-i18n="changePwBtn">Đổi Mật Khẩu</button>
+    </div>
     </div>
 
     <script>
@@ -737,6 +780,7 @@
                 apiHealth: 'API Health',
                 chartTitle: 'Unlocks — Last 7 Days',
                 recentActivity: 'Recent Activity',
+                errorLogTitle: 'Error Debug Logs',
                 loading: 'Loading...',
                 noActivity: 'No activity yet',
                 unlocksLabel: 'Unlocks',
@@ -791,6 +835,7 @@
                 apiHealth: 'Tình Trạng API',
                 chartTitle: 'Mở Khóa — 7 Ngày Qua',
                 recentActivity: 'Hoạt Động Gần Đây',
+                errorLogTitle: 'Debug Log Lỗi',
                 loading: 'Đang tải...',
                 noActivity: 'Chưa có hoạt động',
                 unlocksLabel: 'Mở Khóa',
@@ -1252,16 +1297,22 @@
                 const res = await fetch('/api/recent-activity');
                 const data = await res.json();
                 const list = document.getElementById('activityList');
+                const errorList = document.getElementById('errorLogList');
                 if (!data.success || data.activity.length === 0) {
                     list.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
+                    if (errorList) errorList.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
                     return;
                 }
-                list.innerHTML = data.activity.map(a => {
+
+                let successItems = [];
+                let errorItems = [];
+
+                data.activity.forEach(a => {
                     const time = new Date(a.timestamp);
                     const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                     if (a.status === 'error') {
-                        return `<li class="activity-item" style="flex-wrap: wrap; border-left: 3px solid var(--danger); padding-left: 10px; background: rgba(255,0,0,0.02)">
+                        errorItems.push(`<li class="activity-item" style="flex-wrap: wrap; border-left: 3px solid var(--danger); padding-left: 10px; background: rgba(255,0,0,0.02)">
                             <div style="display:flex; justify-content:space-between; width:100%;">
                                 <span class="activity-user" style="color:var(--danger)">@${a.username}</span>
                                 <span class="activity-time">${timeStr}</span>
@@ -1272,18 +1323,26 @@
                             <div style="flex-basis: 100%; font-size: 0.75rem; color: var(--text2); margin-top: 5px; text-align: center; background: rgba(255,0,0,.05); padding: 2px; border-radius: 4px;">
                                 🔑 Token: <span style="color:#ffcccc">${a.used_token || 'Unknown'}</span>
                             </div>
-                        </li>`;
+                        </li>`);
                     } else {
-                        return `<li class="activity-item" style="flex-wrap: wrap;">
+                        successItems.push(`<li class="activity-item" style="flex-wrap: wrap;">
                             <span class="activity-user">@${a.username}</span>
                             <span class="activity-plan">${a.product_id}</span>
                             <span class="activity-time">${timeStr}</span>
                             <div style="flex-basis: 100%; font-size: 0.75rem; color: var(--text2); margin-top: 5px; text-align: center; background: rgba(0,255,255,.05); padding: 2px; border-radius: 4px;">
                                 🔑 Token: <span style="color:var(--primary)">${a.used_token || 'Unknown'}</span>
                             </div>
-                        </li>`;
+                        </li>`);
                     }
-                }).join('');
+                });
+
+                if (successItems.length === 0) list.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
+                else list.innerHTML = successItems.join('');
+
+                if (errorList) {
+                    if (errorItems.length === 0) errorList.innerHTML = `<li class="activity-item"><span style="color:var(--text2)">${t('noActivity')}</span></li>`;
+                    else errorList.innerHTML = errorItems.join('');
+                }
             } catch (e) { console.error('Activity fetch error:', e); }
         }
 
