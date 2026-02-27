@@ -31,10 +31,9 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
             background-image:
-                radial-gradient(ellipse at top left, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 80%);
-            background-size: 200% 200%;
+                radial-gradient(circle at 15% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(255, 0, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
             background-attachment: fixed;
             color: var(--text-color);
             display: flex;
@@ -44,23 +43,214 @@
             min-height: 100vh;
             margin: 0;
             overflow-x: hidden;
-            animation: aurora-shift 15s ease-in-out infinite alternate;
+            animation: bg-pulse 10s ease-in-out infinite alternate;
         }
 
-        @keyframes aurora-shift {
+        @keyframes bg-pulse {
             0% {
-                background-position: 0% 50%;
-                opacity: 0.8;
-            }
-
-            50% {
-                background-position: 100% 50%;
-                opacity: 1;
+                background-position: 0% 0%;
             }
 
             100% {
-                background-position: 0% 50%;
-                opacity: 0.8;
+                background-position: 100% 100%;
+            }
+        }
+
+        /* ── Aurora Animated Overlay ── */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .aurora-bg::before,
+        .aurora-bg::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            border-radius: 50%;
+            animation: aurora-drift 12s ease-in-out infinite alternate;
+        }
+
+        .aurora-bg::before {
+            background: radial-gradient(ellipse at 30% 40%, rgba(0, 255, 255, 0.07) 0%, transparent 60%);
+        }
+
+        .aurora-bg::after {
+            background: radial-gradient(ellipse at 70% 60%, rgba(255, 0, 255, 0.06) 0%, transparent 60%);
+            animation-delay: -6s;
+            animation-direction: alternate-reverse;
+        }
+
+        @keyframes aurora-drift {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+
+            33% {
+                transform: translate(5%, -3%) rotate(3deg) scale(1.05);
+            }
+
+            66% {
+                transform: translate(-3%, 5%) rotate(-2deg) scale(0.98);
+            }
+
+            100% {
+                transform: translate(2%, 2%) rotate(1deg) scale(1.02);
+            }
+        }
+
+        /* ── Floating Particles Canvas ── */
+        #particlesCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ── Live Server Status LED ── */
+        .server-status-led {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .4);
+            transition: all .4s ease;
+        }
+
+        .led-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #555;
+            box-shadow: 0 0 6px #555;
+            transition: all .4s ease;
+        }
+
+        .led-dot.idle {
+            background: #00ff88;
+            box-shadow: 0 0 8px #00ff88, 0 0 20px rgba(0, 255, 136, .4);
+        }
+
+        .led-dot.processing {
+            background: #ffaa00;
+            box-shadow: 0 0 8px #ffaa00, 0 0 20px rgba(255, 170, 0, .4);
+            animation: led-blink 0.8s infinite;
+        }
+
+        .led-dot.cooldown {
+            background: #ff4444;
+            box-shadow: 0 0 8px #ff4444, 0 0 20px rgba(255, 68, 68, .4);
+            animation: led-blink 1.5s infinite;
+        }
+
+        @keyframes led-blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ── Ripple Effect on Button ── */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple-expand .6s ease-out forwards;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes ripple-expand {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* ── Neon Chase Input Border ── */
+        .input-glow-wrap {
+            position: relative;
+        }
+
+        .input-glow-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+            transition: width .4s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, .6);
+        }
+
+        .input-glow-wrap.active::after {
+            width: 100%;
+        }
+
+        /* ── FOMO Toast (Live Unlock Ping) ── */
+        .fomo-toast {
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: .82rem;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+            background: rgba(0, 255, 136, 0.12);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 136, .35);
+            box-shadow: 0 0 25px rgba(0, 0, 0, .5), 0 0 10px rgba(0, 255, 136, .2);
+            animation: fomo-in .5s cubic-bezier(.175, .885, .32, 1.275);
+            max-width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fomo-toast.out {
+            animation: toast-out .3s ease forwards;
+        }
+
+        @keyframes fomo-in {
+            from {
+                opacity: 0;
+                transform: translateX(120px) scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
             }
         }
 
@@ -172,57 +362,38 @@
 
         /* Global Queue Status */
         .global-queue-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
             margin-bottom: 2rem;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 1rem 1.5rem;
-            border-radius: 50px;
+            background: rgba(0, 255, 255, 0.03);
+            padding: 1.25rem;
+            border-radius: 1rem;
             border: 1px solid rgba(0, 255, 255, 0.2);
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 255, 0.1);
+            box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.05);
         }
 
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #00ffff;
-            box-shadow: 0 0 10px #00ffff;
-            animation: pulse-dot 1s infinite alternate;
+        .global-queue-item {
+            text-align: center;
         }
 
-        @keyframes pulse-dot {
-            0% {
-                transform: scale(0.8);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1.2);
-                opacity: 1;
-                box-shadow: 0 0 15px currentColor;
-            }
-        }
-
-        .status-text {
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 2px;
+        .global-queue-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
             text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
         }
 
-        .status-idle {
-            color: #00ffff;
-        }
-
-        .status-busy {
-            color: #ffaa00;
-        }
-
-        .status-cooldown {
-            color: #ff0055;
+        .global-queue-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
         }
 
         label {
@@ -259,29 +430,8 @@
             outline: none;
             border-color: var(--primary-color);
             background-color: rgba(0, 255, 255, 0.05);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.5);
-            transform: scale(1.02);
-        }
-
-        .btn-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple-effect 0.6s linear;
-            background-color: rgba(255, 255, 255, 0.4);
-            pointer-events: none;
-        }
-
-        @keyframes ripple-effect {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 255, 0.4), 0 0 30px rgba(0, 255, 255, 0.15);
+            transition: all 0.4s ease;
         }
 
         button {
@@ -789,67 +939,6 @@
             }
         }
 
-        /* ── Marquee Live Feed ── */
-        .marquee-wrapper {
-            width: 100%;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(0, 255, 255, 0.3);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            z-index: 100;
-            box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-        }
-
-        .marquee-content {
-            display: flex;
-            white-space: nowrap;
-            animation: marquee 25s linear infinite;
-        }
-
-        .marquee-content:hover {
-            animation-play-state: paused;
-        }
-
-        .marquee-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-right: 3rem;
-            color: #fff;
-            font-size: 0.9rem;
-            padding: 4px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 0, 255, 0.2);
-        }
-
-        .marquee-user {
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .marquee-time {
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(100vw);
-            }
-
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-
         .lang-toggle {
             position: fixed;
             top: 16px;
@@ -1017,6 +1106,17 @@
 
 <body>
 
+    <!-- Aurora Background -->
+    <div class="aurora-bg"></div>
+    <!-- Floating Particles -->
+    <canvas id="particlesCanvas"></canvas>
+
+    <!-- Live Server Status LED -->
+    <div class="server-status-led" id="serverLed">
+        <div class="led-dot" id="ledDot"></div>
+        <span id="ledLabel">CONNECTING...</span>
+    </div>
+
     <div class="main-wrapper">
         <!-- Announcement Banner (dynamic from admin) -->
         <div id="announcementBanner"
@@ -1030,29 +1130,18 @@
             <h1 data-i18n="title">Locket Gold</h1>
             <p class="subtitle" data-i18n="subtitle">Unlock premium features instantly</p>
 
-            <div class="note"
-                style="background:transparent; border:none; padding:0; margin-bottom:1.5rem; text-align:center;">
-                <h3 style="justify-content:center; margin-bottom:.8rem; font-size:.9rem;">
-                    <span data-i18n="importantNote">Live Status</span>
-                </h3>
-                <div class="global-queue-container">
-                    <div class="status-dot" id="liveStatusDot"></div>
-                    <div class="status-text status-idle" id="liveStatusText">IDLE</div>
+            <div class="form-group">
+                <label for="username" data-i18n="targetUsername">Target Username</label>
+                <div class="input-glow-wrap" id="inputGlowWrap">
+                    <input type="text" id="username" data-i18n="placeholder" placeholder="Enter Locket username..."
+                        required autocomplete="off">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="username" data-i18n="targetUsername">Target Username</label>
-                <input type="text" id="username" data-i18n="placeholder" placeholder="Enter Locket username..." required
-                    autocomplete="off">
-            </div>
-
-            <div class="btn-wrapper">
-                <button id="submitBtn" onclick="unlockGold(event)">
-                    <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
-                    <div class="loader" id="loader"></div>
-                </button>
-            </div>
+            <button id="submitBtn" onclick="unlockGold()">
+                <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
+                <div class="loader" id="loader"></div>
+            </button>
 
             <a href="https://t.me/Benonivn" target="_blank" rel="noopener noreferrer"
                 style="display:inline-flex; align-items:center; gap:.4rem; margin-top:.8rem; padding:.5rem 1.2rem; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.3); border-radius:.75rem; color:#ff6b6b; text-decoration:none; font-size:.85rem; font-weight:600; transition:all .2s;"
@@ -1225,16 +1314,8 @@
         </div>
     </div>
 
-    <!-- Marquee Feed (Combo 3) -->
-    <div class="marquee-wrapper" id="marqueeWrapper" style="display:none;">
-        <div class="marquee-content" id="marqueeContent">
-            <!-- Items injected by JS -->
-        </div>
-    </div>
-
     <!-- Language Toggle -->
-    <div class="lang-toggle" id="langToggle" onclick="toggleLang()" style="bottom: 70px; top: auto; right: 20px;">🌐 EN
-    </div>
+    <div class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 EN</div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
@@ -1300,25 +1381,10 @@
             buttonsStyling: false
         };
 
-        async function unlockGold(event) {
-            const btn = document.getElementById('submitBtn');
-            // Ripple effect
-            if (event) {
-                const circle = document.createElement('span');
-                const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-                const radius = diameter / 2;
-                circle.style.width = circle.style.height = `${diameter}px`;
-                const rect = btn.getBoundingClientRect();
-                circle.style.left = `${event.clientX - rect.left - radius}px`;
-                circle.style.top = `${event.clientY - rect.top - radius}px`;
-                circle.classList.add('ripple');
-                const existingRipple = btn.querySelector('.ripple');
-                if (existingRipple) existingRipple.remove();
-                btn.appendChild(circle);
-            }
-
+        async function unlockGold() {
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
+            const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('loader');
             const btnText = document.querySelector('.btn-text');
 
@@ -1443,25 +1509,10 @@
             attemptRestore();
         }
 
-        async function checkUserInfo(event) {
-            const btn = document.getElementById('submitBtn');
-            // Ripple effect
-            if (event) {
-                const circle = document.createElement('span');
-                const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-                const radius = diameter / 2;
-                circle.style.width = circle.style.height = `${diameter}px`;
-                const rect = btn.getBoundingClientRect();
-                circle.style.left = `${event.clientX - rect.left - radius}px`;
-                circle.style.top = `${event.clientY - rect.top - radius}px`;
-                circle.classList.add('ripple');
-                const existingRipple = btn.querySelector('.ripple');
-                if (existingRipple) existingRipple.remove();
-                btn.appendChild(circle);
-            }
-
+        async function checkUserInfo() {
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
+            const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('loader');
             const btnText = document.querySelector('.btn-text');
 
@@ -1556,7 +1607,7 @@
                 cancelButtonText: t('cancelBtn')
             }).then((result) => {
                 if (result.isConfirmed) {
-                    unlockGold(null); // Call the new unlockGold function
+                    unlockGold(); // Call the new unlockGold function
                 }
             });
         }
@@ -1795,86 +1846,23 @@
             showToast(currentLang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'info');
         }
 
-        // ── Activity Feed & Marquee ──
+        // ── Activity Feed ──
         async function fetchActivityFeed() {
             try {
                 const res = await fetch('/api/recent-activity');
                 const data = await res.json();
-
-                // Fallback for list
                 const list = document.getElementById('activityFeed');
-                if (list) {
-                    if (!data.success || !data.activity || data.activity.length === 0) {
-                        list.innerHTML = `<li class="activity-item" style="color:var(--text-secondary)">${t('noActivity')}</li>`;
-                    } else {
-                        list.innerHTML = data.activity.map(a => {
-                            const time = new Date(a.timestamp);
-                            const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            return `<li class="activity-item"><span class="activity-user">@${a.username}</span><span class="activity-time">${timeStr}</span></li>`;
-                        }).join('');
-                    }
-                }
-
-                // Update Marquee
-                const marqueeWrapper = document.getElementById('marqueeWrapper');
-                const marqueeContent = document.getElementById('marqueeContent');
-                if (!marqueeWrapper || !marqueeContent) return;
-
+                if (!list) return;
                 if (!data.success || !data.activity || data.activity.length === 0) {
-                    marqueeWrapper.style.display = 'none';
+                    list.innerHTML = `<li class="activity-item" style="color:var(--text-secondary)">${t('noActivity')}</li>`;
                     return;
                 }
-
-                // Only show successful unlocks in marquee
-                const successes = data.activity.filter(a => a.status !== 'error');
-                if (successes.length === 0) {
-                    marqueeWrapper.style.display = 'none';
-                    return;
-                }
-
-                marqueeWrapper.style.display = 'flex';
-                // Clone items 3 times for seamless scrolling loop
-                const itemsToRender = [...successes, ...successes, ...successes];
-
-                marqueeContent.innerHTML = itemsToRender.map(a => {
+                list.innerHTML = data.activity.map(a => {
                     const time = new Date(a.timestamp);
                     const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    return `<div class="marquee-item">🚀 <span class="marquee-user">@${a.username}</span> <span style="opacity:0.6;font-size:0.8rem;">unlocked</span> <span style="color:var(--secondary-color)">${a.product_id}</span> <span class="marquee-time">${timeStr}</span></div>`;
+                    return `<li class="activity-item"><span class="activity-user">@${a.username}</span><span class="activity-time">${timeStr}</span></li>`;
                 }).join('');
-
             } catch (e) { console.error('Activity error:', e); }
-        }
-
-        // ── Live Queue Status ──
-        async function fetchQueueStatus() {
-            try {
-                const res = await fetch('/api/queue-status');
-                const data = await res.json();
-
-                const dot = document.getElementById('liveStatusDot');
-                const text = document.getElementById('liveStatusText');
-                if (!dot || !text) return;
-
-                dot.className = 'status-dot';
-                text.className = 'status-text';
-
-                if (data.cooldown) {
-                    dot.style.background = '#ff0055';
-                    dot.style.boxShadow = '0 0 10px #ff0055';
-                    text.textContent = 'COOLDOWN';
-                    text.classList.add('status-cooldown');
-                } else if (data.locked) {
-                    dot.style.background = '#ffaa00';
-                    dot.style.boxShadow = '0 0 10px #ffaa00';
-                    text.textContent = 'PROCESSING';
-                    text.classList.add('status-busy');
-                } else {
-                    dot.style.background = '#00ffff';
-                    dot.style.boxShadow = '0 0 10px #00ffff';
-                    text.textContent = 'IDLE';
-                    text.classList.add('status-idle');
-                }
-            } catch (e) { console.error('Queue query error:', e); }
         }
 
         // ── Rate Limit ──
@@ -1964,17 +1952,191 @@
             } catch (e) { console.error('Site settings error:', e); }
         }
 
-        // ── Initialization ──
+        // ══════════════════════════════════════════════
+        // ██  MODULE 1: FLOATING PARTICLES ENGINE  ██
+        // ══════════════════════════════════════════════
+        function initParticles() {
+            const canvas = document.getElementById('particlesCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const PARTICLE_COUNT = 35;
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            class Particle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2.5 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.4;
+                    this.speedY = (Math.random() - 0.5) * 0.3;
+                    this.opacity = Math.random() * 0.4 + 0.1;
+                    this.hue = Math.random() > 0.5 ? 180 : 300; // Cyan or Magenta
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.opacity += (Math.random() - 0.5) * 0.01;
+                    this.opacity = Math.max(0.05, Math.min(0.5, this.opacity));
+                    if (this.x < -10 || this.x > canvas.width + 10 || this.y < -10 || this.y > canvas.height + 10) this.reset();
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${this.opacity})`;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = `hsla(${this.hue}, 100%, 70%, 0.3)`;
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // ══════════════════════════════════════════════
+        // ██  MODULE 2: LIVE SERVER STATUS LED      ██
+        // ══════════════════════════════════════════════
+        const ledLabels = {
+            en: { idle: 'IDLE', processing: 'PROCESSING', cooldown: 'COOLDOWN 5s' },
+            vi: { idle: 'SẴN SÀNG', processing: 'ĐANG XỬ LÝ', cooldown: 'CHỜ 5 GIÂY' }
+        };
+
+        async function pollServerStatus() {
+            try {
+                const res = await fetch('/api/queue-status');
+                const data = await res.json();
+                const dot = document.getElementById('ledDot');
+                const label = document.getElementById('ledLabel');
+                if (!dot || !label) return;
+
+                dot.className = 'led-dot'; // Reset
+                const labels = ledLabels[currentLang] || ledLabels.en;
+
+                if (data.status === 'processing') {
+                    dot.classList.add('processing');
+                    label.textContent = labels.processing;
+                } else if (data.status === 'cooldown') {
+                    dot.classList.add('cooldown');
+                    label.textContent = labels.cooldown;
+                } else {
+                    dot.classList.add('idle');
+                    label.textContent = labels.idle;
+                }
+            } catch (e) {
+                const label = document.getElementById('ledLabel');
+                if (label) label.textContent = 'OFFLINE';
+            }
+        }
+
+        // ══════════════════════════════════════════════
+        // ██  MODULE 3: RIPPLE EFFECT ON BUTTON     ██
+        // ══════════════════════════════════════════════
+        function initRipple() {
+            const btn = document.getElementById('submitBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function (e) {
+                const rect = btn.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        }
+
+        // ══════════════════════════════════════════════
+        // ██  MODULE 4: NEON CHASE INPUT BORDER      ██
+        // ══════════════════════════════════════════════
+        function initNeonInput() {
+            const input = document.getElementById('username');
+            const wrap = document.getElementById('inputGlowWrap');
+            if (!input || !wrap) return;
+            input.addEventListener('focus', () => wrap.classList.add('active'));
+            input.addEventListener('blur', () => wrap.classList.remove('active'));
+        }
+
+        // ══════════════════════════════════════════════
+        // ██  MODULE 5: FOMO TOAST (Live Unlock Pop) ██
+        // ══════════════════════════════════════════════
+        let lastSeenActivity = null;
+
+        async function checkForNewUnlocks() {
+            try {
+                const res = await fetch('/api/recent-activity');
+                const data = await res.json();
+                if (!data.success || !data.activity || data.activity.length === 0) return;
+
+                const latest = data.activity[0];
+                // Only show success unlocks as FOMO
+                if (latest.status === 'error') return;
+
+                const latestKey = latest.username + '_' + latest.timestamp;
+                if (lastSeenActivity === null) {
+                    lastSeenActivity = latestKey; // First load, don't toast
+                    return;
+                }
+                if (latestKey !== lastSeenActivity) {
+                    lastSeenActivity = latestKey;
+                    showFomoToast(latest.username);
+                }
+            } catch (e) { /* Silently fail */ }
+        }
+
+        function showFomoToast(username) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'fomo-toast';
+            const msg = currentLang === 'vi'
+                ? `🎉 @${username} vừa mở khóa Gold thành công!`
+                : `🎉 @${username} just unlocked Gold!`;
+            toast.innerHTML = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('out');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // ══════════════════════════════════════════════
+        // ██  INITIALIZATION                         ██
+        // ══════════════════════════════════════════════
         document.addEventListener('DOMContentLoaded', () => {
+            // Core features
             fetchSiteSettings();
             fetchActivityFeed();
             fetchRateLimit();
-            fetchQueueStatus();
             applyLang();
+
+            // NEW: UI/UX Modules
+            initParticles();
+            initRipple();
+            initNeonInput();
+            pollServerStatus();
+
+            // Polling intervals
             setInterval(fetchSiteSettings, 30000);
             setInterval(fetchActivityFeed, 15000);
             setInterval(fetchRateLimit, 30000);
-            setInterval(fetchQueueStatus, 3000);
+            setInterval(pollServerStatus, 2000);     // LED every 2s
+            setInterval(checkForNewUnlocks, 10000);   // FOMO every 10s
         });
     </script>
 
