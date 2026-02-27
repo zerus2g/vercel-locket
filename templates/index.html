@@ -31,9 +31,10 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
             background-image:
-                radial-gradient(circle at 15% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(255, 0, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+                radial-gradient(ellipse at top left, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 80%);
+            background-size: 200% 200%;
             background-attachment: fixed;
             color: var(--text-color);
             display: flex;
@@ -43,16 +44,23 @@
             min-height: 100vh;
             margin: 0;
             overflow-x: hidden;
-            animation: bg-pulse 10s ease-in-out infinite alternate;
+            animation: aurora-shift 15s ease-in-out infinite alternate;
         }
 
-        @keyframes bg-pulse {
+        @keyframes aurora-shift {
             0% {
-                background-position: 0% 0%;
+                background-position: 0% 50%;
+                opacity: 0.8;
+            }
+
+            50% {
+                background-position: 100% 50%;
+                opacity: 1;
             }
 
             100% {
-                background-position: 100% 100%;
+                background-position: 0% 50%;
+                opacity: 0.8;
             }
         }
 
@@ -164,38 +172,57 @@
 
         /* Global Queue Status */
         .global-queue-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
             margin-bottom: 2rem;
-            background: rgba(0, 255, 255, 0.03);
-            padding: 1.25rem;
-            border-radius: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
             border: 1px solid rgba(0, 255, 255, 0.2);
-            box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.05);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 255, 0.1);
         }
 
-        .global-queue-item {
-            text-align: center;
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: pulse-dot 1s infinite alternate;
         }
 
-        .global-queue-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
+        @keyframes pulse-dot {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 1;
+                box-shadow: 0 0 15px currentColor;
+            }
         }
 
-        .global-queue-value {
-            font-size: 1.4rem;
+        .status-text {
+            font-size: 0.9rem;
             font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent;
-            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .status-idle {
+            color: #00ffff;
+        }
+
+        .status-busy {
+            color: #ffaa00;
+        }
+
+        .status-cooldown {
+            color: #ff0055;
         }
 
         label {
@@ -232,7 +259,29 @@
             outline: none;
             border-color: var(--primary-color);
             background-color: rgba(0, 255, 255, 0.05);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 255, 0.4);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        .btn-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         button {
@@ -740,6 +789,67 @@
             }
         }
 
+        /* ── Marquee Live Feed ── */
+        .marquee-wrapper {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .marquee-content {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+        }
+
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+
+        .marquee-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 3rem;
+            color: #fff;
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 0, 255, 0.2);
+        }
+
+        .marquee-user {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .marquee-time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(100vw);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
         .lang-toggle {
             position: fixed;
             top: 16px;
@@ -920,16 +1030,29 @@
             <h1 data-i18n="title">Locket Gold</h1>
             <p class="subtitle" data-i18n="subtitle">Unlock premium features instantly</p>
 
+            <div class="note"
+                style="background:transparent; border:none; padding:0; margin-bottom:1.5rem; text-align:center;">
+                <h3 style="justify-content:center; margin-bottom:.8rem; font-size:.9rem;">
+                    <span data-i18n="importantNote">Live Status</span>
+                </h3>
+                <div class="global-queue-container">
+                    <div class="status-dot" id="liveStatusDot"></div>
+                    <div class="status-text status-idle" id="liveStatusText">IDLE</div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="username" data-i18n="targetUsername">Target Username</label>
                 <input type="text" id="username" data-i18n="placeholder" placeholder="Enter Locket username..." required
                     autocomplete="off">
             </div>
 
-            <button id="submitBtn" onclick="unlockGold()">
-                <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
-                <div class="loader" id="loader"></div>
-            </button>
+            <div class="btn-wrapper">
+                <button id="submitBtn" onclick="unlockGold(event)">
+                    <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
+                    <div class="loader" id="loader"></div>
+                </button>
+            </div>
 
             <a href="https://t.me/Benonivn" target="_blank" rel="noopener noreferrer"
                 style="display:inline-flex; align-items:center; gap:.4rem; margin-top:.8rem; padding:.5rem 1.2rem; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.3); border-radius:.75rem; color:#ff6b6b; text-decoration:none; font-size:.85rem; font-weight:600; transition:all .2s;"
@@ -1102,8 +1225,16 @@
         </div>
     </div>
 
+    <!-- Marquee Feed (Combo 3) -->
+    <div class="marquee-wrapper" id="marqueeWrapper" style="display:none;">
+        <div class="marquee-content" id="marqueeContent">
+            <!-- Items injected by JS -->
+        </div>
+    </div>
+
     <!-- Language Toggle -->
-    <div class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 EN</div>
+    <div class="lang-toggle" id="langToggle" onclick="toggleLang()" style="bottom: 70px; top: auto; right: 20px;">🌐 EN
+    </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
@@ -1169,10 +1300,25 @@
             buttonsStyling: false
         };
 
-        async function unlockGold() {
+        async function unlockGold(event) {
+            const btn = document.getElementById('submitBtn');
+            // Ripple effect
+            if (event) {
+                const circle = document.createElement('span');
+                const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+                const radius = diameter / 2;
+                circle.style.width = circle.style.height = `${diameter}px`;
+                const rect = btn.getBoundingClientRect();
+                circle.style.left = `${event.clientX - rect.left - radius}px`;
+                circle.style.top = `${event.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+                const existingRipple = btn.querySelector('.ripple');
+                if (existingRipple) existingRipple.remove();
+                btn.appendChild(circle);
+            }
+
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
-            const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('loader');
             const btnText = document.querySelector('.btn-text');
 
@@ -1297,10 +1443,25 @@
             attemptRestore();
         }
 
-        async function checkUserInfo() {
+        async function checkUserInfo(event) {
+            const btn = document.getElementById('submitBtn');
+            // Ripple effect
+            if (event) {
+                const circle = document.createElement('span');
+                const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+                const radius = diameter / 2;
+                circle.style.width = circle.style.height = `${diameter}px`;
+                const rect = btn.getBoundingClientRect();
+                circle.style.left = `${event.clientX - rect.left - radius}px`;
+                circle.style.top = `${event.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+                const existingRipple = btn.querySelector('.ripple');
+                if (existingRipple) existingRipple.remove();
+                btn.appendChild(circle);
+            }
+
             const usernameInput = document.getElementById('username');
             const username = usernameInput.value.trim();
-            const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('loader');
             const btnText = document.querySelector('.btn-text');
 
@@ -1395,7 +1556,7 @@
                 cancelButtonText: t('cancelBtn')
             }).then((result) => {
                 if (result.isConfirmed) {
-                    unlockGold(); // Call the new unlockGold function
+                    unlockGold(null); // Call the new unlockGold function
                 }
             });
         }
@@ -1634,23 +1795,86 @@
             showToast(currentLang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'info');
         }
 
-        // ── Activity Feed ──
+        // ── Activity Feed & Marquee ──
         async function fetchActivityFeed() {
             try {
                 const res = await fetch('/api/recent-activity');
                 const data = await res.json();
+
+                // Fallback for list
                 const list = document.getElementById('activityFeed');
-                if (!list) return;
+                if (list) {
+                    if (!data.success || !data.activity || data.activity.length === 0) {
+                        list.innerHTML = `<li class="activity-item" style="color:var(--text-secondary)">${t('noActivity')}</li>`;
+                    } else {
+                        list.innerHTML = data.activity.map(a => {
+                            const time = new Date(a.timestamp);
+                            const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            return `<li class="activity-item"><span class="activity-user">@${a.username}</span><span class="activity-time">${timeStr}</span></li>`;
+                        }).join('');
+                    }
+                }
+
+                // Update Marquee
+                const marqueeWrapper = document.getElementById('marqueeWrapper');
+                const marqueeContent = document.getElementById('marqueeContent');
+                if (!marqueeWrapper || !marqueeContent) return;
+
                 if (!data.success || !data.activity || data.activity.length === 0) {
-                    list.innerHTML = `<li class="activity-item" style="color:var(--text-secondary)">${t('noActivity')}</li>`;
+                    marqueeWrapper.style.display = 'none';
                     return;
                 }
-                list.innerHTML = data.activity.map(a => {
+
+                // Only show successful unlocks in marquee
+                const successes = data.activity.filter(a => a.status !== 'error');
+                if (successes.length === 0) {
+                    marqueeWrapper.style.display = 'none';
+                    return;
+                }
+
+                marqueeWrapper.style.display = 'flex';
+                // Clone items 3 times for seamless scrolling loop
+                const itemsToRender = [...successes, ...successes, ...successes];
+
+                marqueeContent.innerHTML = itemsToRender.map(a => {
                     const time = new Date(a.timestamp);
                     const timeStr = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    return `<li class="activity-item"><span class="activity-user">@${a.username}</span><span class="activity-time">${timeStr}</span></li>`;
+                    return `<div class="marquee-item">🚀 <span class="marquee-user">@${a.username}</span> <span style="opacity:0.6;font-size:0.8rem;">unlocked</span> <span style="color:var(--secondary-color)">${a.product_id}</span> <span class="marquee-time">${timeStr}</span></div>`;
                 }).join('');
+
             } catch (e) { console.error('Activity error:', e); }
+        }
+
+        // ── Live Queue Status ──
+        async function fetchQueueStatus() {
+            try {
+                const res = await fetch('/api/queue-status');
+                const data = await res.json();
+
+                const dot = document.getElementById('liveStatusDot');
+                const text = document.getElementById('liveStatusText');
+                if (!dot || !text) return;
+
+                dot.className = 'status-dot';
+                text.className = 'status-text';
+
+                if (data.cooldown) {
+                    dot.style.background = '#ff0055';
+                    dot.style.boxShadow = '0 0 10px #ff0055';
+                    text.textContent = 'COOLDOWN';
+                    text.classList.add('status-cooldown');
+                } else if (data.locked) {
+                    dot.style.background = '#ffaa00';
+                    dot.style.boxShadow = '0 0 10px #ffaa00';
+                    text.textContent = 'PROCESSING';
+                    text.classList.add('status-busy');
+                } else {
+                    dot.style.background = '#00ffff';
+                    dot.style.boxShadow = '0 0 10px #00ffff';
+                    text.textContent = 'IDLE';
+                    text.classList.add('status-idle');
+                }
+            } catch (e) { console.error('Queue query error:', e); }
         }
 
         // ── Rate Limit ──
@@ -1745,10 +1969,12 @@
             fetchSiteSettings();
             fetchActivityFeed();
             fetchRateLimit();
+            fetchQueueStatus();
             applyLang();
             setInterval(fetchSiteSettings, 30000);
             setInterval(fetchActivityFeed, 15000);
             setInterval(fetchRateLimit, 30000);
+            setInterval(fetchQueueStatus, 3000);
         });
     </script>
 
