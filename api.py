@@ -90,12 +90,11 @@ class LocketAPI:
         """
         url = "https://api.revenuecat.com/v1/receipts"
 
-        tokens = token_store.get_tokens()
-        if not tokens:
-            raise Exception("No fetch tokens found in Redis Store.")
+        # Select payload config via Round-Robin, ignoring dead tokens
+        token_config = token_store.get_next_token()
+        if not token_config:
+            raise Exception("Tất cả Token hiện tại đều đã Die hoặc Hết dung lượng khởi chạy. Xin báo Admin nạp thêm!")
 
-        # Select random payload config
-        token_config = random.choice(tokens)
         token_name = token_config.get('name', 'Unknown')
         
         fetch_token = token_config.get('fetch_token')
@@ -161,7 +160,12 @@ class LocketAPI:
             result["__used_token_name"] = token_name
             return result
         else:
-            raise Exception(f"API request failed with status code {response.status_code}: {response.text}")
+            err_text = response.text
+            # Identify dead token responses
+            if response.status_code in [401, 403] or "Invalid token" in err_text or "not authorized" in err_text.lower() or "Invalid API Key" in err_text:
+                token_store.ban_token(token_name)
+                raise Exception(f"Token Bị Tử Hình [{token_name}]: {err_text}")
+            raise Exception(f"API request failed with status code {response.status_code}: {err_text}")
 
     def _update_rate_limit(self, response):
         """Extract rate limit info from response headers."""

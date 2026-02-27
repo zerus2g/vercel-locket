@@ -233,6 +233,9 @@ class RedisTokenStore:
     Manages fetch tokens using Redis list. Falls back to in-memory list if Redis is unavailable.
     """
     TOKENS_KEY = "locket_admin:fetch_tokens"
+    LOCK_KEY = "locket_admin:restore_lock"
+    COOLDOWN_KEY = "locket_admin:restore_cooldown"
+    RR_INDEX_KEY = "locket_admin:rr_index"
 
     def __init__(self):
         from config import TOKEN_SETS
@@ -292,6 +295,78 @@ class RedisTokenStore:
                 redis_client.delete(self.TOKENS_KEY)
             except Exception as e:
                 logger.error(f"Redis clear_tokens error: {e}")
+
+    # --- ADVANCED FEATURES ---
+    
+    def acquire_lock(self, timeout=30):
+        """Acquire a distributed lock. Returns True if acquired."""
+        if not redis_client: return True # Fallback if no redis
+        try:
+            # SETNX (Set if Not eXists) with expiration
+            return bool(redis_client.set(self.LOCK_KEY, "locked", nx=True, ex=timeout))
+        except Exception:
+            return True
+
+    def release_lock(self):
+        if not redis_client: return
+        try:
+            redis_client.delete(self.LOCK_KEY)
+        except: pass
+
+    def set_cooldown(self, seconds=5):
+        """Set a global cooldown before next unlock can process."""
+        if not redis_client: return
+        try:
+            redis_client.set(self.COOLDOWN_KEY, "cooldown", ex=seconds)
+        except: pass
+
+    def is_cooldown(self):
+        """Check if we are in cooldown period."""
+        if not redis_client: return False
+        try:
+            return bool(redis_client.exists(self.COOLDOWN_KEY))
+        except: return False
+
+    def is_locked(self):
+        """Check if lock is currently held by someone."""
+        if not redis_client: return False
+        try:
+            return bool(redis_client.exists(self.LOCK_KEY))
+        except: return False
+
+    def get_next_token(self):
+        """Round-robin token selection, ignoring dead tokens."""
+        tokens = self.get_tokens()
+        # Filter out dead tokens
+        active_tokens = [t for t in tokens if t.get('status') != 'dead']
+        
+        if not active_tokens:
+            return None # No tokens available
+            
+        if not redis_client:
+            import random
+            return random.choice(active_tokens)
+            
+        try:
+            # Atomic increment
+            idx = redis_client.incr(self.RR_INDEX_KEY)
+            return active_tokens[idx % len(active_tokens)]
+        except Exception:
+            import random
+            return random.choice(active_tokens)
+
+    def ban_token(self, token_name):
+        """Mark a token as dead."""
+        tokens = self.get_tokens()
+        changed = False
+        for t in tokens:
+            if t.get('name') == token_name:
+                t['status'] = 'dead'
+                changed = True
+        if changed:
+            self.save_tokens(tokens)
+            return True
+        return False
 
 
 # Instantiate globals

@@ -29,8 +29,7 @@ subscription_ids = [
 api = LocketAPI()
 
 # ── Restore Lock (Vercel-compatible serialization) ──
-restore_lock = threading.Lock()
-restore_busy = False  # Track if currently processing
+# (Now handled by Redis token_store globally across all Vercel instances)
 
 
 # ── Auth Decorator ──
@@ -205,8 +204,8 @@ def queue_status():
     """Return whether the server is currently processing a request."""
     return jsonify({
         "success": True,
-        "busy": restore_busy,
-        "status": "processing" if restore_busy else "idle"
+        "busy": token_store.is_locked() or token_store.is_cooldown(),
+        "status": "processing" if token_store.is_locked() else ("cooldown" if token_store.is_cooldown() else "idle")
     })
 
 
@@ -237,8 +236,16 @@ def restore_purchase():
     if not username:
         return jsonify({"success": False, "msg": "Username is required"}), 400
 
-    # ── Serialize: Only 1 restore at a time ──
-    acquired = restore_lock.acquire(blocking=False)
+    # ── Cooldown Check ──
+    if token_store.is_cooldown():
+        return jsonify({
+            "success": False, 
+            "busy": True, 
+            "msg": "Cổng API đang nhịp gõ chờ 5 giây để tránh chặn bởi Apple. Vui lòng bấm lại ngay sau đây!"
+        }), 429
+
+    # ── Serialize: Only 1 restore at a time globally (Redis Lock) ──
+    acquired = token_store.acquire_lock(timeout=30)
     if not acquired:
         return jsonify({
             "success": False,
@@ -247,7 +254,6 @@ def restore_purchase():
         }), 429
 
     try:
-        restore_busy = True
 
         # 1. Scrape the UID from locket.cam silently
         print(f"Scraping UID for: {username}")
@@ -312,8 +318,8 @@ def restore_purchase():
         return jsonify({"success": False, "msg": f"An error occurred: {str(e)}"}), 500
 
     finally:
-        restore_busy = False
-        restore_lock.release()
+        token_store.set_cooldown(6)  # Set ~5-6s cooldown globally after completion
+        token_store.release_lock()
 
 
 # ── Activity Feed ──
