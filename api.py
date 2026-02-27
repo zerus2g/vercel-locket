@@ -156,7 +156,9 @@ class LocketAPI:
         self._update_rate_limit(response)
         
         if response.ok:
-            return response.json()
+            result = response.json()
+            result["__used_token_name"] = token_name
+            return result
         else:
             raise Exception(f"API request failed with status code {response.status_code}: {response.text}")
 

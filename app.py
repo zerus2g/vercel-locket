@@ -279,8 +279,10 @@ def restore_purchase():
 
         msg = f"Purchase {product_id} for {username} successfully!"
 
+        used_token = restore_result.get("__used_token_name", "Unknown")
+
         # Update stats
-        tracker.add_success(username, product_id)
+        tracker.add_success(username, product_id, used_token)
         
         # Notification (correct 4-param signature)
         try:

@@ -147,7 +147,7 @@ class RedisStatsTracker:
             logger.error(f"Redis get stats error: {e}")
             return self._mem_stats
 
-    def add_success(self, username, product_id="locket_199_1m"):
+    def add_success(self, username, product_id="locket_199_1m", used_token="Unknown"):
         vn_tz = timezone(timedelta(hours=7))
         today = datetime.now(vn_tz).strftime("%Y-%m-%d")
         
@@ -158,6 +158,7 @@ class RedisStatsTracker:
             self._mem_activity.insert(0, {
                 "username": username,
                 "product_id": product_id,
+                "used_token": used_token,
                 "timestamp": datetime.now(vn_tz).isoformat()
             })
             self._mem_activity = self._mem_activity[:20]
@@ -172,6 +173,7 @@ class RedisStatsTracker:
             activity = json.dumps({
                 "username": username,
                 "product_id": product_id,
+                "used_token": used_token,
                 "timestamp": datetime.now(vn_tz).isoformat()
             })
             redis_client.lpush(self.ACTIVITY_KEY, activity)
