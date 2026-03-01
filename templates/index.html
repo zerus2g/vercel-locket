@@ -1284,7 +1284,7 @@
 
             .layout-left {
                 flex: 1;
-                max-width: 320px;
+                max-width: 400px;
                 order: 1;
             }
 
@@ -1295,7 +1295,7 @@
 
             .layout-right {
                 flex: 1;
-                max-width: 320px;
+                max-width: 400px;
                 order: 3;
             }
 
@@ -1386,7 +1386,8 @@
                         </ol>
                         <div
                             style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                            <a href="/download/profile" class="download-btn" rel="noopener noreferrer" style="
+                            <a href="{{ url_for('download_profile') }}" class="download-btn" rel="noopener noreferrer"
+                                style="
                         display: inline-flex;
                         align-items: center;
                         background: rgba(255, 255, 255, 0.1);
