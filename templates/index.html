@@ -1250,65 +1250,143 @@
         <span id="ledLabel">CONNECTING...</span>
     </div>
 
-    <div class="main-wrapper">
-        <!-- Announcement Banner (dynamic from admin) -->
-        <div id="announcementBanner"
-            style="display:none; width:100%; max-width:520px; margin: 0 auto 1rem; padding: .8rem 1.2rem; background: rgba(255, 200, 0, 0.1); border: 1px solid rgba(255, 200, 0, 0.3); border-radius: .75rem; text-align: center; color: #ffcc00; font-size: .9rem; backdrop-filter: blur(10px);">
-            <span id="announcementText"></span>
-        </div>
+    <style>
+        .layout-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 10px;
+            position: relative;
+            z-index: 10;
+        }
 
-        <div class="container">
-            <img src="https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM"
-                alt="Locket Icon" class="app-icon">
-            <h1 data-i18n="title">Locket Gold</h1>
-            <p class="subtitle" data-i18n="subtitle">Unlock premium features instantly</p>
+        .layout-left,
+        .layout-right,
+        .layout-center {
+            width: 100%;
+        }
 
-            <div class="form-group">
-                <label for="username" data-i18n="targetUsername">Target Username</label>
-                <div class="input-glow-wrap" id="inputGlowWrap">
-                    <input type="text" id="username" data-i18n="placeholder" placeholder="Enter Locket username..."
-                        required autocomplete="off">
+        .layout-left .main-wrapper,
+        .layout-right .main-wrapper,
+        .layout-center .main-wrapper {
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1100px) {
+            .layout-grid {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                padding: 40px 20px;
+            }
+
+            .layout-left {
+                flex: 1;
+                max-width: 320px;
+                order: 1;
+            }
+
+            .layout-center {
+                flex: 0 1 520px;
+                order: 2;
+            }
+
+            .layout-right {
+                flex: 1;
+                max-width: 320px;
+                order: 3;
+            }
+
+            .layout-grid>div>.main-wrapper {
+                margin: 0;
+                /* Reset default vertical margins */
+            }
+        }
+    </style>
+
+    <div class="layout-grid">
+        <!-- 2. Hoạt Động Gần Đây (Trái) -->
+        <div class="layout-left">
+            <div class="main-wrapper">
+                <div class="activity-feed">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        <span data-i18n="recentUnlocks">Recent Unlocks</span>
+                    </h3>
+                    <ul class="activity-list" id="activityFeed">
+                        <li class="activity-item" style="color:var(--text-secondary)">No activity yet</li>
+                    </ul>
                 </div>
             </div>
-
-            <button id="submitBtn" onclick="unlockGold()">
-                <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
-                <div class="loader" id="loader"></div>
-            </button>
-
-            <a href="https://t.me/Benonivn" target="_blank" rel="noopener noreferrer"
-                style="display:inline-flex; align-items:center; gap:.4rem; margin-top:.8rem; padding:.5rem 1.2rem; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.3); border-radius:.75rem; color:#ff6b6b; text-decoration:none; font-size:.85rem; font-weight:600; transition:all .2s;"
-                onmouseover="this.style.background='rgba(255,70,70,0.25)';this.style.transform='translateY(-1px)'"
-                onmouseout="this.style.background='rgba(255,70,70,0.1)';this.style.transform='none'">
-                📩 <span data-i18n="reportError">Báo Lỗi</span>
-            </a>
         </div>
 
-        <div class="instructions">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <span data-i18n="howToUse">How to use</span>
-            </h3>
+        <!-- Khung Chính (Giữa) -->
+        <div class="layout-center">
+            <div class="main-wrapper">
+                <!-- Announcement Banner (dynamic from admin) -->
+                <div id="announcementBanner"
+                    style="display:none; width:100%; max-width:520px; margin: 0 auto 1rem; padding: .8rem 1.2rem; background: rgba(255, 200, 0, 0.1); border: 1px solid rgba(255, 200, 0, 0.3); border-radius: .75rem; text-align: center; color: #ffcc00; font-size: .9rem; backdrop-filter: blur(10px);">
+                    <span id="announcementText"></span>
+                </div>
 
-            <!-- Platform Tabs -->
+                <div class="container">
+                    <img src="https://play-lh.googleusercontent.com/eRZLg00mAQGayCrFjDBklPIpW3qFHcmUs8PUQA4z7hVe-cDKMcRqecVHONAIexJGJZM"
+                        alt="Locket Icon" class="app-icon">
+                    <h1 data-i18n="title">Locket Gold</h1>
+                    <p class="subtitle" data-i18n="subtitle">Unlock premium features instantly</p>
 
-            <!-- iOS Content -->
-            <div id="ios-content" class="platform-content active">
-                <ol>
-                    <li data-i18n="ios1">Open the Locket app and find your username in settings.</li>
-                    <li data-i18n="ios2">Enter your exact username in the field above.</li>
-                    <li data-i18n="ios3">Click <strong>Unlock Locket Gold</strong> to activate premium.</li>
-                    <li data-i18n="ios4"><strong>Important:</strong> After activation, you must install the
-                        configuration profile below to block revocation.</li>
-                    <li data-i18n="ios5">Restart your Locket app to see the changes.</li>
-                </ol>
-                <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a href="/download/profile" class="download-btn" rel="noopener noreferrer" style="
+                    <div class="form-group">
+                        <label for="username" data-i18n="targetUsername">Target Username</label>
+                        <div class="input-glow-wrap" id="inputGlowWrap">
+                            <input type="text" id="username" data-i18n="placeholder"
+                                placeholder="Enter Locket username..." required autocomplete="off">
+                        </div>
+                    </div>
+
+                    <button id="submitBtn" onclick="unlockGold()">
+                        <span class="btn-text" data-i18n="unlockBtn">Unlock Locket Gold</span>
+                        <div class="loader" id="loader"></div>
+                    </button>
+
+                    <a href="https://t.me/Benonivn" target="_blank" rel="noopener noreferrer"
+                        style="display:inline-flex; align-items:center; gap:.4rem; margin-top:.8rem; padding:.5rem 1.2rem; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.3); border-radius:.75rem; color:#ff6b6b; text-decoration:none; font-size:.85rem; font-weight:600; transition:all .2s;"
+                        onmouseover="this.style.background='rgba(255,70,70,0.25)';this.style.transform='translateY(-1px)'"
+                        onmouseout="this.style.background='rgba(255,70,70,0.1)';this.style.transform='none'">
+                        📩 <span data-i18n="reportError">Báo Lỗi</span>
+                    </a>
+                </div>
+
+                <div class="instructions">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span data-i18n="howToUse">How to use</span>
+                    </h3>
+
+                    <!-- Platform Tabs -->
+
+                    <!-- iOS Content -->
+                    <div id="ios-content" class="platform-content active">
+                        <ol>
+                            <li data-i18n="ios1">Open the Locket app and find your username in settings.</li>
+                            <li data-i18n="ios2">Enter your exact username in the field above.</li>
+                            <li data-i18n="ios3">Click <strong>Unlock Locket Gold</strong> to activate premium.</li>
+                            <li data-i18n="ios4"><strong>Important:</strong> After activation, you must install the
+                                configuration profile below to block revocation.</li>
+                            <li data-i18n="ios5">Restart your Locket app to see the changes.</li>
+                        </ol>
+                        <div
+                            style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <a href="/download/profile" class="download-btn" rel="noopener noreferrer" style="
                         display: inline-flex;
                         align-items: center;
                         background: rgba(255, 255, 255, 0.1);
@@ -1322,17 +1400,17 @@
                         border: 1px solid rgba(255, 255, 255, 0.2);
                         transition: all 0.3s ease;
                     ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            style="vertical-align: middle; margin-right: 8px;">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        <span data-i18n="downloadProfile">Download Profile</span>
-                    </a>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span data-i18n="downloadProfile">Download Profile</span>
+                            </a>
 
-                    <button onclick="showTutorial()" style="
+                            <button onclick="showTutorial()" style="
                         display: inline-flex;
                         align-items: center;
                         width: auto;
@@ -1347,83 +1425,63 @@
                         border: 1px solid rgba(255, 215, 0, 0.2);
                         transition: all 0.3s ease;
                     ">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                </svg>
+                                <span data-i18n="watchTutorial">Watch Tutorial</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Android Content removed -->
+                </div>
+
+                <div class="note">
+                    <h3>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            style="vertical-align: middle; margin-right: 8px;">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
                         </svg>
-                        <span data-i18n="watchTutorial">Watch Tutorial</span>
-                    </button>
+                        <span data-i18n="importantNote">Important Note</span>
+                    </h3>
+                    <ul>
+                        <li data-i18n="iosCompat">This tool is compatible with <strong>iOS Devices</strong>.</li>
+                        <li data-i18n="goldValid">The Gold subscription is only valid until you <strong>log out</strong>
+                            of the
+                            Locket app.</li>
+                        <li data-i18n="eduOnly">This project is created for <strong>educational purposes only</strong>.
+                        </li>
+                    </ul>
                 </div>
             </div>
-
-            <!-- Android Content removed -->
         </div>
 
-        <div class="note">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                    </path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <span data-i18n="importantNote">Important Note</span>
-            </h3>
-            <ul>
-                <li data-i18n="iosCompat">This tool is compatible with <strong>iOS Devices</strong>.</li>
-                <li data-i18n="goldValid">The Gold subscription is only valid until you <strong>log out</strong> of the
-                    Locket app.</li>
-                <li data-i18n="eduOnly">This project is created for <strong>educational purposes only</strong>.</li>
-            </ul>
+        <!-- 1. QR Donate (Phải) -->
+        <div class="layout-right">
+            <!-- QR Donate Section (dynamic from admin) -->
+            <div class="main-wrapper" id="qrDonateSection" style="display:none;">
+                <div
+                    style="max-width:520px; margin:0 auto; background:rgba(10,10,15,0.4); backdrop-filter:blur(15px); border:1px solid rgba(0,255,255,0.15); border-radius:1.5rem; padding:2rem; text-align:center;">
+                    <h3
+                        style="font-size:1rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-secondary); margin-bottom:1rem;">
+                        ❤️ <span data-i18n="donateTitle">Donate</span>
+                    </h3>
+                    <img id="qrDonateImg" src="" alt="QR Donate"
+                        style="max-width:280px; width:100%; border-radius:1rem; border:1px solid rgba(0,255,255,0.15);">
+                    <p style="margin-top:.8rem; font-size:.85rem; color:var(--text-secondary);" data-i18n="donateDesc">
+                        Scan QR
+                        to support us</p>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- QR Donate + Activity Feed (2-column grid) -->
-    <div class="main-wrapper" style="max-width:1100px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-
-            <!-- Box 1: QR Donate -->
-            <div id="qrDonateSection"
-                style="display:none; background:rgba(10,10,15,0.4); backdrop-filter:blur(15px); border:1px solid rgba(0,255,255,0.15); border-radius:1.5rem; padding:2rem; text-align:center;">
-                <h3
-                    style="font-size:1rem; text-transform:uppercase; letter-spacing:2px; color:var(--text-secondary); margin-bottom:1rem;">
-                    ❤️ <span data-i18n="donateTitle">Donate</span>
-                </h3>
-                <img id="qrDonateImg" src="" alt="QR Donate"
-                    style="max-width:280px; width:100%; border-radius:1rem; border:1px solid rgba(0,255,255,0.15);">
-                <p style="margin-top:.8rem; font-size:.85rem; color:var(--text-secondary);" data-i18n="donateDesc">Scan
-                    QR
-                    to support us</p>
-            </div>
-
-            <!-- Box 2: Activity Feed -->
-            <div class="activity-feed"
-                style="background:rgba(10,10,15,0.4); backdrop-filter:blur(15px); border:1px solid rgba(0,255,255,0.15); border-radius:1.5rem; padding:2rem;">
-                <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                    <span data-i18n="recentUnlocks">Recent Unlocks</span>
-                </h3>
-                <ul class="activity-list" id="activityFeed">
-                    <li class="activity-item" style="color:var(--text-secondary)">No activity yet</li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-
-    <style>
-        @media (max-width: 768px) {
-            .main-wrapper>div[style*="grid-template-columns"] {
-                grid-template-columns: 1fr !important;
-            }
-        }
-    </style>
 
     <!-- Language Toggle -->
     <div class="lang-toggle" id="langToggle" onclick="toggleLang()">🌐 EN</div>
