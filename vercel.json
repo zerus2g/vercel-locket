@@ -8,6 +8,14 @@
     ],
     "routes": [
         {
+            "src": "/static/(.*)\\.mobileconfig",
+            "dest": "app.py",
+            "headers": {
+                "Content-Type": "application/x-apple-aspen-config",
+                "Content-Disposition": "attachment"
+            }
+        },
+        {
             "src": "/(.*)",
             "dest": "app.py"
         }

@@ -11,6 +11,10 @@ import threading
 from datetime import datetime, timezone, timedelta
 from notifications import send_telegram_notification
 from redis_store import site_settings, tracker, token_store
+import mimetypes
+
+# Fix MIME type for iOS Profile downloads (.mobileconfig)
+mimetypes.add_type('application/x-apple-aspen-config', '.mobileconfig')
 
 app = Flask(__name__)
 dotenv.load_dotenv()
