@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect
+from flask import Flask, render_template, request, jsonify, session, redirect, send_file
 from api import LocketAPI
 import config
 from config import TOKEN_SETS
@@ -54,6 +54,17 @@ def index():
 @app.route("/admin")
 def admin_page():
     return render_template("admin.html")
+
+@app.route("/download/profile")
+def download_profile():
+    """Serve the .mobileconfig file with correct MIME type for iOS."""
+    filepath = os.path.join(app.root_path, 'static', 'Dns.mobileconfig')
+    return send_file(
+        filepath,
+        mimetype='application/x-apple-aspen-config',
+        as_attachment=True,
+        download_name='Dns.mobileconfig'
+    )
 
 
 # ── Admin Auth Endpoints ──
