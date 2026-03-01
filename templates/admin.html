@@ -1183,7 +1183,7 @@
         async function deleteToken(name) {
             if (!confirm(`Bạn có chắc muốn xóa token '${name}'?`)) return;
             try {
-                const res = await fetch(`/api/admin/tokens/${name}`, { method: 'DELETE' });
+                const res = await fetch(`/api/admin/tokens/${encodeURIComponent(name)}`, { method: 'DELETE' });
                 if (res.status === 401) { showLogin(); return; }
                 const data = await res.json();
                 Swal.fire({

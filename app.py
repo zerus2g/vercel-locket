@@ -170,6 +170,8 @@ def clear_tokens():
 @admin_required
 def delete_token(token_name):
     """Delete a specific token by name from Redis."""
+    import urllib.parse
+    token_name = urllib.parse.unquote(token_name)
     success = token_store.delete_token(token_name)
     if success:
         return jsonify({"success": True, "msg": f"Đã xóa Token '{token_name}' thành công!"})
